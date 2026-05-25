@@ -1064,6 +1064,78 @@
     margin-top: 36px;
   }
 
+  /* ============ JOURNAL ENTRY READER MODAL ============ */
+  .entry-modal-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .entry-modal-title {
+    font-family: 'Italiana', serif;
+    font-size: 36px;
+    color: var(--marron-deep);
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .entry-modal-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .entry-modal-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .entry-modal-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .entry-modal-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--marron-deep);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .entry-modal-empty {
+    font-style: italic;
+    color: var(--marron-soft);
+    font-size: 14px;
+  }
+  .entry-modal-ratings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+  .entry-modal-rating {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line-soft);
+    padding: 14px 16px;
+  }
+  .entry-modal-rating .lab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .entry-modal-rating .val {
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--terracotta-deep);
+    letter-spacing: 4px;
+  }
+
   /* ============ RESPONSIVE ============ */
   @media (max-width: 1100px) {
     .app { grid-template-columns: 1fr; }
@@ -1498,7 +1570,7 @@
             <div class="name" style="font-family: 'Italiana', serif; font-size: 24px; color: var(--marron);">[Formation à venir]</div>
             <p style="color: var(--marron-soft); font-size: 13px; margin-top: 4px;">Bientôt révélée</p>
           </div>
-          <div class="eleve-module">—</div>
+          <div class="eleve-module" style="color: var(--marron-soft); font-style: italic;">à venir</div>
           <div class="eleve-status">En préparation</div>
           <div class="eleve-actions">
             <button class="icon-btn" title="Configurer">⚙</button>
@@ -1727,6 +1799,66 @@
       <div class="pwd-error" id="pwdError"></div>
       <button type="submit" class="pwd-submit"><span>Mettre à jour →</span></button>
     </form>
+  </div>
+</div>
+
+<!-- ============ MODAL : ENTRY READER ============ -->
+<div class="modal-overlay" id="modalEntry">
+  <div class="modal" style="max-width: 760px;">
+    <button class="modal-close" onclick="closeEntryModal()">×</button>
+    <div class="entry-modal-meta" id="entryModalMeta">Jour ? · Module ?</div>
+    <h2 class="entry-modal-title">Entrée de <em id="entryModalStudent">l'élève</em></h2>
+
+    <div class="entry-modal-section" id="entryModalRatingsSection" style="display: none;">
+      <h4>Auto évaluation</h4>
+      <div class="entry-modal-ratings" id="entryModalRatings"></div>
+    </div>
+
+    <div class="entry-modal-section">
+      <h4>Écriture libre</h4>
+      <div class="entry-modal-body" id="entryModalBody"></div>
+    </div>
+
+    <div class="entry-modal-section" id="entryModalObsSection" style="display: none;">
+      <h4>Observation libre</h4>
+      <div class="entry-modal-body" id="entryModalObs"></div>
+    </div>
+
+    <div class="entry-modal-section" id="entryModalIshtarSection" style="display: none;">
+      <h4>Lecture Ishtar</h4>
+      <div id="entryModalIshtar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL : FORMATION DETAIL ============ -->
+<div class="modal-overlay" id="modalFormation">
+  <div class="modal" style="max-width: 720px;">
+    <button class="modal-close" onclick="closeFormationModal()">×</button>
+    <div class="entry-modal-meta">01 · Formation V Care</div>
+    <h2 class="entry-modal-title">V Care, <em>facilitatrice.</em></h2>
+    <p style="font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.85; color: var(--marron-deep); margin-top: 18px;">
+      Formation complète de facilitatrice du bain de vapeur vaginal. Six modules sur cinq mois, alternance théorie, journaling, séances incarnées et certification.
+    </p>
+
+    <div class="entry-modal-section">
+      <h4>Les six modules</h4>
+      <div style="font-family: 'Cormorant Garamond', serif; font-size: 16px; line-height: 1.9; color: var(--marron-deep);">
+        <p><strong>Module 01.</strong> Fondations, ancrage, l'histoire du V Care, posture de la facilitatrice.</p>
+        <p><strong>Module 02.</strong> Autonomie et journaling, 14 jours d'auto observation, écriture quotidienne.</p>
+        <p><strong>Module 03.</strong> Le rituel à l'encens, transmission de la séance fumée.</p>
+        <p><strong>Module 04.</strong> Plantes et formules, les mélanges, les contre indications.</p>
+        <p><strong>Module 05.</strong> Mise en pratique, 14 jours de séances accompagnées.</p>
+        <p><strong>Module 06.</strong> Séance certifiante, 3 heures en groupe de 2 maximum.</p>
+      </div>
+    </div>
+
+    <div class="entry-modal-section">
+      <h4>Tarif</h4>
+      <div style="font-family: 'Cormorant Garamond', serif; font-size: 16px; line-height: 1.9; color: var(--marron-deep);">
+        3333 euros la formation complète, ou 4 fois 850 euros.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2132,8 +2264,8 @@
     if (infoCard) {
       const rows = infoCard.querySelectorAll('.info-row');
       if (rows[0]) rows[0].querySelector('.value').textContent = CURRENT_STUDENT.prenom;
-      if (rows[1]) rows[1].querySelector('.value').textContent = CURRENT_STUDENT.email || '—';
-      if (rows[2]) rows[2].querySelector('.value').textContent = CURRENT_STUDENT.phone || '—';
+      if (rows[1]) rows[1].querySelector('.value').textContent = CURRENT_STUDENT.email || 'non renseigné';
+      if (rows[2]) rows[2].querySelector('.value').textContent = CURRENT_STUDENT.phone || 'non renseigné';
       if (rows[3]) rows[3].querySelector('.value').textContent = CURRENT_STUDENT.cohort || 'Lune 2026';
       if (rows[4]) rows[4].querySelector('.value').textContent = Sanctuarys.formatDate(CURRENT_STUDENT.created_at);
     }
@@ -2203,7 +2335,8 @@
       `;
       const btn = li.querySelector('.btn-ishtar[data-entry-id]');
       if (btn) {
-        btn.addEventListener('click', async () => {
+        btn.addEventListener('click', async (ev) => {
+          ev.stopPropagation();
           btn.disabled = true;
           btn.textContent = 'Ishtar réfléchit...';
           try {
@@ -2217,6 +2350,8 @@
           }
         });
       }
+      // Rendre l'entrée cliquable pour lecture complète
+      li.addEventListener('click', () => openEntryModal(e, summary));
       list.appendChild(li);
     });
 
@@ -2621,6 +2756,89 @@
   window.openModal = openModal;
   window.closeModal = closeModal;
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  // ============ MODAL ENTRY READER ============
+  const modalEntry = document.getElementById('modalEntry');
+  const RATING_LABELS_FR = { corps: 'Corps', emotion: 'Émotion', energie: 'Énergie', sommeil: 'Sommeil', cycle: 'Cycle' };
+  function openEntryModal(entry, summary) {
+    const prenom = CURRENT_STUDENT ? CURRENT_STUDENT.prenom : 'élève';
+    document.getElementById('entryModalMeta').textContent =
+      'Jour ' + entry.day_number + ' sur 14 · Module ' + entry.module_number + ' · ' + Sanctuarys.formatDateTime(entry.updated_at);
+    document.getElementById('entryModalStudent').textContent = prenom;
+
+    // Ratings
+    const ratings = entry.ratings || {};
+    const ratingKeys = Object.keys(ratings);
+    const ratingsSection = document.getElementById('entryModalRatingsSection');
+    const ratingsHost = document.getElementById('entryModalRatings');
+    if (ratingKeys.length > 0) {
+      ratingsHost.innerHTML = ratingKeys.map(k => {
+        const v = ratings[k];
+        const dots = '●'.repeat(v) + '○'.repeat(5 - v);
+        return '<div class="entry-modal-rating"><div class="lab">' + (RATING_LABELS_FR[k] || k) + '</div><div class="val">' + dots + '</div></div>';
+      }).join('');
+      ratingsSection.style.display = 'block';
+    } else {
+      ratingsSection.style.display = 'none';
+    }
+
+    // Body
+    const bodyEl = document.getElementById('entryModalBody');
+    if (entry.body && entry.body.trim()) {
+      bodyEl.textContent = entry.body;
+      bodyEl.classList.remove('entry-modal-empty');
+    } else {
+      bodyEl.textContent = 'Aucune écriture pour cette entrée.';
+      bodyEl.classList.add('entry-modal-empty');
+    }
+
+    // Observation
+    const obsSection = document.getElementById('entryModalObsSection');
+    const obsEl = document.getElementById('entryModalObs');
+    if (entry.observation && entry.observation.trim()) {
+      obsEl.textContent = entry.observation;
+      obsSection.style.display = 'block';
+    } else {
+      obsSection.style.display = 'none';
+    }
+
+    // Ishtar summary
+    const ishtarSection = document.getElementById('entryModalIshtarSection');
+    const ishtarHost = document.getElementById('entryModalIshtar');
+    if (summary) {
+      ishtarHost.innerHTML = '<div class="ishtar-summary alert-' + summary.alert_level + '">' + escapeHTML(summary.summary) +
+        (summary.alert_message ? '<div style="margin-top: 10px; font-family: \'JetBrains Mono\', monospace; font-size: 11px; color: var(--rouge-doux); letter-spacing: 1px;">⚠ ' + escapeHTML(summary.alert_message) + '</div>' : '') +
+        '</div>';
+      ishtarSection.style.display = 'block';
+    } else {
+      ishtarSection.style.display = 'none';
+    }
+
+    modalEntry.classList.add('show');
+  }
+  function closeEntryModal() { modalEntry.classList.remove('show'); }
+  window.openEntryModal = openEntryModal;
+  window.closeEntryModal = closeEntryModal;
+  modalEntry.addEventListener('click', e => { if (e.target === modalEntry) closeEntryModal(); });
+
+  // ============ MODAL FORMATION ============
+  const modalFormation = document.getElementById('modalFormation');
+  function openFormationModal() { modalFormation.classList.add('show'); }
+  function closeFormationModal() { modalFormation.classList.remove('show'); }
+  window.openFormationModal = openFormationModal;
+  window.closeFormationModal = closeFormationModal;
+  modalFormation.addEventListener('click', e => { if (e.target === modalFormation) closeFormationModal(); });
+
+  // Rendre la ligne V Care cliquable
+  document.querySelectorAll('#panel-formations .eleve-row').forEach((row, idx) => {
+    if (idx === 0) {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', openFormationModal);
+    } else {
+      row.style.cursor = 'default';
+      row.style.pointerEvents = 'none';
+    }
+  });
 
   document.getElementById('newEleveForm').addEventListener('submit', async e => {
     e.preventDefault();
