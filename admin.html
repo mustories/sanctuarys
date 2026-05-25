@@ -1138,8 +1138,10 @@
           <div class="detail-card" style="margin-top: 20px;">
             <h3>Actions</h3>
             <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="openPanel('messages')">Envoyer un message</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="resendInvitationBtn">Renvoyer l'invitation par email</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Programmer un coaching</button>
-            <button class="btn-outline" style="width: 100%; justify-content: center;">Exporter son parcours</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Exporter son parcours</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; color: var(--rouge-doux); border-color: var(--rouge-doux);" id="deleteEleveDetailBtn">Supprimer cette élève</button>
           </div>
         </div>
 
@@ -1734,6 +1736,30 @@
     if (!CURRENT_STUDENT) return;
     MSG_THREAD_USER = id;
 
+    // Lie les boutons d'action
+    setTimeout(() => {
+      const resendBtn = document.getElementById('resendInvitationBtn');
+      if (resendBtn) {
+        resendBtn.onclick = async () => {
+          try {
+            showToast('Envoi de l\'invitation...');
+            const r = await Sanctuarys.resendInvitation(CURRENT_STUDENT.id);
+            if (r.action_link) {
+              alert('Email non envoyé, mais voici le lien à transmettre :\n\n' + r.action_link);
+            } else {
+              showToast('✦ ' + (r.message || 'Email renvoyé'));
+            }
+          } catch (err) {
+            alert('Erreur : ' + (err.message || 'envoi impossible'));
+          }
+        };
+      }
+      const delBtn = document.getElementById('deleteEleveDetailBtn');
+      if (delBtn) {
+        delBtn.onclick = () => confirmDeleteUser(CURRENT_STUDENT, 'élève');
+      }
+    }, 100);
+
     document.getElementById('detailName').textContent = CURRENT_STUDENT.prenom;
     document.getElementById('detailNameTitle').innerHTML = `${escapeHTML(CURRENT_STUDENT.prenom)} <em>${escapeHTML(CURRENT_STUDENT.nom || '')}</em>`;
     navItems.forEach(n => n.classList.remove('active'));
@@ -1918,8 +1944,9 @@
         await loadFormatrices();
       }
     } catch (err) {
-      console.error(err);
-      showToast('Erreur · ' + (err.message || 'suppression impossible'));
+      console.error('Delete error:', err);
+      // Alert pour que tu puisses lire le message
+      alert('Erreur de suppression :\n\n' + (err.message || 'suppression impossible') + '\n\n(Aussi visible dans la console)');
     }
   }
 

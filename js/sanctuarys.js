@@ -311,6 +311,23 @@ window.Sanctuarys = {
     return data;
   },
 
+  async resendInvitation(userId) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/resend-invitation`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_id: userId })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur lors du renvoi');
+    return data;
+  },
+
   async listFormatrices() {
     const supa = await this.init();
     const { data } = await supa
