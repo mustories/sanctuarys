@@ -973,6 +973,13 @@
       <span class="count">1</span>
     </a>
 
+    <div class="nav-section-label admin-only">Équipe</div>
+    <a class="nav-item admin-only" data-panel="formatrices">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 19 Q 9 13 15 19 M 14 16 Q 17 13 21 16"/></svg>
+      Formatrices
+      <span class="count" id="formatricesCount">0</span>
+    </a>
+
     <div class="nav-section-label">Formation</div>
     <a class="nav-item" data-panel="formations">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5 L 12 2 L 20 5 L 20 18 L 12 21 L 4 18 Z"/><path d="M4 5 L 12 8 L 20 5 M 12 8 L 12 21"/></svg>
@@ -1246,6 +1253,32 @@
       </div>
     </div>
 
+    <!-- FORMATRICES -->
+    <div class="panel" id="panel-formatrices">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Formatrices</div>
+        <div>
+          <h1 class="page-title">L'équipe <em>Sanctuarys.</em></h1>
+          <p class="page-subtitle">Toutes les formatrices qui accompagnent les élèves Sanctuarys. Chaque formatrice voit son propre dashboard avec ses élèves référencées.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Total</strong><span id="formatricesTotal">0</span> formatrices</div>
+        </div>
+      </div>
+
+      <div class="eleves-toolbar">
+        <input type="text" class="search-box" placeholder="Rechercher une formatrice..." id="searchFormatrice">
+        <button class="btn-primary" onclick="openFormatriceModal()">
+          <span>+</span>
+          <span>Nouvelle formatrice</span>
+        </button>
+      </div>
+
+      <div class="eleves-list" id="formatricesList">
+        <!-- inserted by JS -->
+      </div>
+    </div>
+
     <!-- FORMATIONS -->
     <div class="panel" id="panel-formations">
       <div class="panel-header">
@@ -1292,8 +1325,8 @@
 <div class="modal-overlay" id="modalNewEleve">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <h2>Nouvelle <em>élève</em></h2>
-    <p class="modal-subtitle">Crée son espace personnel Sanctuarys. Elle recevra un email avec ses identifiants.</p>
+    <h2>Inviter une <em>élève</em></h2>
+    <p class="modal-subtitle">Elle recevra automatiquement un email Sanctuarys avec un lien pour activer son compte et choisir son mot de passe. Une fois activé, elle entre directement dans son espace personnel.</p>
 
     <form id="newEleveForm">
       <div class="form-grid-2">
@@ -1335,9 +1368,17 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Promotion</label>
-        <input type="text" name="promotion" value="Lune 2026" placeholder="Ex: Lune 2026">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Promotion</label>
+          <input type="text" name="promotion" value="Lune 2026" placeholder="Ex: Lune 2026">
+        </div>
+        <div class="form-group admin-only">
+          <label>Formatrice référente</label>
+          <select name="formatrice_id" id="formatriceSelect">
+            <option value="">Moi (par défaut)</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
@@ -1347,7 +1388,49 @@
 
       <div class="modal-actions">
         <button type="button" class="btn-outline" onclick="closeModal()">Annuler</button>
-        <button type="submit" class="btn-primary"><span>Créer l'espace élève →</span></button>
+        <button type="submit" class="btn-primary"><span>Envoyer l'invitation ✦</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL : NEW FORMATRICE ============ -->
+<div class="modal-overlay" id="modalNewFormatrice">
+  <div class="modal">
+    <button class="modal-close" onclick="closeFormatriceModal()">×</button>
+    <h2>Nouvelle <em>formatrice</em></h2>
+    <p class="modal-subtitle">Elle rejoint l'équipe Sanctuarys. Elle aura son propre dashboard et suivra les élèves que tu lui assignes.</p>
+
+    <form id="newFormatriceForm">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" name="prenom" required>
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" name="nom">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="elle@email.com">
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" name="telephone">
+      </div>
+
+      <div class="form-group">
+        <label>Note interne (optionnel)</label>
+        <textarea name="note" rows="3" placeholder="Sa formation, son rôle, ses spécialités..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeFormatriceModal()">Annuler</button>
+        <button type="submit" class="btn-primary"><span>Envoyer l'invitation ✦</span></button>
       </div>
     </form>
   </div>
@@ -1381,6 +1464,7 @@
   // ============ STATE ============
   let ADMIN_PROFILE = null;
   let STUDENTS = [];
+  let FORMATRICES = [];
   let CURRENT_STUDENT = null;
   let MSG_CHANNEL = null;
   let MSG_THREAD_USER = null;
@@ -1423,14 +1507,22 @@
   async function bootstrap() {
     document.getElementById('loginGate').classList.add('hidden');
     ADMIN_PROFILE = await Sanctuarys.getProfile();
-    if (!ADMIN_PROFILE || ADMIN_PROFILE.role !== 'admin') {
-      showToast('Accès refusé. Cet espace est réservé à la formatrice.');
+    if (!ADMIN_PROFILE || !['admin', 'formatrice'].includes(ADMIN_PROFILE.role)) {
+      showToast('Accès refusé. Cet espace est réservé aux formatrices Sanctuarys.');
       await Sanctuarys.signOut();
       setTimeout(() => location.reload(), 1500);
       return;
     }
     hydrateAdminProfile();
     await loadStudents();
+
+    // Section Formatrices : visible uniquement pour l'admin
+    if (ADMIN_PROFILE.role === 'admin') {
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+      await loadFormatrices();
+    } else {
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    }
     setupAdminRealtime();
   }
 
@@ -1740,6 +1832,111 @@
     });
   }
 
+  // ============ FORMATRICES ============
+  async function loadFormatrices() {
+    FORMATRICES = await Sanctuarys.listFormatrices();
+    renderFormatrices();
+    populateFormatriceSelect();
+  }
+
+  function renderFormatrices() {
+    const list = document.getElementById('formatricesList');
+    const count = document.getElementById('formatricesCount');
+    const total = document.getElementById('formatricesTotal');
+    if (count) count.textContent = FORMATRICES.length;
+    if (total) total.textContent = FORMATRICES.length;
+    if (!list) return;
+    list.innerHTML = '';
+    if (FORMATRICES.length === 0) {
+      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 18px;">Aucune formatrice pour l\'instant.</div>';
+      return;
+    }
+    FORMATRICES.forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'eleve-row';
+      row.style.gridTemplateColumns = '1fr 1fr 100px 100px';
+      const isAdmin = f.role === 'admin';
+      const myStudentsCount = STUDENTS.filter(s => s.formatrice_id === f.id).length;
+      row.innerHTML = `
+        <div class="eleve-name">
+          <div class="eleve-avatar">${Sanctuarys.initialOf(f.prenom)}</div>
+          <div>
+            <div class="name">${escapeHTML(f.prenom)} ${escapeHTML(f.nom || '')}</div>
+            <div class="email">${escapeHTML(f.email || '')}</div>
+          </div>
+        </div>
+        <div class="eleve-module">${myStudentsCount} élève${myStudentsCount > 1 ? 's' : ''} <strong>référente${myStudentsCount > 1 ? 's' : ''}</strong></div>
+        <div class="eleve-module">${isAdmin ? 'Direction' : 'Formatrice'}</div>
+        <div class="eleve-status ${isAdmin ? 'completed' : 'active'}">${isAdmin ? 'Admin' : 'Active'}</div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function populateFormatriceSelect() {
+    const select = document.getElementById('formatriceSelect');
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = '<option value="">Moi (par défaut)</option>';
+    FORMATRICES.forEach(f => {
+      if (f.id === ADMIN_PROFILE.id) return; // skip self (déjà "par défaut")
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = `${f.prenom} ${f.nom || ''}`.trim();
+      select.appendChild(opt);
+    });
+    select.value = current || '';
+  }
+
+  // Search formatrices
+  const searchFormatriceInput = document.getElementById('searchFormatrice');
+  if (searchFormatriceInput) {
+    searchFormatriceInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('#formatricesList .eleve-row').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // ============ MODAL NEW FORMATRICE ============
+  const modalFormatrice = document.getElementById('modalNewFormatrice');
+  function openFormatriceModal() { modalFormatrice.classList.add('show'); }
+  function closeFormatriceModal() { modalFormatrice.classList.remove('show'); }
+  window.openFormatriceModal = openFormatriceModal;
+  window.closeFormatriceModal = closeFormatriceModal;
+  modalFormatrice.addEventListener('click', e => { if (e.target === modalFormatrice) closeFormatriceModal(); });
+
+  document.getElementById('newFormatriceForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>Envoi de l\'invitation...</span>';
+
+    try {
+      const payload = {
+        email: data.get('email').trim().toLowerCase(),
+        prenom: data.get('prenom').trim(),
+        nom: data.get('nom')?.trim() || null,
+        phone: data.get('telephone')?.trim() || null,
+        internal_note: data.get('note')?.trim() || null
+      };
+      const result = await Sanctuarys.inviteFormatrice(payload);
+      closeFormatriceModal();
+      showToast(`✦ Invitation formatrice envoyée à ${payload.prenom}`);
+      e.target.reset();
+      await loadFormatrices();
+    } catch (err) {
+      console.error(err);
+      showToast('Erreur · ' + (err.message || 'invitation impossible'));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  });
+
   // ============ MODAL NEW ELEVE ============
   const modal = document.getElementById('modalNewEleve');
   function openModal() { modal.classList.add('show'); }
@@ -1751,55 +1948,40 @@
   document.getElementById('newEleveForm').addEventListener('submit', async e => {
     e.preventDefault();
     const data = new FormData(e.target);
-    showToast('Création en cours...');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>Envoi de l\'invitation...</span>';
 
-    // 1. Crée le compte auth via signup
-    // ATTENTION : ceci envoie un email de confirmation à l'élève selon ta config Supabase
     try {
-      const tempPassword = Math.random().toString(36).slice(-12) + 'Aa1!';
-      const supa = await Sanctuarys.init();
-      const { data: signupData, error: signupErr } = await supa.auth.signUp({
-        email: data.get('email'),
-        password: tempPassword,
-        options: {
-          data: {
-            prenom: data.get('prenom'),
-            nom: data.get('nom'),
-            invited_by: ADMIN_PROFILE.id
-          }
-        }
-      });
-      if (signupErr) throw signupErr;
+      const payload = {
+        email: data.get('email').trim().toLowerCase(),
+        prenom: data.get('prenom').trim(),
+        nom: data.get('nom')?.trim() || null,
+        phone: data.get('telephone')?.trim() || null,
+        cohort: data.get('promotion')?.trim() || 'Lune 2026',
+        current_module: data.get('module_depart') || '1',
+        current_day: '1',
+        internal_note: data.get('note')?.trim() || null,
+        formatrice_id: data.get('formatrice_id') || null
+      };
 
-      // 2. Mets à jour son profile (via trigger auto-créé, mais on peut le compléter)
-      const newId = signupData.user?.id;
-      if (newId) {
-        await supa.from('profiles').update({
-          phone: data.get('telephone'),
-          cohort: data.get('promotion'),
-          current_module: parseInt(data.get('module_depart')),
-          current_day: data.get('module_depart') === '02' ? 1 : 1,
-          internal_note: data.get('note')
-        }).eq('id', newId);
-      }
-
-      // Reconnecte la formatrice (signUp a changé la session)
-      // On force un reload après pour repartir propre
+      const result = await Sanctuarys.inviteStudent(payload);
 
       closeModal();
-      showToast(`Espace créé pour ${data.get('prenom')} ✦ Mot de passe : ${tempPassword}`);
-      // Note : tu dois transmettre ce mot de passe à l'élève
-      // On le copie dans le presse-papier
-      navigator.clipboard.writeText(`Email: ${data.get('email')}\nMot de passe: ${tempPassword}\nLien: ${window.location.origin}/espace-eleve.html`).catch(() => {});
+      showToast(`✦ Invitation envoyée à ${payload.prenom} (${payload.email})`);
 
       e.target.reset();
       document.querySelector('input[name="promotion"]').value = 'Lune 2026';
 
-      // Reload (la session admin a été remplacée par celle de la nouvelle élève)
-      setTimeout(() => location.reload(), 4000);
+      // Recharge la liste des élèves
+      await loadStudents();
     } catch (err) {
       console.error(err);
-      showToast('Erreur : ' + (err.message || 'création impossible'));
+      showToast('Erreur · ' + (err.message || 'invitation impossible'));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
     }
   });
 

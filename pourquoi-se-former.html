@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pourquoi se former — Sanctuarys V-Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --beige: #ECDCC2;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --rose: #D4A89A;
+    --rose-pale: #E8C5B6;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--blanc); }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--blanc);
+    color: var(--marron-deep);
+    line-height: 1.7;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    pointer-events: none; z-index: 100;
+    opacity: 0.06; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--terracotta-deep);
+    pointer-events: none; z-index: 1000;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-trail {
+    position: fixed; width: 44px; height: 44px;
+    border: 1px solid var(--or); border-radius: 50%;
+    pointer-events: none; z-index: 999;
+    transform: translate(-50%, -50%);
+    opacity: 0.6;
+    transition: width 0.4s, height 0.4s;
+  }
+  body.cursor-hover .cursor-trail { width: 80px; height: 80px; background: rgba(184, 137, 90, 0.1); border-color: var(--terracotta); }
+
+  h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background: rgba(250, 245, 236, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-left { display: flex; align-items: center; gap: 30px; }
+  .nav-right { display: flex; align-items: center; gap: 30px; justify-self: end; }
+  .logo {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    letter-spacing: 8px;
+    color: var(--marron-deep);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark { width: 22px; height: 22px; fill: var(--terracotta); }
+  .nav-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase; opacity: 0.75;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; justify-self: center; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--marron-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.4s; opacity: 0.85;
+    cursor: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-links a .idx { color: var(--terracotta); opacity: 0.7; font-size: 9px; }
+  .nav-links a:hover, .nav-links a.active { color: var(--terracotta-deep); }
+  .nav-links a.active { padding-bottom: 6px; border-bottom: 1px solid var(--terracotta-deep); }
+
+  .nav-cta {
+    padding: 11px 22px; background: transparent;
+    color: var(--marron-deep); text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative; overflow: hidden;
+    cursor: none;
+  }
+  .nav-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--terracotta);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .nav-cta span { position: relative; z-index: 2; display: inline-flex; gap: 8px; align-items: center; }
+  .nav-cta:hover { color: var(--blanc); }
+  .nav-cta:hover::before { transform: translateY(0); }
+
+  /* HERO */
+  .page-hero {
+    padding: 200px 40px 120px;
+    text-align: center;
+    background: var(--blanc);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero-inner { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; }
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--terracotta-deep);
+    margin-bottom: 60px;
+    display: inline-flex; align-items: center; gap: 16px;
+  }
+  .breadcrumb::before { content: ''; width: 40px; height: 1px; background: var(--terracotta-deep); }
+
+  .page-hero h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(54px, 8vw, 144px);
+    line-height: 0.9;
+    color: var(--marron-deep);
+    margin-bottom: 40px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .page-hero h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    font-weight: 300;
+    display: block;
+  }
+  .page-hero p.lead {
+    font-size: 20px;
+    color: var(--marron);
+    max-width: 760px;
+    margin: 0 auto 60px;
+    line-height: 1.85;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
+
+  /* SECTIONS */
+  .section {
+    padding: 140px 40px;
+    position: relative;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-bottom: 100px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-num::before { content: ''; width: 30px; height: 1px; background: var(--terracotta-deep); }
+
+  .section-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 5.5vw, 92px);
+    line-height: 0.95;
+    color: var(--marron-deep);
+    font-weight: 400;
+  }
+  .section-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .section-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    line-height: 2; margin-top: 14px;
+  }
+  .section-info strong { color: var(--terracotta-deep); display: block; margin-bottom: 4px; font-size: 9px; }
+
+  /* QUI EST CONCERNÉE */
+  .target { background: var(--blanc); }
+  .target-body {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .target-headline {
+    font-family: 'Italiana', serif;
+    font-size: clamp(36px, 4vw, 64px);
+    line-height: 1.05;
+    color: var(--marron-deep);
+    position: sticky;
+    top: 120px;
+  }
+  .target-headline em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    display: block;
+  }
+
+  .target-list { display: grid; gap: 24px; }
+  .target-card {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 36px 36px;
+    transition: all 0.4s;
+  }
+  .target-card:hover { border-color: var(--terracotta); transform: translateY(-4px); }
+
+  .target-card h3 {
+    font-family: 'Italiana', serif;
+    font-size: 26px;
+    color: var(--marron-deep);
+    margin-bottom: 12px;
+  }
+  .target-card h3 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .target-card p {
+    color: var(--marron);
+    font-size: 15px;
+    line-height: 1.85;
+  }
+
+  /* HOLISTIQUE */
+  .holistic {
+    background: var(--marron-noir);
+    color: var(--blanc);
+    padding: 160px 40px;
+    max-width: none;
+  }
+  .holistic-inner { max-width: 1700px; margin: 0 auto; }
+  .holistic .section-title { color: var(--blanc); }
+  .holistic .section-title em { color: var(--terracotta-pale); }
+  .holistic .section-num { color: var(--or-pale); }
+  .holistic .section-num::before { background: var(--or-pale); }
+  .holistic .section-info { color: var(--rose-pale); }
+  .holistic .section-info strong { color: var(--or-pale); }
+  .holistic .section-header { border-color: rgba(212, 160, 76, 0.2); }
+
+  .holistic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 60px;
+  }
+
+  .holistic-pillar {
+    position: relative;
+    overflow: hidden;
+    min-height: 580px;
+    padding: 50px 44px;
+    background: rgba(74, 48, 32, 0.4);
+    border: 1px solid rgba(212, 160, 76, 0.15);
+    transition: background 0.4s;
+  }
+  .holistic-pillar:hover { background: rgba(168, 85, 55, 0.18); }
+
+  .pillar-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 96px;
+    color: var(--terracotta-pale);
+    line-height: 0.85;
+    margin-bottom: 30px;
+    opacity: 0.85;
+  }
+
+  .holistic-pillar h3 {
+    font-family: 'Italiana', serif;
+    font-size: 32px;
+    color: var(--blanc);
+    margin-bottom: 20px;
+    line-height: 1.05;
+  }
+
+  .holistic-pillar p {
+    color: var(--rose-pale);
+    font-size: 15px;
+    line-height: 1.9;
+    margin-bottom: 24px;
+  }
+
+  .holistic-pillar ul {
+    list-style: none;
+    margin-top: 24px;
+  }
+  .holistic-pillar li {
+    padding: 12px 0;
+    color: var(--blanc);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .holistic-pillar li::before {
+    content: '✦';
+    color: var(--terracotta-pale);
+    font-size: 11px;
+    margin-top: 5px;
+  }
+
+  /* BÉNÉFICES */
+  .benefits { background: var(--blanc); }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin-top: 40px;
+  }
+
+  .benefit {
+    padding: 50px 40px;
+    border-top: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    transition: background 0.3s;
+  }
+  .benefit:nth-child(even) { border-right: none; }
+  .benefit:hover { background: var(--blanc-deep); }
+
+  .benefit-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .benefit h4 {
+    font-family: 'Italiana', serif;
+    font-size: 28px;
+    color: var(--marron-deep);
+    margin-bottom: 14px;
+    line-height: 1.05;
+  }
+  .benefit h4 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .benefit p {
+    color: var(--marron);
+    font-size: 15px;
+    line-height: 1.85;
+  }
+
+  /* QUOTE */
+  .quote-section {
+    padding: 180px 40px;
+    background: linear-gradient(180deg, var(--blanc-deep) 0%, var(--beige) 100%);
+    text-align: center;
+  }
+  .quote-inner { max-width: 1000px; margin: 0 auto; }
+  .quote-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 180px;
+    color: var(--terracotta);
+    line-height: 0.3;
+    opacity: 0.6;
+    margin-bottom: 50px;
+  }
+  .quote-section blockquote {
+    font-family: 'Italiana', serif;
+    font-size: clamp(30px, 4vw, 56px);
+    color: var(--marron-deep);
+    line-height: 1.25;
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+  .quote-section blockquote em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .quote-section cite {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--marron-soft);
+    font-style: normal;
+    display: inline-flex; gap: 18px; align-items: center;
+  }
+  .quote-section cite::before, .quote-section cite::after {
+    content: ''; width: 40px; height: 1px; background: var(--terracotta);
+  }
+
+  /* CTA */
+  .cta {
+    padding: 220px 40px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(200, 112, 77, 0.18), transparent 70%), var(--blanc);
+    text-align: center;
+  }
+  .cta-inner { max-width: 1100px; margin: 0 auto; }
+  .cta-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 3px;
+    color: var(--terracotta-deep); text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+  .cta h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(56px, 9vw, 156px);
+    line-height: 0.88;
+    color: var(--marron-deep);
+    margin-bottom: 48px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .cta h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    display: block;
+  }
+  .cta p {
+    font-size: 19px;
+    max-width: 620px;
+    margin: 0 auto 60px;
+    color: var(--marron);
+    line-height: 1.9;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 48px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative; overflow: hidden;
+    cursor: none;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--marron-deep);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .btn-primary span { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 12px; }
+  .btn-primary:hover::before { transform: translateY(0); }
+  .btn-primary:hover { border-color: var(--marron-deep); }
+
+  /* FOOTER */
+  footer {
+    background: var(--marron-noir);
+    color: var(--rose-pale);
+    padding: 80px 40px 40px;
+  }
+  .footer-grid {
+    max-width: 1700px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.15);
+  }
+  .footer-brand .logo { margin-bottom: 24px; color: var(--blanc); }
+  .footer-brand .logo svg { fill: var(--terracotta-pale); }
+  .footer-brand p { color: var(--rose-pale); font-size: 13px; line-height: 1.85; max-width: 380px; opacity: 0.85; }
+  .footer-col h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--or-pale); margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a { color: var(--rose-pale); text-decoration: none; font-size: 13px; transition: color 0.3s; cursor: none; }
+  .footer-col a:hover { color: var(--terracotta-pale); }
+  .footer-bottom {
+    max-width: 1700px; margin: 32px auto 0;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--rose-pale); text-transform: uppercase; opacity: 0.55;
+  }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.2s, transform 1.2s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    body { cursor: default; }
+    .cursor, .cursor-trail { display: none; }
+    nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
+    .nav-links { display: none; }
+    .page-hero, .section, .holistic, .quote-section, .cta { padding: 80px 24px; }
+    .section-header { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
+    .target-body { grid-template-columns: 1fr; gap: 40px; }
+    .target-headline { position: relative; top: auto; }
+    .holistic-grid { grid-template-columns: 1fr; }
+    .holistic-pillar { min-height: auto; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .benefit { border-right: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28"><path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/><circle cx="14" cy="14" r="3" fill="#FAF5EC"/></svg>
+      Sanctuarys
+    </a>
+    <div class="nav-meta">Édition 2026</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="idx">00</span> Accueil</a></li>
+    <li><a href="pourquoi-se-former.html" class="active"><span class="idx">01</span> Pourquoi</a></li>
+    <li><a href="inscription.html"><span class="idx">02</span> Formation</a></li>
+    <li><a href="espace-eleve.html"><span class="idx">03</span> Espace Élève</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-meta">Promotion · Lune 26</div>
+    <a href="inscription.html" class="nav-cta"><span>Candidater →</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">Pourquoi se former</div>
+    <h1>Devenir facilitatrice<br><em>de l'invisible.</em></h1>
+    <p class="lead">Le bain de vapeur vaginal n'est pas une technique. C'est un langage que les femmes parlent depuis des millénaires. V-Care te le rend, dans sa précision moderne et son ancrage holistique.</p>
+  </div>
+</section>
+
+<!-- 01 · POUR QUI ? -->
+<section class="section target">
+  <div class="section-header reveal">
+    <div class="section-num">01 / Pour qui</div>
+    <h2 class="section-title">À celles qui<br><em>se rappellent.</em></h2>
+    <div class="section-info">
+      <div><strong>Profils</strong>Sept chemins vers Sanctuarys</div>
+    </div>
+  </div>
+
+  <div class="target-body">
+    <h3 class="target-headline reveal">
+      Tu n'es pas obligée d'avoir<br><em>déjà été soignante.</em><br>Tu dois juste être prête à te traverser.
+    </h3>
+
+    <div class="target-list">
+      <div class="target-card reveal">
+        <h3>La praticienne <em>déjà installée</em></h3>
+        <p>Massage, naturopathie, doula, sage-femme. Tu cherches à enrichir ton offre d'un soin profond, ancestral, distinctif, qui parle à un nouveau public.</p>
+      </div>
+
+      <div class="target-card reveal">
+        <h3>La femme en <em>reconversion</em></h3>
+        <p>Le corporate, l'enseignement, le soin classique. Quelque chose s'est éteint. Tu veux transmettre depuis ton incarnation, pas depuis ton CV.</p>
+      </div>
+
+      <div class="target-card reveal">
+        <h3>La maman, la sage, <em>la cherchense</em></h3>
+        <p>Tu sens que le savoir du féminin est en train de revenir. Tu veux le porter dans ta lignée, dans ta communauté, dans ta maison.</p>
+      </div>
+
+      <div class="target-card reveal">
+        <h3>La curieuse <em>en exploration</em></h3>
+        <p>Tu ne sais pas encore si tu en feras un métier. V-Care te donne une expérience initiatique complète, transposable à toute la suite de ta vie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · DIMENSION HOLISTIQUE -->
+<section class="holistic">
+  <div class="holistic-inner">
+    <div class="section-header reveal">
+      <div class="section-num">02 / Holistique</div>
+      <h2 class="section-title">Trois corps,<br><em>une transmission.</em></h2>
+      <div class="section-info">
+        <div><strong>Approche</strong>Trame Sanctuarys</div>
+        <div><strong>Ancrage</strong>Corps · Émotion · Énergie</div>
+      </div>
+    </div>
+
+    <p style="color: var(--rose-pale); font-size: 18px; line-height: 1.9; max-width: 720px; margin: 0 auto 40px; text-align: center;">
+      Le V-Care n'est pas qu'un protocole. C'est une rencontre simultanée avec ce qui se sent, ce qui se ressent, et ce qui circule. Sanctuarys forme à cette triple présence.
+    </p>
+
+    <div class="holistic-grid">
+      <div class="holistic-pillar reveal">
+        <div class="pillar-num">I</div>
+        <h3>Le corps<br><em>physique</em></h3>
+        <p>L'anatomie féminine subtile. Les plantes et leurs propriétés. La précision du geste, la sécurité, la posture. La pharmacopée ancestrale rencontre la rigueur moderne.</p>
+        <ul>
+          <li>Anatomie utérine et vulvaire</li>
+          <li>Pharmacopée des plantes féminines</li>
+          <li>Cycles, indications, contre-indications</li>
+          <li>Hygiène et sécurité absolue</li>
+        </ul>
+      </div>
+
+      <div class="holistic-pillar reveal">
+        <div class="pillar-num">II</div>
+        <h3>Le corps<br><em>émotionnel</em></h3>
+        <p>L'utérus est mémoire. Lors d'un protocole, des émotions montent. Tu apprends à les accueillir sans les fixer, à offrir un cadre de présence sans interpréter, à honorer ce qui se libère.</p>
+        <ul>
+          <li>Tenue du cadre émotionnel</li>
+          <li>Écoute active sans interprétation</li>
+          <li>Mémoires utérines et libérations</li>
+          <li>Posture éthique de présence</li>
+        </ul>
+      </div>
+
+      <div class="holistic-pillar reveal">
+        <div class="pillar-num">III</div>
+        <h3>Le corps<br><em>énergétique</em></h3>
+        <p>La vapeur sacrée travaille au-delà du physique. Sanctuarys transmet une lecture énergétique du soin, sans dogme, avec respect des sensibilités de chacune. L'invisible se met au service du tangible.</p>
+        <ul>
+          <li>Cartographie énergétique du bassin</li>
+          <li>Lecture des champs et signaux</li>
+          <li>Rituel et création d'espace sacré</li>
+          <li>Ancrage personnel de la facilitatrice</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 · BÉNÉFICES -->
+<section class="section benefits">
+  <div class="section-header reveal">
+    <div class="section-num">03 / Bénéfices</div>
+    <h2 class="section-title">Ce que V-Care<br><em>te transmet.</em></h2>
+    <div class="section-info">
+      <div><strong>Sortie</strong>Facilitatrice certifiée</div>
+      <div><strong>Lignée</strong>Réseau Sanctuarys</div>
+    </div>
+  </div>
+
+  <div class="benefits-grid">
+    <div class="benefit reveal">
+      <div class="benefit-num">01</div>
+      <h4>Un savoir-faire <em>incarné</em></h4>
+      <p>Tu n'as pas seulement appris une technique, tu l'as traversée. Tu offres depuis ton corps, ta mémoire, ta présence éprouvée.</p>
+    </div>
+
+    <div class="benefit reveal">
+      <div class="benefit-num">02</div>
+      <h4>Une posture <em>juste et éthique</em></h4>
+      <p>Pas de mysticisme creux, pas de technique sans âme. Sanctuarys te forme à tenir la juste distance, sans projeter, sans confondre les rôles.</p>
+    </div>
+
+    <div class="benefit reveal">
+      <div class="benefit-num">03</div>
+      <h4>Deux protocoles <em>distincts et complémentaires</em></h4>
+      <p>L'eau et l'encens. Deux registres énergétiques, deux pédagogies, deux signatures. Une polyvalence rare sur le marché du soin féminin.</p>
+    </div>
+
+    <div class="benefit reveal">
+      <div class="benefit-num">04</div>
+      <h4>Un accompagnement <em>à l'installation</em></h4>
+      <p>Le module 6 te transmet ce qui manque souvent aux formations : la stratégie, la posture publique, le passage à l'acte. Tu sors prête à recevoir.</p>
+    </div>
+
+    <div class="benefit reveal">
+      <div class="benefit-num">05</div>
+      <h4>Une lignée <em>de facilitatrices</em></h4>
+      <p>Tu intègres le réseau Sanctuarys. Tu n'es plus seule. Tu peux échanger, te référencer, grandir au sein d'une lignée vivante.</p>
+    </div>
+
+    <div class="benefit reveal">
+      <div class="benefit-num">06</div>
+      <h4>Une légitimité <em>tranquille</em></h4>
+      <p>Le diplôme Sanctuarys n'est pas un papier, c'est une vibration. Tes premières clientes le sentent. La légitimité vient de ce que tu as traversé.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · QUOTE -->
+<section class="quote-section">
+  <div class="quote-inner reveal">
+    <div class="quote-mark">"</div>
+    <blockquote>
+      Avant de transmettre, il faut avoir reçu.<br>
+      <em>Avant de soigner, il faut avoir été soignée.</em>
+    </blockquote>
+    <cite>Le manifeste Sanctuarys</cite>
+  </div>
+</section>
+
+<!-- 05 · CTA -->
+<section class="cta">
+  <div class="cta-inner reveal">
+    <div class="cta-num">05 / Le seuil</div>
+    <h2>Et toi,<br><em>qu'attends-tu de toi ?</em></h2>
+    <p>Si tu lis encore cette page, c'est que quelque chose en toi reconnaît déjà le chemin. Sanctuarys t'accompagne pour le traverser.</p>
+    <a href="inscription.html" class="btn-primary" data-cursor-hover><span>Découvrir la formation →</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28"><path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/><circle cx="14" cy="14" r="3" fill="#0F0805"/></svg>
+        Sanctuarys
+      </a>
+      <p>École des soins féminins ancestraux. Sagesse ancestrale et accompagnement holistique. Formation des facilitatrices V-Care depuis 2021.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigation</h5>
+      <ul>
+        <li><a href="index.html" data-cursor-hover>Accueil</a></li>
+        <li><a href="pourquoi-se-former.html" data-cursor-hover>Pourquoi se former</a></li>
+        <li><a href="inscription.html" data-cursor-hover>La Formation</a></li>
+        <li><a href="espace-eleve.html" data-cursor-hover>Espace Élève</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Formation</h5>
+      <ul>
+        <li><a href="inscription.html#modules" data-cursor-hover>Les six modules</a></li>
+        <li><a href="inscription.html#pricing" data-cursor-hover>Investissement</a></li>
+        <li><a href="inscription.html#inscription" data-cursor-hover>Candidater</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="mailto:info@sanctuarys.me" data-cursor-hover>info@sanctuarys.me</a></li>
+        <li><a data-cursor-hover>Sur rendez-vous</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Sanctuarys · Soins féminins ancestraux</span>
+    <span>Conçu avec présence à Paris</span>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx = window.innerWidth/2, my = window.innerHeight/2, tx = mx, ty = my;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  function animCursor(){
+    tx += (mx - tx) * 0.18;
+    ty += (my - ty) * 0.18;
+    trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('[data-cursor-hover]').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+
+  // Reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

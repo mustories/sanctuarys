@@ -259,6 +259,72 @@ window.Sanctuarys = {
     return data;
   },
 
+  async inviteStudent(payload) {
+    const supa = await this.init();
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-student`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur lors de la création');
+    return data;
+  },
+
+  async inviteFormatrice(payload) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-formatrice`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur lors de la création');
+    return data;
+  },
+
+  async listFormatrices() {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .select('*')
+      .in('role', ['formatrice', 'admin'])
+      .order('created_at', { ascending: false });
+    return data || [];
+  },
+
+  async getMyFormatrice() {
+    const supa = await this.init();
+    const session = await this.getSession();
+    if (!session) return null;
+    const { data: profile } = await supa
+      .from('profiles')
+      .select('formatrice_id')
+      .eq('id', session.user.id)
+      .single();
+    if (!profile?.formatrice_id) {
+      // Fallback : admin
+      return await this.getAdminProfile();
+    }
+    const { data: formatrice } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('id', profile.formatrice_id)
+      .single();
+    return formatrice;
+  },
+
   // === UTILS ===
   formatDate(dateStr) {
     const d = new Date(dateStr);

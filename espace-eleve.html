@@ -2225,15 +2225,16 @@
       showToast('Profil introuvable. Contacte Princesse.');
       return;
     }
-    if (PROFILE.role === 'admin') {
+    if (PROFILE.role === 'admin' || PROFILE.role === 'formatrice') {
       // Redirige vers admin
       window.location.href = 'admin.html';
       return;
     }
-    ADMIN = await Sanctuarys.getAdminProfile();
+    ADMIN = await Sanctuarys.getMyFormatrice();
 
     // Hydrate l'UI avec le profil
     hydrateProfile();
+    hydrateFormatrice();
     await Promise.all([
       loadJournalForToday(),
       loadCalendar(),
@@ -2241,6 +2242,64 @@
       loadMessages()
     ]);
     setupMessagesRealtime();
+  }
+
+  function hydrateFormatrice() {
+    const name = ADMIN?.prenom || 'ta formatrice';
+    const fullName = `${ADMIN?.prenom || ''} ${ADMIN?.nom || ''}`.trim() || 'Ta formatrice';
+
+    // Recherche et remplace les mentions "Princesse" dans le texte
+    function replacePrincesseIn(selector, replacement) {
+      const el = document.querySelector(selector);
+      if (el) el.textContent = el.textContent.replace(/Princesse/g, replacement);
+    }
+    function replacePrincesseInHTML(selector, replacement) {
+      const el = document.querySelector(selector);
+      if (el) el.innerHTML = el.innerHTML.replace(/Princesse/g, replacement);
+    }
+
+    // Quick action button
+    document.querySelectorAll('.quick-actions .btn-outline').forEach(b => {
+      b.textContent = b.textContent.replace('Princesse', name);
+    });
+
+    // Tile messages
+    document.querySelectorAll('#panel-dashboard .tile h3').forEach(h => {
+      h.textContent = h.textContent.replace('Princesse', name);
+    });
+    document.querySelectorAll('#panel-dashboard .tile p').forEach(p => {
+      p.textContent = p.textContent.replace(/Princesse/g, name);
+    });
+
+    // Bibliothèque empty state
+    document.querySelectorAll('#panel-resources p').forEach(p => {
+      p.textContent = p.textContent.replace('Princesse', name);
+    });
+
+    // Messages panel
+    const msgHeader = document.querySelector('#panel-messages .page-title em');
+    if (msgHeader) msgHeader.textContent = name + '.';
+    const msgSubtitle = document.querySelector('#panel-messages .page-subtitle');
+    if (msgSubtitle) msgSubtitle.textContent = msgSubtitle.textContent.replace(/Princesse/g, name);
+    const msgMeta = document.querySelector('#panel-messages .meta-row');
+    if (msgMeta) msgMeta.innerHTML = msgMeta.innerHTML.replace(/Princesse Tchassi/g, fullName);
+
+    // Message header card
+    const msgHeaderName = document.querySelector('.message-header-info h4');
+    if (msgHeaderName) msgHeaderName.textContent = fullName;
+    const msgHeaderAvatar = document.querySelector('.message-header-avatar');
+    if (msgHeaderAvatar && ADMIN) msgHeaderAvatar.textContent = Sanctuarys.initialOf(ADMIN.prenom);
+
+    // Message input placeholder
+    const msgInput = document.getElementById('messageInput');
+    if (msgInput) msgInput.placeholder = `Écris ton message à ${name}...`;
+
+    // Save journal button
+    const saveBtn = document.getElementById('saveJournal');
+    if (saveBtn) {
+      const span = saveBtn.querySelector('span');
+      if (span) span.textContent = `Enregistrer et envoyer à ${name} →`;
+    }
   }
 
   function hydrateProfile() {
