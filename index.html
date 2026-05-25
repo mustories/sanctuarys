@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANCTUARY — V-Care, école du sacré féminin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Bases claires */
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --beige: #ECDCC2;
+    --beige-deep: #DCC7A4;
+
+    /* Marrons */
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+
+    /* Terracotta */
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+
+    /* Or */
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --or-deep: #8A6840;
+
+    /* Rose (subtil, en accent rare) */
+    --rose: #D4A89A;
+    --rose-pale: #E8C5B6;
+
+    /* Rouge (très occasionnel) */
+    --rouge-sacre: #8B1A1A;
+    --rouge-vif: #B22B2B;
+
+    /* Lignes */
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+
+    --noir-photo: #0F0805;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--blanc); }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--blanc);
+    color: var(--marron-deep);
+    line-height: 1.65;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--terracotta-deep);
+    pointer-events: none;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-trail {
+    position: fixed;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--or);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+    transition: width 0.4s, height 0.4s, opacity 0.4s, background 0.3s, border-color 0.3s;
+  }
+  body.cursor-hover .cursor-trail { width: 80px; height: 80px; background: rgba(184, 137, 90, 0.1); border-color: var(--terracotta); }
+
+  /* Dark sections set the cursor light */
+  .dark-section .cursor-trail, .dark-section ~ * .cursor-trail { /* placeholder, not used directly */ }
+
+  h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
+
+  /* PRELOADER */
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--blanc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 28px;
+    transition: opacity 1.2s, visibility 1.2s;
+  }
+  .preloader.done { opacity: 0; visibility: hidden; }
+  .preloader-mark { width: 48px; height: 48px; fill: var(--terracotta-deep); animation: pulseLogo 1.8s ease-in-out infinite; }
+  @keyframes pulseLogo {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+  .preloader-text { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 8px; color: var(--marron); text-transform: uppercase; }
+  .preloader-bar { width: 220px; height: 1px; background: rgba(106, 68, 35, 0.18); overflow: hidden; }
+  .preloader-bar-fill { height: 100%; background: var(--terracotta); width: 0; animation: fillBar 2.4s ease-out forwards; }
+  @keyframes fillBar { to { width: 100%; } }
+
+  /* ============ NAV ============ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background: rgba(250, 245, 236, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+    transition: padding 0.4s, background 0.4s;
+  }
+  nav.scrolled { padding: 16px 40px; background: rgba(250, 245, 236, 0.96); }
+  nav.on-dark { background: rgba(15, 8, 5, 0.6); border-bottom-color: rgba(212, 160, 76, 0.15); }
+  nav.on-dark .logo, nav.on-dark .nav-meta, nav.on-dark .nav-links a, nav.on-dark .nav-cta { color: var(--blanc); }
+
+  .nav-left { display: flex; align-items: center; gap: 30px; }
+  .nav-right { display: flex; align-items: center; gap: 30px; justify-self: end; }
+
+  .logo {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    letter-spacing: 8px;
+    color: var(--marron-deep);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.4s;
+  }
+  .logo-mark { width: 22px; height: 22px; fill: var(--terracotta); }
+
+  .nav-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    opacity: 0.75;
+    transition: color 0.4s;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    justify-self: center;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--marron-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.4s;
+    opacity: 0.85;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-links a .idx { color: var(--terracotta); opacity: 0.7; font-size: 9px; }
+  .nav-links a:hover { color: var(--terracotta-deep); opacity: 1; }
+
+  .nav-cta {
+    padding: 11px 22px;
+    background: transparent;
+    color: var(--marron-deep);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .nav-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--terracotta);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .nav-cta span { position: relative; z-index: 2; display: inline-flex; gap: 8px; align-items: center; }
+  .nav-cta:hover { color: var(--blanc); }
+  .nav-cta:hover::before { transform: translateY(0); }
+
+  /* SIDE INDEX */
+  .side-index {
+    position: fixed;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    mix-blend-mode: difference;
+  }
+  .side-index a {
+    color: var(--rose);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: opacity 0.3s, color 0.3s;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .side-index a .dot {
+    width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.6;
+  }
+  .side-index a.active, .side-index a:hover { opacity: 1; color: var(--terracotta-pale); }
+  .side-index a.active .dot { background: var(--terracotta-pale); opacity: 1; }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 120px 40px 40px;
+    color: var(--blanc);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url('https://i.pinimg.com/736x/0d/2a/d1/0d2ad15585dee35b8da70ab4dc154551.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(15, 8, 5, 0.55) 0%, rgba(15, 8, 5, 0.15) 30%, rgba(15, 8, 5, 0.92) 100%);
+  }
+
+  .hero-content { position: relative; z-index: 5; width: 100%; max-width: 1700px; margin: 0 auto; }
+
+  .hero-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(64px, 11.5vw, 220px);
+    line-height: 0.86;
+    color: var(--blanc);
+    font-weight: 400;
+    margin-bottom: 36px;
+    letter-spacing: -0.02em;
+  }
+  .hero-title .word { display: inline-block; overflow: hidden; line-height: 0.86; }
+  .hero-title .word > span { display: inline-block; transform: translateY(110%); animation: wordReveal 1.4s cubic-bezier(0.2, 0.9, 0.3, 1) forwards; }
+  .hero-title .l1 > span { animation-delay: 1.6s; }
+  .hero-title .l2 > span { animation-delay: 1.8s; }
+  .hero-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-pale);
+    font-weight: 300;
+    display: inline-block;
+  }
+  @keyframes wordReveal { to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero-bottom-bar {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+    padding-top: 30px;
+    border-top: 1px solid rgba(232, 197, 182, 0.3);
+    opacity: 0;
+    animation: fadeIn 1.2s 2.4s forwards;
+  }
+
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(20px, 1.8vw, 26px);
+    color: var(--blanc);
+    line-height: 1.4;
+    font-weight: 300;
+    max-width: 580px;
+  }
+
+  .hero-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--rose-pale);
+    text-transform: uppercase;
+  }
+  .hero-detail strong {
+    display: block;
+    color: var(--or-pale);
+    font-weight: 400;
+    margin-bottom: 6px;
+    opacity: 0.85;
+    font-size: 9px;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 18px 36px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    font-weight: 400;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--marron-deep);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .btn-primary span { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 12px; }
+  .btn-primary:hover::before { transform: translateY(0); }
+  .btn-primary:hover { border-color: var(--marron-deep); }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 32px;
+    color: var(--marron-deep);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    border: 1px solid var(--marron-deep);
+    cursor: none;
+    background: transparent;
+  }
+  .btn-outline:hover { background: var(--marron-deep); color: var(--blanc); }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 20px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    text-transform: uppercase;
+    z-index: 6;
+    opacity: 0;
+    animation: fadeIn 1s 3s forwards;
+  }
+  .scroll-indicator .line-anim {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--or-pale));
+    position: relative; overflow: hidden;
+  }
+  .scroll-indicator .line-anim::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--terracotta-pale);
+    transform: translateX(-100%);
+    animation: lineScroll 2.4s ease-in-out infinite;
+  }
+  @keyframes lineScroll { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  /* ============ MARQUEE ============ */
+  .marquee {
+    background: var(--marron-deep);
+    color: var(--blanc);
+    padding: 24px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .marquee-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: scroll 50s linear infinite;
+    font-family: 'Italiana', serif;
+    font-size: 26px;
+    letter-spacing: 12px;
+    text-transform: uppercase;
+  }
+  .marquee-track > div { display: inline-flex; align-items: center; }
+  .marquee-track > div span { padding: 0 60px; }
+  .marquee-track > div span::after { content: '✦'; color: var(--or-pale); font-size: 14px; margin-left: 60px; }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ============ SECTIONS ============ */
+  .section {
+    padding: 140px 40px;
+    position: relative;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-bottom: 100px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-num::before { content: ''; width: 30px; height: 1px; background: var(--terracotta-deep); }
+
+  .section-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 5.5vw, 92px);
+    line-height: 0.92;
+    color: var(--marron-deep);
+    font-weight: 400;
+  }
+  .section-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .section-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    line-height: 2;
+    margin-top: 14px;
+  }
+  .section-info strong {
+    color: var(--terracotta-deep);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 9px;
+  }
+  .section-info .info-row {
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 16px;
+  }
+  .section-info .info-row:last-child { border-bottom: none; }
+
+  /* Dark variant for sections */
+  .section-dark { color: var(--blanc); background: var(--marron-noir); }
+  .section-dark .section-title { color: var(--blanc); }
+  .section-dark .section-title em { color: var(--terracotta-pale); }
+  .section-dark .section-num { color: var(--or-pale); }
+  .section-dark .section-num::before { background: var(--or-pale); }
+  .section-dark .section-info { color: var(--rose-pale); }
+  .section-dark .section-info strong { color: var(--or-pale); }
+  .section-dark .section-info .info-row { border-color: rgba(212, 160, 76, 0.15); }
+  .section-dark .section-header { border-color: rgba(212, 160, 76, 0.2); }
+
+  /* ============ 01 MANIFESTE (LIGHT) ============ */
+  .manifesto { background: var(--blanc); padding-top: 180px; }
+
+  .manifesto-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: start;
+  }
+
+  .manifesto-headline {
+    font-family: 'Italiana', serif;
+    font-size: clamp(40px, 4.4vw, 72px);
+    line-height: 1.05;
+    color: var(--marron-deep);
+    font-weight: 400;
+    position: sticky;
+    top: 140px;
+  }
+  .manifesto-headline em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    display: block;
+  }
+
+  .manifesto-text {
+    font-size: 17px;
+    color: var(--marron);
+    line-height: 2;
+  }
+  .manifesto-text p { margin-bottom: 28px; }
+  .manifesto-text p:first-child::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 88px;
+    line-height: 0.85;
+    float: left;
+    color: var(--terracotta-deep);
+    margin: 6px 14px 0 0;
+    font-weight: 400;
+  }
+
+  /* ============ 02 MÉTHODE (DARK) ============ */
+  .method { background: var(--marron-noir); padding: 160px 40px; max-width: none; }
+  .method-inner { max-width: 1700px; margin: 0 auto; }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 40px;
+  }
+
+  .method-card {
+    position: relative;
+    height: 70vh;
+    min-height: 600px;
+    overflow: hidden;
+    cursor: none;
+  }
+  .method-card-photo {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .method-card:hover .method-card-photo { transform: scale(1.06); }
+  .method-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(15, 8, 5, 0.1) 0%, rgba(15, 8, 5, 0.92) 100%);
+    z-index: 2;
+  }
+
+  .method-card-1 .method-card-photo { background-image: url('https://i.pinimg.com/736x/fa/8d/c4/fa8dc4d355c4debe602aa7573a93759e.jpg'); }
+  .method-card-2 .method-card-photo { background-image: url('https://i.pinimg.com/736x/41/38/bb/4138bbb5c728eca31b7c81ea01fec80b.jpg'); }
+  .method-card-3 .method-card-photo { background-image: url('https://i.pinimg.com/736x/ab/86/d9/ab86d93a0f912955e26ab5beab3e0742.jpg'); }
+
+  .method-card-top {
+    position: absolute;
+    top: 30px; left: 30px; right: 30px;
+    display: flex; justify-content: space-between;
+    z-index: 3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--rose-pale);
+    text-transform: uppercase;
+  }
+  .method-card-top .num { color: var(--or-pale); }
+
+  .method-card-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 40px 36px;
+    z-index: 3;
+  }
+
+  .method-card-roman {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 140px;
+    color: var(--terracotta-pale);
+    line-height: 0.82;
+    margin-bottom: 24px;
+    opacity: 0.95;
+  }
+
+  .method-card h3 {
+    font-family: 'Italiana', serif;
+    font-size: 44px;
+    color: var(--blanc);
+    margin-bottom: 20px;
+    line-height: 1;
+  }
+  .method-card p {
+    color: var(--rose-pale);
+    font-size: 14px;
+    line-height: 1.85;
+    max-width: 320px;
+  }
+
+  /* ============ 03 PARCOURS (LIGHT) ============ */
+  .projects { background: var(--blanc); padding: 180px 40px 200px; max-width: none; }
+  .projects-inner { max-width: 1700px; margin: 0 auto; }
+
+  .project {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr;
+    gap: 60px;
+    padding: 60px 0;
+    border-top: 1px solid var(--line);
+    cursor: none;
+    position: relative;
+    align-items: start;
+    text-decoration: none;
+    color: inherit;
+  }
+  .project:last-child { border-bottom: 1px solid var(--line); }
+
+  .project::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 1px;
+    background: var(--terracotta);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .project:hover::before { transform: scaleX(1); }
+  .project:hover .project-title { transform: translateX(20px); }
+  .project:hover .project-photo { opacity: 1; transform: scale(1.03); }
+  .project:hover .project-num { color: var(--terracotta-deep); }
+
+  .project-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--marron-soft);
+    letter-spacing: 2px;
+    transition: color 0.4s;
+    padding-top: 14px;
+  }
+
+  .project-title { transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+  .project-title h3 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(36px, 4.5vw, 72px);
+    color: var(--marron-deep);
+    line-height: 0.95;
+    margin-bottom: 18px;
+    font-weight: 400;
+  }
+  .project-title h3 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .project-meta {
+    display: flex;
+    gap: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+  }
+  .project-meta span { display: flex; gap: 6px; align-items: center; }
+  .project-meta span::before {
+    content: ''; width: 4px; height: 4px;
+    background: var(--terracotta); border-radius: 50%;
+  }
+
+  .project-right {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .project-photo {
+    width: 240px;
+    height: 280px;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.85;
+    transition: opacity 0.6s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .project-description {
+    color: var(--marron);
+    font-size: 15px;
+    line-height: 1.85;
+    padding-top: 8px;
+  }
+
+  /* ============ 04 VISION (LIGHT EDITORIAL) ============ */
+  .editorial {
+    background: var(--blanc-deep);
+    padding: 180px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editorial-container { max-width: 1700px; margin: 0 auto; }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: stretch;
+    margin-top: 80px;
+  }
+
+  .editorial-photo-block { position: relative; }
+  .editorial-photo-main {
+    width: 100%;
+    height: 760px;
+    background:
+      linear-gradient(180deg, transparent 60%, rgba(15, 8, 5, 0.45)),
+      url('https://i.pinimg.com/736x/ab/86/d9/ab86d93a0f912955e26ab5beab3e0742.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 50px 100px rgba(42, 24, 16, 0.3);
+  }
+  .editorial-photo-caption {
+    position: absolute;
+    bottom: 24px; left: 24px; right: 24px;
+    color: var(--blanc);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .editorial-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 40px;
+  }
+
+  .editorial-text h3 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(40px, 4.6vw, 76px);
+    line-height: 1;
+    color: var(--marron-deep);
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+  .editorial-text h3 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    display: block;
+  }
+  .editorial-text p {
+    font-size: 17px;
+    color: var(--marron);
+    line-height: 2;
+    margin-bottom: 28px;
+  }
+
+  /* ============ 05 TESTIMONIAL (DARK) ============ */
+  .testimonial-section {
+    padding: 200px 40px;
+    background: var(--marron-noir);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .testimonial-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at center, rgba(184, 137, 90, 0.25), transparent 60%),
+      url('https://i.pinimg.com/736x/41/38/bb/4138bbb5c728eca31b7c81ea01fec80b.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+  }
+
+  .testimonial-content {
+    position: relative;
+    z-index: 5;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .testimonial-content .section-num { color: var(--or-pale); justify-content: center; margin-bottom: 40px; }
+  .testimonial-content .section-num::before { background: var(--or-pale); }
+
+  .testimonial-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 200px;
+    color: var(--terracotta-pale);
+    line-height: 0.3;
+    opacity: 0.6;
+    margin-bottom: 60px;
+  }
+
+  .testimonial-content blockquote {
+    font-family: 'Italiana', serif;
+    font-size: clamp(28px, 3.6vw, 60px);
+    color: var(--blanc);
+    line-height: 1.25;
+    margin-bottom: 56px;
+    font-weight: 400;
+  }
+
+  .testimonial-content cite {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--or-pale);
+    font-style: normal;
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .testimonial-content cite::before, .testimonial-content cite::after {
+    content: ''; width: 40px; height: 1px; background: var(--or-pale);
+  }
+
+  /* ============ 06 CONTACT (LIGHT) ============ */
+  .contact {
+    padding: 220px 40px;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(200, 112, 77, 0.18), transparent 70%),
+      var(--blanc);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-rings {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1400px; height: 1400px;
+    pointer-events: none;
+    opacity: 0.2;
+    animation: rotateRings 80s linear infinite;
+  }
+  @keyframes rotateRings { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  .contact-inner { position: relative; z-index: 5; max-width: 1200px; margin: 0 auto; }
+
+  .contact-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+  }
+
+  .contact h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(64px, 10vw, 180px);
+    line-height: 0.88;
+    color: var(--marron-deep);
+    margin-bottom: 48px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .contact h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    display: block;
+  }
+  .contact p {
+    font-size: 19px;
+    max-width: 620px;
+    margin: 0 auto 60px;
+    color: var(--marron);
+    line-height: 1.9;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--marron-noir);
+    color: var(--rose-pale);
+    padding: 80px 40px 40px;
+  }
+  .footer-grid {
+    max-width: 1700px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.15);
+  }
+  .footer-brand .logo { margin-bottom: 24px; color: var(--blanc); }
+  .footer-brand .logo svg { fill: var(--terracotta-pale); }
+  .footer-brand p { color: var(--rose-pale); font-size: 13px; line-height: 1.85; max-width: 380px; opacity: 0.85; }
+
+  .footer-col h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a { color: var(--rose-pale); text-decoration: none; font-size: 13px; transition: color 0.3s; cursor: none; }
+  .footer-col a:hover { color: var(--terracotta-pale); }
+
+  .footer-bottom {
+    max-width: 1700px;
+    margin: 32px auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--rose-pale);
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.2s, transform 1.2s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    body { cursor: default; }
+    .cursor, .cursor-trail, .side-index { display: none; }
+    nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 110px 24px 40px; }
+    .hero-bottom-bar { grid-template-columns: 1fr; gap: 24px; }
+    .scroll-indicator { display: none; }
+    .section, .editorial, .method, .projects, .contact, .testimonial-section { padding: 80px 24px; }
+    .section-header { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
+    .manifesto-body, .editorial-grid { grid-template-columns: 1fr; gap: 40px; }
+    .manifesto-headline { position: relative; top: auto; }
+    .method-grid { grid-template-columns: 1fr; gap: 4px; }
+    .method-card { height: 460px; min-height: 460px; }
+    .project { grid-template-columns: 60px 1fr; gap: 20px; padding: 40px 0; }
+    .project-right { grid-column: 1 / -1; grid-template-columns: 1fr; padding-left: 80px; }
+    .project-photo { width: 100%; height: 220px; }
+    .editorial-photo-main { height: 460px; }
+    .editorial-text { padding-right: 0; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <svg class="preloader-mark" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/>
+    <circle cx="14" cy="14" r="3" fill="#FAF5EC"/>
+  </svg>
+  <div class="preloader-text">Sanctuarys</div>
+  <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+</div>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- SIDE INDEX -->
+<div class="side-index">
+  <a href="#hero" data-section="hero" class="active"><span>00</span><span class="dot"></span></a>
+  <a href="#manifeste" data-section="manifeste"><span>01</span><span class="dot"></span></a>
+  <a href="#methode" data-section="methode"><span>02</span><span class="dot"></span></a>
+  <a href="#parcours" data-section="parcours"><span>03</span><span class="dot"></span></a>
+  <a href="#vision" data-section="vision"><span>04</span><span class="dot"></span></a>
+  <a href="#temoignage" data-section="temoignage"><span>05</span><span class="dot"></span></a>
+  <a href="#contact" data-section="contact"><span>06</span><span class="dot"></span></a>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav" class="on-dark">
+  <div class="nav-left">
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/>
+        <circle cx="14" cy="14" r="3" fill="#0F0805"/>
+      </svg>
+      Sanctuarys
+    </a>
+    <div class="nav-meta">Édition 2026</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="idx">00</span> Accueil</a></li>
+    <li><a href="inscription.html"><span class="idx">01</span> Formation</a></li>
+    <li><a href="espace-eleve.html"><span class="idx">02</span> Espace Élève</a></li>
+    <li><a href="#temoignage"><span class="idx">03</span> Témoignages</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-meta">Promotion · Mai 26</div>
+    <a href="inscription.html" class="nav-cta"><span>Candidater →</span></a>
+  </div>
+</nav>
+
+<!-- 00 HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <div class="word l1"><span>Sanctuarys</span></div><br>
+      <div class="word l2"><span><em>V-Care</em></span></div>
+    </h1>
+
+    <div class="hero-bottom-bar">
+      <p class="hero-tagline">L'école qui forme les facilitatrices du sacré féminin contemporain.<br>Six modules. Une vocation. Une lignée.</p>
+      <div class="hero-detail">
+        <strong>Format</strong>
+        Présentiel<br>+ Distanciel
+      </div>
+      <div class="hero-detail">
+        <strong>Durée</strong>
+        Trois mois<br>de parcours
+      </div>
+      <a href="inscription.html" class="btn-primary" data-cursor-hover style="justify-self: end;"><span>Candidater →</span></a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="line-anim"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<section class="marquee">
+  <div class="marquee-track">
+    <div>
+      <span>Soins ancestraux</span>
+      <span>Bain de vapeur sacré</span>
+      <span>Transmission incarnée</span>
+      <span>École Sanctuarys</span>
+      <span>Édition 2026</span>
+    </div>
+    <div>
+      <span>Soins ancestraux</span>
+      <span>Bain de vapeur sacré</span>
+      <span>Transmission incarnée</span>
+      <span>École Sanctuarys</span>
+      <span>Édition 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- 01 MANIFESTE -->
+<section class="section manifesto" id="manifeste">
+  <div class="section-header reveal">
+    <div class="section-num">01 / Manifeste</div>
+    <h2 class="section-title">Avant de transmettre,<br><em>il faut avoir reçu.</em></h2>
+    <div class="section-info">
+      <div class="info-row"><strong>Année</strong>2026</div>
+      <div class="info-row"><strong>Édition</strong>Sixième promotion</div>
+      <div class="info-row"><strong>Auteure</strong>Direction Sanctuarys</div>
+    </div>
+  </div>
+
+  <div class="manifesto-body">
+    <h3 class="manifesto-headline reveal">
+      Une école pour
+      <em>les femmes qui choisissent</em>
+      la transmission.
+    </h3>
+    <div class="manifesto-text reveal">
+      <p>Sanctuarys forme des facilitatrices qui incarnent ce qu'elles transmettent. Pas de théorie sans chair, pas de geste sans présence. La méthode V-Care vous fait traverser le soin avant de l'enseigner. Vous devenez le territoire que vous offrirez.</p>
+      <p>Notre lignée puise dans les traditions ancestrales du soin féminin, herbes, vapeur, encens, chant, silence. Notre exigence est moderne, précision, éthique, posture, légitimité. La rencontre fait des facilitatrices irréprochables.</p>
+      <p>Six modules ponctuent ce parcours, conçus comme six seuils. Chacun se vit, s'intègre, se mesure. À l'issue, vous quittez Sanctuarys prête à recevoir.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 MÉTHODE (DARK) -->
+<section class="method section-dark" id="methode">
+  <div class="method-inner">
+    <div class="section-header reveal">
+      <div class="section-num">02 / Méthode</div>
+      <h2 class="section-title">Trois temps,<br><em>une métamorphose.</em></h2>
+      <div class="section-info">
+        <div class="info-row"><strong>Principe</strong>Pédagogie immersive</div>
+        <div class="info-row"><strong>Application</strong>Chaque protocole</div>
+        <div class="info-row"><strong>Durée</strong>Une demi-journée</div>
+      </div>
+    </div>
+
+    <div class="method-grid">
+      <div class="method-card method-card-1 reveal" data-cursor-hover>
+        <div class="method-card-photo"></div>
+        <div class="method-card-top"><span>Temps</span><span class="num">01</span></div>
+        <div class="method-card-content">
+          <div class="method-card-roman">I</div>
+          <h3>Je vois</h3>
+          <p>L'observation attentive du geste. Le regard apprend avant les mains.</p>
+        </div>
+      </div>
+
+      <div class="method-card method-card-2 reveal" data-cursor-hover>
+        <div class="method-card-photo"></div>
+        <div class="method-card-top"><span>Temps</span><span class="num">02</span></div>
+        <div class="method-card-content">
+          <div class="method-card-roman">II</div>
+          <h3>Je fais</h3>
+          <p>La mise en pratique guidée. Le corps intègre, la mémoire s'inscrit.</p>
+        </div>
+      </div>
+
+      <div class="method-card method-card-3 reveal" data-cursor-hover>
+        <div class="method-card-photo"></div>
+        <div class="method-card-top"><span>Temps</span><span class="num">03</span></div>
+        <div class="method-card-content">
+          <div class="method-card-roman">III</div>
+          <h3>Je reçois</h3>
+          <p>L'expérience intime sur votre propre chair. On ne transmet bien que ce qui a été éprouvé.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 PARCOURS (LIGHT) -->
+<section class="projects" id="parcours">
+  <div class="projects-inner">
+    <div class="section-header reveal">
+      <div class="section-num">03 / Parcours</div>
+      <h2 class="section-title">Six modules,<br><em>une vocation.</em></h2>
+      <div class="section-info">
+        <div class="info-row"><strong>Total</strong>6 modules</div>
+        <div class="info-row"><strong>Format</strong>Mixte</div>
+        <div class="info-row"><strong>Certification</strong>Facilitatrice Sanctuarys</div>
+      </div>
+    </div>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 01</div>
+      <div class="project-title">
+        <h3>Je vois, je fais,<br><em>je reçois</em></h3>
+        <div class="project-meta">
+          <span>Présentiel</span>
+          <span>Demi-journée</span>
+          <span>Eau</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/2c/74/5c/2c745c0cff274acc0603706903fcd940.jpg');"></div>
+        <p class="project-description">Le premier seuil. Vous découvrez le bain de vapeur vaginal à l'eau au sein d'un cocon dédié. Le geste sacré entre dans votre corps.</p>
+      </div>
+    </a>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 02</div>
+      <div class="project-title">
+        <h3>Autonomie<br><em>et journaling</em></h3>
+        <div class="project-meta">
+          <span>Distanciel</span>
+          <span>14 jours</span>
+          <span>Intégration</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/3f/dc/2d/3fdc2d1511ac9366a1eb28119e0c158e.jpg');"></div>
+        <p class="project-description">Le silence après le geste. Quatorze jours de journaling quotidien guidé. Vous mesurez ce que le soin transforme dans votre corps.</p>
+      </div>
+    </a>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 03</div>
+      <div class="project-title">
+        <h3>Le bain<br><em>à l'encens</em></h3>
+        <div class="project-meta">
+          <span>Présentiel</span>
+          <span>Demi-journée</span>
+          <span>Encens</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/30/eb/3c/30eb3cdb14a9358084a7186cb7b5219c.jpg');"></div>
+        <p class="project-description">Un protocole plus subtil, plus mystique. Résines sacrées, chaleur sèche, fumée odorante. Un rituel d'une profondeur rare.</p>
+      </div>
+    </a>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 04</div>
+      <div class="project-title">
+        <h3>Intégration<br><em>à l'encens</em></h3>
+        <div class="project-meta">
+          <span>Distanciel</span>
+          <span>3 jours</span>
+          <span>Intégration</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/51/77/1a/51771a3ab0c3149c7727212a5229eae4.jpg');"></div>
+        <p class="project-description">Trois nuits, trois aubes, trois journaux. Vous affinez votre ressenti et distinguez les signatures du protocole encens.</p>
+      </div>
+    </a>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 05</div>
+      <div class="project-title">
+        <h3>La théorie<br><em>sacrée</em></h3>
+        <div class="project-meta">
+          <span>Distanciel</span>
+          <span>Formation complète</span>
+          <span>Théorie</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/61/95/4f/61954fd2d6603a343784c2d105fa0c8a.jpg');"></div>
+        <p class="project-description">Le coeur conceptuel. Anatomie subtile, pharmacopée, contre-indications, posture éthique. Le savoir s'inscrit sur la chair préparée.</p>
+      </div>
+    </a>
+
+    <a class="project reveal" data-cursor-hover href="inscription.html">
+      <div class="project-num">M / 06</div>
+      <div class="project-title">
+        <h3>Coaching<br><em>installation</em></h3>
+        <div class="project-meta">
+          <span>Individuel</span>
+          <span>3 heures</span>
+          <span>Stratégie</span>
+        </div>
+      </div>
+      <div class="project-right">
+        <div class="project-photo" style="background-image: url('https://i.pinimg.com/736x/0d/2a/d1/0d2ad15585dee35b8da70ab4dc154551.jpg');"></div>
+        <p class="project-description">Le seuil de sortie. Construction de votre offre, posture publique, plan d'action 90 jours. Vous quittez prête à recevoir.</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- 04 VISION -->
+<section class="editorial" id="vision">
+  <div class="editorial-container">
+    <div class="section-header reveal">
+      <div class="section-num">04 / Vision</div>
+      <h2 class="section-title">Le sacré féminin<br><em>n'est pas une pose.</em></h2>
+      <div class="section-info">
+        <div class="info-row"><strong>Lignée</strong>Traditions ancestrales</div>
+        <div class="info-row"><strong>Exigence</strong>Précision moderne</div>
+      </div>
+    </div>
+
+    <div class="editorial-grid">
+      <div class="editorial-photo-block reveal">
+        <div class="editorial-photo-main"></div>
+        <div class="editorial-photo-caption">
+          <span>Atelier rituel, Édition Sanctuarys 2026</span>
+          <span>fig. 01</span>
+        </div>
+      </div>
+      <div class="editorial-text reveal">
+        <h3>Une mémoire ancienne<br><em>qui revient.</em></h3>
+        <p>Sanctuarys ne forme pas des praticiennes. Sanctuarys réveille des prêtresses contemporaines. Le V-Care n'est pas une technique apprise, c'est un territoire reconquis.</p>
+        <p>Nous transmettons à celles qui acceptent de traverser le soin avant de le donner. Nous construisons des facilitatrices irréprochables, légitimes parce qu'incarnées, justes parce qu'éprouvées.</p>
+        <a href="inscription.html" class="btn-outline" data-cursor-hover>Découvrir la formation →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 TÉMOIGNAGE -->
+<section class="testimonial-section section-dark" id="temoignage">
+  <div class="testimonial-bg"></div>
+  <div class="testimonial-content reveal">
+    <div class="section-num">05 / Témoignage</div>
+    <div class="testimonial-mark">"</div>
+    <blockquote>J'ai franchi le seuil de Sanctuarys comme on entre dans un temple. J'en suis ressortie habitée, légitime, irrévocable. Mes premières clientes sont arrivées la semaine suivante.</blockquote>
+    <cite>Aïcha · Promotion V-Care 2025</cite>
+  </div>
+</section>
+
+<!-- 06 CONTACT -->
+<section class="contact" id="contact">
+  <svg class="contact-rings" viewBox="0 0 1400 1400" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#B8895A" stroke-width="0.6">
+      <circle cx="700" cy="700" r="680"/>
+      <circle cx="700" cy="700" r="600"/>
+      <circle cx="700" cy="700" r="520"/>
+      <circle cx="700" cy="700" r="440"/>
+      <circle cx="700" cy="700" r="360"/>
+      <circle cx="700" cy="700" r="280"/>
+      <circle cx="700" cy="700" r="200"/>
+      <circle cx="700" cy="700" r="120"/>
+    </g>
+  </svg>
+
+  <div class="contact-inner reveal">
+    <div class="contact-num">06 / Candidater</div>
+    <h2>Le sanctuaire<br><em>vous attend.</em></h2>
+    <p>Une formation, un protocole, une vocation. Rejoignez les femmes qui ont choisi de transmettre le sacré.</p>
+    <a href="inscription.html" class="btn-primary" data-cursor-hover><span>Franchir le seuil →</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/>
+          <circle cx="14" cy="14" r="3" fill="#0F0805"/>
+        </svg>
+        Sanctuarys
+      </a>
+      <p>École du sacré féminin contemporain. Formation des facilitatrices V-Care depuis 2021. Édition 2026, sixième promotion.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigation</h5>
+      <ul>
+        <li><a href="index.html" data-cursor-hover>Accueil</a></li>
+        <li><a href="inscription.html" data-cursor-hover>La Formation</a></li>
+        <li><a href="espace-eleve.html" data-cursor-hover>Espace Élève</a></li>
+        <li><a href="#temoignage" data-cursor-hover>Témoignages</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Formation</h5>
+      <ul>
+        <li><a href="inscription.html#modules" data-cursor-hover>Les six modules</a></li>
+        <li><a href="inscription.html#pricing" data-cursor-hover>Investissement</a></li>
+        <li><a href="inscription.html#inscription" data-cursor-hover>Candidater</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="mailto:info@sanctuarys.me" data-cursor-hover>info@sanctuarys.me</a></li>
+        <li><a data-cursor-hover>Sur rendez-vous</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Sanctuarys · École du sacré féminin</span>
+    <span>Conçu avec présence à Paris</span>
+  </div>
+</footer>
+
+<script>
+  // Preloader
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('preloader').classList.add('done'), 2400);
+  });
+
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx = window.innerWidth/2, my = window.innerHeight/2, tx = mx, ty = my;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  function animCursor(){
+    tx += (mx - tx) * 0.18;
+    ty += (my - ty) * 0.18;
+    trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('[data-cursor-hover]').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+
+  // Nav scroll + adaptive theme (dark/light)
+  const nav = document.getElementById('mainNav');
+  const darkSections = document.querySelectorAll('.hero, .section-dark, footer');
+
+  function updateNavTheme() {
+    const navHeight = nav.offsetHeight;
+    let onDark = false;
+    darkSections.forEach(sec => {
+      const r = sec.getBoundingClientRect();
+      if (r.top < navHeight / 2 && r.bottom > navHeight / 2) onDark = true;
+    });
+    nav.classList.toggle('on-dark', onDark);
+  }
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    updateNavTheme();
+  });
+  updateNavTheme();
+
+  // Reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Side index active state
+  const sections = document.querySelectorAll('section[id]');
+  const indexLinks = document.querySelectorAll('.side-index a');
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        indexLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.side-index a[data-section="${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.35 });
+  sections.forEach(s => sectionObserver.observe(s));
+
+  indexLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const id = link.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

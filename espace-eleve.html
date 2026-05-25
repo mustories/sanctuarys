@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanctuarys · Espace Élève</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --beige: #ECDCC2;
+    --beige-deep: #DCC7A4;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --or-vif: #E8C079;
+    --rose: #D4A89A;
+    --rose-pale: #E8C5B6;
+    --rouge-vif: #B22B2B;
+    --vert-succes: #6B8C4A;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+    --line-dark: rgba(212, 160, 76, 0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--blanc); }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--blanc);
+    color: var(--marron-deep);
+    line-height: 1.65;
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
+  .display { font-family: 'Italiana', serif; }
+  .display-italic { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ============ APP LAYOUT ============ */
+  .app {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    background: var(--marron-noir);
+    color: var(--rose-pale);
+    padding: 32px 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--line-dark);
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--marron-soft); }
+
+  .sidebar-logo {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 24px;
+    border-bottom: 1px solid var(--line-dark);
+    margin-bottom: 28px;
+  }
+
+  .sidebar-logo img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    filter: invert(94%) sepia(11%) saturate(394%) hue-rotate(341deg) brightness(99%) contrast(92%);
+  }
+
+  .user-card {
+    background: linear-gradient(135deg, rgba(200, 112, 77, 0.18), rgba(212, 160, 76, 0.08));
+    border: 1px solid var(--line-dark);
+    padding: 22px 20px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--terracotta), var(--or));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--blanc);
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    color: var(--blanc);
+    margin-bottom: 4px;
+  }
+
+  .user-cohort {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--or-pale);
+    opacity: 0.85;
+  }
+
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--or-pale);
+    opacity: 0.55;
+    margin-bottom: 14px;
+    margin-top: 22px;
+    padding-left: 8px;
+  }
+
+  .nav-section-label:first-of-type { margin-top: 0; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    color: var(--rose-pale);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.3s;
+    position: relative;
+    font-weight: 400;
+  }
+
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.75; }
+  .nav-item .badge {
+    margin-left: auto;
+    background: var(--terracotta);
+    color: var(--blanc);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+  }
+  .nav-item .lock {
+    margin-left: auto;
+    opacity: 0.4;
+    font-size: 11px;
+  }
+
+  .nav-item:hover {
+    color: var(--blanc);
+    background: rgba(200, 112, 77, 0.15);
+  }
+
+  .nav-item.active {
+    color: var(--terracotta-pale);
+    background: rgba(200, 112, 77, 0.18);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--terracotta-pale);
+  }
+
+  .nav-item.active svg { opacity: 1; }
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--rose-pale); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-dark);
+  }
+  .sidebar-footer a {
+    display: block;
+    color: var(--rose-pale);
+    text-decoration: none;
+    font-size: 11px;
+    padding: 8px 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.65;
+    transition: opacity 0.3s, color 0.3s;
+  }
+  .sidebar-footer a:hover { opacity: 1; color: var(--terracotta-pale); }
+
+  /* ============ MAIN ============ */
+  .main {
+    padding: 50px 60px 80px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.6s; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 40px;
+    align-items: start;
+    padding-bottom: 40px;
+    margin-bottom: 50px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .breadcrumb::before { content: ''; width: 30px; height: 1px; background: var(--terracotta-deep); }
+
+  .page-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(40px, 4.5vw, 64px);
+    color: var(--marron-deep);
+    margin-bottom: 12px;
+    line-height: 1;
+    font-weight: 400;
+  }
+
+  .page-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .page-subtitle {
+    color: var(--marron);
+    font-size: 16px;
+    line-height: 1.85;
+    max-width: 580px;
+  }
+
+  .panel-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    line-height: 1.9;
+    text-align: right;
+  }
+  .panel-meta strong {
+    color: var(--terracotta-deep);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 9px;
+    opacity: 0.85;
+  }
+  .panel-meta .meta-row {
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: 14px;
+  }
+  .panel-meta .meta-row:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
+
+  /* ============ DASHBOARD ============ */
+  .welcome-card {
+    background: linear-gradient(135deg, var(--blanc-deep), var(--beige));
+    border: 1px solid var(--line);
+    padding: 60px 60px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(200, 112, 77, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .welcome-card-inner { position: relative; z-index: 2; }
+
+  .welcome-greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--terracotta-deep);
+    margin-bottom: 12px;
+  }
+
+  .welcome-card h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    color: var(--marron-deep);
+    margin-bottom: 20px;
+    line-height: 1.05;
+  }
+
+  .welcome-card h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .welcome-card p {
+    color: var(--marron);
+    font-size: 16px;
+    line-height: 1.9;
+    max-width: 620px;
+    margin-bottom: 30px;
+  }
+
+  .welcome-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--marron-soft);
+    border-left: 2px solid var(--terracotta);
+    padding-left: 24px;
+    margin-bottom: 36px;
+    max-width: 520px;
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--marron-deep);
+    transform: translateY(101%);
+    transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .btn-primary span { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 10px; }
+  .btn-primary:hover::before { transform: translateY(0); }
+  .btn-primary:hover { border-color: var(--marron-deep); }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: transparent;
+    color: var(--marron-deep);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid var(--marron-deep);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .btn-outline:hover { background: var(--marron-deep); color: var(--blanc); }
+
+  /* PROGRESSION CARD */
+  .progress-card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 36px 40px;
+    margin-bottom: 28px;
+  }
+
+  .progress-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .progress-card-header h3 {
+    font-family: 'Italiana', serif;
+    font-size: 26px;
+    color: var(--marron-deep);
+  }
+
+  .progress-card-header h3 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+
+  .progress-percent {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--or);
+    text-transform: uppercase;
+  }
+  .progress-percent strong { color: var(--terracotta-deep); font-weight: 400; font-size: 18px; margin-right: 6px; }
+
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--blanc-deep);
+    overflow: hidden;
+    margin-bottom: 14px;
+    border-radius: 2px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--terracotta), var(--or-pale));
+    width: 7%;
+    transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* TILES GRID */
+  .tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 36px;
+  }
+
+  .tile {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 36px 32px;
+    transition: all 0.4s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile:hover {
+    transform: translateY(-4px);
+    border-color: var(--terracotta);
+    box-shadow: 0 20px 50px rgba(74, 48, 32, 0.1);
+  }
+
+  .tile-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tile-label svg { width: 14px; height: 14px; }
+
+  .tile h3 {
+    font-family: 'Italiana', serif;
+    font-size: 26px;
+    color: var(--marron-deep);
+    margin-bottom: 14px;
+    line-height: 1.1;
+  }
+
+  .tile p {
+    color: var(--marron);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .tile-arrow {
+    color: var(--terracotta-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ============ JOURNAL ============ */
+  .journal-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 32px;
+    margin-top: 20px;
+  }
+
+  /* CALENDAR */
+  .calendar-card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 30px 26px;
+    height: fit-content;
+    position: sticky;
+    top: 50px;
+  }
+
+  .calendar-card h4 {
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+    color: var(--marron-deep);
+    margin-bottom: 6px;
+  }
+  .calendar-card .calendar-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--blanc-deep);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    position: relative;
+  }
+
+  .calendar-day .day-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--marron-soft);
+    line-height: 1;
+  }
+  .calendar-day .day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--marron-soft);
+    margin-top: 2px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  .calendar-day.completed {
+    background: var(--terracotta-pale);
+    border-color: var(--terracotta);
+  }
+  .calendar-day.completed .day-num { color: var(--marron-deep); }
+  .calendar-day.completed::after {
+    content: '✦';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 8px;
+    color: var(--terracotta-deep);
+  }
+
+  .calendar-day.today {
+    background: var(--terracotta);
+    border-color: var(--marron-deep);
+    box-shadow: 0 0 0 3px rgba(200, 112, 77, 0.2);
+  }
+  .calendar-day.today .day-num, .calendar-day.today .day-label { color: var(--blanc); }
+
+  .calendar-day.locked { opacity: 0.45; cursor: not-allowed; }
+  .calendar-day:hover:not(.locked):not(.today) { background: var(--beige); transform: scale(1.04); }
+
+  .calendar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+  }
+  .calendar-legend > div { display: flex; align-items: center; gap: 10px; }
+  .legend-dot { width: 12px; height: 12px; flex-shrink: 0; }
+  .legend-dot.completed { background: var(--terracotta-pale); border: 1px solid var(--terracotta); }
+  .legend-dot.today { background: var(--terracotta); }
+  .legend-dot.future { background: var(--blanc-deep); opacity: 0.5; }
+
+  /* JOURNAL EDITOR */
+  .journal-editor {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 50px 54px;
+  }
+
+  .editor-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .editor-date-block .date-day {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .editor-date-block .date-main {
+    font-family: 'Italiana', serif;
+    font-size: 36px;
+    color: var(--marron-deep);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .editor-date-block .date-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--marron-soft);
+  }
+
+  .save-state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--vert-succes);
+    text-transform: uppercase;
+  }
+  .save-state .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--vert-succes);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* Daily prompt */
+  .daily-prompt {
+    background: linear-gradient(135deg, var(--blanc-deep), var(--beige));
+    border-left: 3px solid var(--terracotta);
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .daily-prompt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .daily-prompt-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--marron-deep);
+    line-height: 1.5;
+  }
+
+  /* Ratings */
+  .ratings-section { margin-bottom: 40px; }
+  .ratings-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .ratings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+
+  .rating-block { }
+  .rating-block-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .rating-block label {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    color: var(--marron-deep);
+  }
+  .rating-block .rating-help {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--marron-soft);
+  }
+
+  .rating-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .rating-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    background: var(--blanc-deep);
+  }
+  .rating-dot.active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+  .rating-dot:hover { border-color: var(--terracotta); transform: scale(1.05); }
+
+  .rating-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  /* Free writing */
+  .write-section { margin-top: 40px; }
+  .write-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  textarea.journal-input {
+    width: 100%;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.85;
+    padding: 26px;
+    min-height: 280px;
+    resize: vertical;
+    font-style: italic;
+    font-weight: 300;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  textarea.journal-input:focus { outline: none; border-color: var(--terracotta); background: var(--blanc); }
+
+  .input-helper {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Observation section */
+  .obs-section { margin-top: 40px; }
+  .obs-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .obs-section .obs-help {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--marron-soft);
+    margin-bottom: 20px;
+  }
+
+  textarea.obs-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.85;
+    padding: 20px 24px;
+    min-height: 140px;
+    resize: vertical;
+    transition: border-color 0.3s;
+  }
+  textarea.obs-input:focus { outline: none; border-color: var(--terracotta); }
+
+  /* Save button */
+  .editor-actions {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  /* ============ MODULES PANEL ============ */
+  .modules-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 20px;
+  }
+
+  .module-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1.2fr auto;
+    gap: 30px;
+    padding: 40px 0;
+    border-top: 1px solid var(--line);
+    transition: all 0.4s;
+    cursor: pointer;
+    position: relative;
+    align-items: center;
+  }
+  .module-row:last-child { border-bottom: 1px solid var(--line); }
+  .module-row::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 1px;
+    background: var(--terracotta);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s;
+  }
+  .module-row:hover::before { transform: scaleX(1); }
+  .module-row.locked { opacity: 0.4; cursor: not-allowed; }
+  .module-row.completed::before { transform: scaleX(1); background: var(--vert-succes); }
+
+  .module-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 56px;
+    color: var(--terracotta);
+    line-height: 0.9;
+  }
+
+  .module-info h3 {
+    font-family: 'Italiana', serif;
+    font-size: 28px;
+    color: var(--marron-deep);
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .module-info .module-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+  }
+
+  .module-progress { padding: 0 20px; }
+  .module-progress-bar {
+    height: 3px;
+    background: var(--blanc-deep);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .module-progress-bar-fill {
+    height: 100%;
+    background: var(--terracotta);
+    transition: width 1s;
+  }
+  .module-progress-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--marron-soft);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .module-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    color: var(--marron-soft);
+  }
+  .module-status.active { color: var(--terracotta); border-color: var(--terracotta); }
+  .module-status.completed { color: var(--vert-succes); border-color: var(--vert-succes); }
+
+  /* ============ RESOURCES PANEL ============ */
+  .resources-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .resource-tab {
+    padding: 10px 18px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--marron-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .resource-tab:hover { border-color: var(--terracotta); color: var(--terracotta-deep); }
+  .resource-tab.active {
+    background: var(--marron-deep);
+    color: var(--blanc);
+    border-color: var(--marron-deep);
+  }
+
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .resource-card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+  .resource-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--terracotta);
+    box-shadow: 0 20px 50px rgba(74, 48, 32, 0.12);
+  }
+
+  .resource-cover {
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .resource-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(26, 15, 8, 0.55));
+  }
+  .resource-type {
+    position: absolute;
+    top: 16px; left: 16px;
+    padding: 6px 12px;
+    background: rgba(250, 245, 236, 0.92);
+    backdrop-filter: blur(8px);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    z-index: 2;
+  }
+  .resource-duration {
+    position: absolute;
+    bottom: 16px; right: 16px;
+    padding: 6px 12px;
+    background: rgba(26, 15, 8, 0.75);
+    backdrop-filter: blur(8px);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--blanc);
+    z-index: 2;
+  }
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 2;
+  }
+  .resource-card:hover .play-overlay { opacity: 1; }
+  .play-btn {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.85);
+    transition: transform 0.4s;
+  }
+  .resource-card:hover .play-btn { transform: scale(1); }
+
+  .resource-body { padding: 24px; }
+  .resource-body .module-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .resource-body h3 {
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+    color: var(--marron-deep);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .resource-body p {
+    color: var(--marron);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* ============ NOTES PANEL ============ */
+  .notes-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .new-note-btn {
+    padding: 14px 26px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .new-note-btn:hover { background: var(--terracotta-deep); }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .note-card {
+    background: var(--beige);
+    border: 1px solid var(--line);
+    padding: 28px 26px;
+    min-height: 200px;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+  .note-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(74, 48, 32, 0.1); }
+
+  .note-card .note-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .note-card h4 {
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+    color: var(--marron-deep);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .note-card p {
+    color: var(--marron);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .note-empty {
+    background: var(--blanc-deep);
+    border: 1px dashed var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    color: var(--marron-soft);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+  }
+
+  /* ============ MESSAGES PANEL ============ */
+  .messages-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 900px;
+  }
+
+  .message-card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .message-header {
+    background: var(--marron-noir);
+    color: var(--blanc);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .message-header-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--terracotta), var(--or));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blanc);
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+  }
+  .message-header-info h4 {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    color: var(--blanc);
+    margin-bottom: 2px;
+  }
+  .message-header-info .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--or-pale);
+    text-transform: uppercase;
+  }
+
+  .message-status {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--vert-succes);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .message-status .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--vert-succes);
+  }
+
+  .message-thread {
+    padding: 30px 32px;
+    max-height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msg {
+    max-width: 80%;
+    padding: 18px 22px;
+    line-height: 1.65;
+  }
+  .msg.from-formatrice {
+    background: var(--blanc-deep);
+    align-self: flex-start;
+    border-left: 2px solid var(--terracotta);
+    color: var(--marron-deep);
+  }
+  .msg.from-student {
+    background: var(--marron-deep);
+    color: var(--blanc);
+    align-self: flex-end;
+  }
+  .msg .msg-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.75;
+  }
+  .msg p { font-size: 14px; }
+
+  .message-input-row {
+    padding: 24px 32px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+  }
+
+  .message-input-row textarea {
+    flex: 1;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 16px 20px;
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    resize: none;
+    min-height: 60px;
+    max-height: 160px;
+    font-weight: 300;
+  }
+  .message-input-row textarea:focus { outline: none; border-color: var(--terracotta); }
+
+  .send-btn {
+    padding: 18px 24px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .send-btn:hover { background: var(--terracotta-deep); }
+
+  /* ============ TOAST / NOTIFICATIONS ============ */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    padding: 18px 28px;
+    border: 1px solid var(--terracotta);
+    border-left-width: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transform: translateX(120%);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 380px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast .toast-icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ============ LOGIN GATE ============ */
+  .login-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(200, 112, 77, 0.3), transparent 60%),
+      var(--marron-noir);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    transition: opacity 0.6s, visibility 0.6s;
+  }
+  .login-gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .login-card {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .login-logo {
+    width: 220px;
+    margin: 0 auto 40px;
+    filter: invert(94%) sepia(11%) saturate(394%) hue-rotate(341deg) brightness(99%) contrast(92%);
+  }
+
+  .login-greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--terracotta-pale);
+    margin-bottom: 14px;
+  }
+
+  .login-title {
+    font-family: 'Italiana', serif;
+    font-size: 42px;
+    color: var(--blanc);
+    margin-bottom: 14px;
+    line-height: 1.1;
+  }
+  .login-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-pale);
+  }
+
+  .login-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--or-pale);
+    margin-bottom: 48px;
+    opacity: 0.85;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 20px 24px;
+    background: rgba(250, 245, 236, 0.04);
+    border: 1px solid var(--line-dark);
+    color: var(--blanc);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    text-align: center;
+    letter-spacing: 2px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .login-input:focus {
+    outline: none;
+    border-color: var(--terracotta-pale);
+    background: rgba(232, 176, 153, 0.06);
+  }
+  .login-input::placeholder { color: var(--rose-pale); opacity: 0.5; }
+
+  .login-btn {
+    padding: 20px 32px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: 1px solid var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--blanc);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .login-btn span { position: relative; z-index: 2; }
+  .login-btn:hover { color: var(--marron-deep); border-color: var(--blanc); }
+  .login-btn:hover::before { transform: translateY(0); }
+
+  .login-error {
+    color: #E8B099;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 8px;
+    min-height: 22px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .login-error.show { opacity: 1; }
+
+  .login-footer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--rose-pale);
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-top: 36px;
+  }
+
+  .login-app-locked { display: none; }
+  .login-app-locked.locked-out { display: block; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; }
+    .main { padding: 30px 24px 60px; }
+    .panel-header { grid-template-columns: 1fr; gap: 20px; }
+    .panel-meta { text-align: left; }
+    .welcome-card { padding: 40px 30px; }
+    .tiles { grid-template-columns: 1fr; }
+    .journal-grid { grid-template-columns: 1fr; }
+    .calendar-card { position: static; }
+    .journal-editor { padding: 30px 24px; }
+    .ratings-grid { grid-template-columns: 1fr; }
+    .module-row { grid-template-columns: 60px 1fr; gap: 20px; }
+    .module-progress, .module-status { grid-column: 1 / -1; padding-left: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN GATE ============ -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <div class="login-greeting">Bienvenue dans ton espace</div>
+    <h1 class="login-title">Le seuil<br><em>Sanctuarys.</em></h1>
+    <div class="login-sub">Connexion à ton espace personnel</div>
+
+    <form class="login-form" id="loginForm">
+      <input type="email" class="login-input" id="loginEmail" placeholder="Ton email" autocomplete="email" required>
+      <input type="password" class="login-input" id="loginPassword" placeholder="Ton mot de passe" autocomplete="current-password" required>
+      <button type="submit" class="login-btn"><span>Franchir le seuil →</span></button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+
+    <div class="login-footer">Ton espace est strictement personnel</div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar">A</div>
+      <div>
+        <div class="user-name">Angélique</div>
+        <div class="user-cohort">Promo Lune 26 · Jour 1/14</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Mon parcours</div>
+    <a class="nav-item active" data-panel="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7 V 12 L 15 14"/></svg>
+      Tableau de bord
+    </a>
+    <a class="nav-item" data-panel="journal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4 L 20 4 L 20 20 L 4 20 Z"/><path d="M8 8 L 16 8 M 8 12 L 16 12 M 8 16 L 12 16"/></svg>
+      Journal de bord
+      <span class="badge">1/14</span>
+    </a>
+    <a class="nav-item" data-panel="modules">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Mes modules
+    </a>
+    <a class="nav-item" data-panel="resources">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M10 9 L 16 12 L 10 15 Z" fill="currentColor"/></svg>
+      Bibliothèque
+    </a>
+
+    <div class="nav-section-label">Mon espace</div>
+    <a class="nav-item" data-panel="notes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3 L 16 3 L 21 8 L 21 21 L 5 21 Z"/><path d="M16 3 L 16 8 L 21 8"/></svg>
+      Mes notes
+    </a>
+    <a class="nav-item" data-panel="messages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5 a 8.38 8.38 0 0 1 -.9 3.8 8.5 8.5 0 0 1 -7.6 4.7 8.38 8.38 0 0 1 -3.8 -.9 L 3 21 l 1.9 -5.7 a 8.38 8.38 0 0 1 -.9 -3.8 8.5 8.5 0 0 1 4.7 -7.6 8.38 8.38 0 0 1 3.8 -.9 8.5 8.5 0 0 1 8.5 8.5 z"/></svg>
+      Messages
+      <span class="badge">1</span>
+    </a>
+    <a class="nav-item locked">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4 L 19 4 L 19 19 L 12 22 L 5 19 Z"/><circle cx="12" cy="11" r="3"/></svg>
+      Mon coaching
+      <span class="lock">⌧</span>
+    </a>
+
+    <div class="sidebar-footer">
+      <a href="#">Paramètres</a>
+      <a href="index.html">Déconnexion</a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="panel-header">
+        <div class="breadcrumb">00 / Accueil</div>
+        <div>
+          <h1 class="page-title">Bonjour <em>Angélique.</em></h1>
+          <p class="page-subtitle">C'est ton tout premier jour du cycle d'intégration. Quatorze jours s'ouvrent devant toi. Le sacré ne se presse pas, prends le temps qu'il te faut.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Module en cours</strong>02 · Autonomie</div>
+          <div class="meta-row"><strong>Avancement</strong>Jour 1 sur 14</div>
+          <div class="meta-row"><strong>Promotion</strong>Lune 2026</div>
+        </div>
+      </div>
+
+      <!-- WELCOME / RITUEL DU JOUR -->
+      <div class="welcome-card">
+        <div class="welcome-card-inner">
+          <div class="welcome-greeting">Ton tout premier jour</div>
+          <h2>Bienvenue dans<br><em>ton cycle d'intégration.</em></h2>
+          <p>Hier, ton corps a reçu son premier bain de vapeur vaginal. Le geste s'est inscrit dans ta chair. À partir d'aujourd'hui, et pendant quatorze jours, tu vas tenir le journal Sanctuarys. C'est le coeur du module 02. Pas de performance, juste l'écoute. Note ce qui vient, sans filtre, sans jugement.</p>
+
+          <div class="welcome-quote">"Le corps féminin n'oublie jamais. Il se souvient seulement quand on lui demande de parler."</div>
+
+          <div class="quick-actions">
+            <button class="btn-primary" onclick="openPanel('journal')"><span>Écrire dans mon journal →</span></button>
+            <button class="btn-outline" onclick="openPanel('messages')">Contacter Princesse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESSION CARD -->
+      <div class="progress-card">
+        <div class="progress-card-header">
+          <h3>Ma progression dans <em>le module 02</em></h3>
+          <div class="progress-percent"><strong>7%</strong>du cycle</div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar"></div>
+        </div>
+        <div class="progress-stats">
+          <span>Jour 1 sur 14</span>
+          <span>Prochain seuil · Module 03</span>
+        </div>
+      </div>
+
+      <!-- TILES -->
+      <div class="tiles">
+        <div class="tile" onclick="openPanel('journal')">
+          <div class="tile-label">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="12" height="12"/></svg>
+            Journal · Jour 1
+          </div>
+          <h3>Ouvrir mon journal de bord</h3>
+          <p>Ton espace quotidien d'auto-évaluation. Cinq dimensions, un prompt guidé, ton écriture libre. Le coeur du module 02.</p>
+          <div class="tile-arrow">Commencer mon journal →</div>
+        </div>
+
+        <div class="tile" onclick="openPanel('resources')">
+          <div class="tile-label">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="6"/></svg>
+            Bibliothèque
+          </div>
+          <h3>Revoir le protocole vapeur</h3>
+          <p>Vidéos pédagogiques, audios de guidance, herbier Sanctuarys. Revisite la transmission du module 01.</p>
+          <div class="tile-arrow">Accéder aux ressources →</div>
+        </div>
+
+        <div class="tile" onclick="openPanel('notes')">
+          <div class="tile-label">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 1 L 10 1 L 13 4 L 13 13 L 2 13 Z"/></svg>
+            Mes notes
+          </div>
+          <h3>Mes observations libres</h3>
+          <p>Un espace différent du journal, pour tes observations spontanées, tes intuitions, tes questions.</p>
+          <div class="tile-arrow">Ouvrir mes notes →</div>
+        </div>
+
+        <div class="tile" onclick="openPanel('messages')">
+          <div class="tile-label">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.5 a 5 5 0 0 1 -.5 2.3 5 5 0 0 1 -4.5 2.8 5 5 0 0 1 -2.3 -.5 L 2 12 l 1.1 -3.4 a 5 5 0 0 1 -.5 -2.3 5 5 0 0 1 2.8 -4.5 5 5 0 0 1 2.3 -.5 5 5 0 0 1 5 5 z"/></svg>
+            Messages
+          </div>
+          <h3>Échanger avec Princesse</h3>
+          <p>Une question, un doute, une joie à partager. Princesse te répond sous 24h en jours ouvrés.</p>
+          <div class="tile-arrow">Ouvrir la messagerie →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="panel" id="panel-journal">
+      <div class="panel-header">
+        <div class="breadcrumb">01 / Journal de bord</div>
+        <div>
+          <h1 class="page-title">Mon journal <em>quotidien.</em></h1>
+          <p class="page-subtitle">Le journaling guidé est le coeur du module 02. Chaque jour, prends quinze minutes pour t'écouter. Le journal Sanctuarys deviendra ton miroir le plus juste.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Aujourd'hui</strong>Jour 1 / 14</div>
+          <div class="meta-row"><strong>Ton cycle</strong>commence ici</div>
+        </div>
+      </div>
+
+      <div class="journal-grid">
+
+        <!-- CALENDAR -->
+        <aside class="calendar-card">
+          <h4>Calendrier d'intégration</h4>
+          <div class="calendar-sub">14 jours · Module 02</div>
+
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- Days inserted by JS -->
+          </div>
+
+          <div class="calendar-legend">
+            <div><span class="legend-dot completed"></span>Jour complété</div>
+            <div><span class="legend-dot today"></span>Aujourd'hui</div>
+            <div><span class="legend-dot future"></span>À venir</div>
+          </div>
+        </aside>
+
+        <!-- EDITOR -->
+        <div class="journal-editor">
+          <div class="editor-top">
+            <div class="editor-date-block">
+              <div class="date-day">Jour 01 sur 14 · Le commencement</div>
+              <div class="date-main">Lundi 25 mai</div>
+              <div class="date-sub">Au lendemain du protocole</div>
+            </div>
+            <div class="save-state" id="saveState"><div class="dot"></div>Sauvegarde auto</div>
+          </div>
+
+          <!-- DAILY PROMPT -->
+          <div class="daily-prompt">
+            <div class="daily-prompt-label">Première question du cycle</div>
+            <div class="daily-prompt-text" id="dailyPrompt">"Au lendemain de ton premier protocole, comment ton corps t'accueille-t-il ce matin ? Pose une main sur ton bas-ventre. Reste là un instant. Que ressens-tu sous ta paume ? Une chaleur, un calme, une présence inhabituelle ? Sans interpréter, juste accueillir."</div>
+          </div>
+
+          <!-- RATINGS -->
+          <div class="ratings-section">
+            <h4>Auto-évaluation du jour</h4>
+            <div class="ratings-grid">
+              <div class="rating-block">
+                <div class="rating-block-top">
+                  <label>Le corps</label>
+                  <span class="rating-help">comment il se sent</span>
+                </div>
+                <div class="rating-dots" data-rating="corps">
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                </div>
+                <div class="rating-scale"><span>Lourd</span><span>Vibrant</span></div>
+              </div>
+
+              <div class="rating-block">
+                <div class="rating-block-top">
+                  <label>L'émotion</label>
+                  <span class="rating-help">ce qui m'habite</span>
+                </div>
+                <div class="rating-dots" data-rating="emotion">
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                </div>
+                <div class="rating-scale"><span>Trouble</span><span>Paisible</span></div>
+              </div>
+
+              <div class="rating-block">
+                <div class="rating-block-top">
+                  <label>L'énergie</label>
+                  <span class="rating-help">vitalité globale</span>
+                </div>
+                <div class="rating-dots" data-rating="energie">
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                </div>
+                <div class="rating-scale"><span>Basse</span><span>Pleine</span></div>
+              </div>
+
+              <div class="rating-block">
+                <div class="rating-block-top">
+                  <label>Le sommeil</label>
+                  <span class="rating-help">la nuit passée</span>
+                </div>
+                <div class="rating-dots" data-rating="sommeil">
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                </div>
+                <div class="rating-scale"><span>Agité</span><span>Profond</span></div>
+              </div>
+
+              <div class="rating-block" style="grid-column: 1 / -1;">
+                <div class="rating-block-top">
+                  <label>Le cycle / l'intuition</label>
+                  <span class="rating-help">ce que mon corps me dit</span>
+                </div>
+                <div class="rating-dots" data-rating="cycle">
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                  <div class="rating-dot"></div>
+                </div>
+                <div class="rating-scale"><span>Silencieux</span><span>Très expressif</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FREE WRITING -->
+          <div class="write-section">
+            <h4>Ce qui est venu aujourd'hui</h4>
+            <textarea class="journal-input" id="journalText" placeholder="Laisse les mots venir... même si c'est court, même si c'est confus. Note les images, les sensations, les rêves. Aucune phrase n'a besoin d'être parfaite. Seul l'honnêteté compte."></textarea>
+            <div class="input-helper">
+              <span><span id="wordCount">0</span> mots</span>
+              <span>Sauvegarde automatique active</span>
+            </div>
+          </div>
+
+          <!-- OBSERVATION -->
+          <div class="obs-section">
+            <h4>Observation libre</h4>
+            <div class="obs-help">Un détail singulier ? Un événement inattendu ? Une synchronicité ? Note tout ce qui se distingue.</div>
+            <textarea class="obs-input" id="obsInput" placeholder="Par exemple : 'Réveil à 4h47 sans raison, sensation de paix profonde.'"></textarea>
+          </div>
+
+          <div class="editor-actions">
+            <span class="mono" style="color: var(--marron-soft); font-size: 11px;">Dernière sauvegarde · à l'instant</span>
+            <button class="btn-primary" id="saveJournal"><span>Enregistrer et envoyer à Princesse →</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULES -->
+    <div class="panel" id="panel-modules">
+      <div class="panel-header">
+        <div class="breadcrumb">02 / Mes modules</div>
+        <div>
+          <h1 class="page-title">Le voyage <em>V-Care.</em></h1>
+          <p class="page-subtitle">Vue d'ensemble de ton parcours. Six modules pour devenir facilitatrice. Tu avances à ton rythme, chaque seuil se déverrouille en son temps.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Total</strong>6 modules</div>
+          <div class="meta-row"><strong>Complétés</strong>1 module</div>
+          <div class="meta-row"><strong>En cours</strong>1 module</div>
+        </div>
+      </div>
+
+      <div class="modules-list">
+        <a class="module-row completed" onclick="alert('Module 01 complété hier au présentiel Sanctuarys.')">
+          <div class="module-num">01</div>
+          <div class="module-info">
+            <h3>Je vois, je fais, je reçois</h3>
+            <span class="module-label">Présentiel · Demi-journée · Eau</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:100%; background: var(--vert-succes);"></div></div>
+            <div class="module-progress-meta">Complété le 24 mai 2026</div>
+          </div>
+          <div class="module-status completed">Complété ✦</div>
+        </a>
+
+        <a class="module-row" onclick="openPanel('journal')">
+          <div class="module-num">02</div>
+          <div class="module-info">
+            <h3>Autonomie et journaling</h3>
+            <span class="module-label">14 jours · Auto-évaluation</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:7%;"></div></div>
+            <div class="module-progress-meta">Jour 1 sur 14 · début du cycle</div>
+          </div>
+          <div class="module-status active">En cours</div>
+        </a>
+
+        <a class="module-row locked">
+          <div class="module-num">03</div>
+          <div class="module-info">
+            <h3>Le bain à l'encens</h3>
+            <span class="module-label">Présentiel · Demi-journée · Encens</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:0%;"></div></div>
+            <div class="module-progress-meta">Se déverrouille après le module 02</div>
+          </div>
+          <div class="module-status">Verrouillé</div>
+        </a>
+
+        <a class="module-row locked">
+          <div class="module-num">04</div>
+          <div class="module-info">
+            <h3>Intégration à l'encens</h3>
+            <span class="module-label">3 jours · Auto-évaluation</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:0%;"></div></div>
+            <div class="module-progress-meta">Se déverrouille après le module 03</div>
+          </div>
+          <div class="module-status">Verrouillé</div>
+        </a>
+
+        <a class="module-row locked">
+          <div class="module-num">05</div>
+          <div class="module-info">
+            <h3>La théorie sacrée</h3>
+            <span class="module-label">Distanciel · Formation théorique</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:0%;"></div></div>
+            <div class="module-progress-meta">Se déverrouille après le module 04</div>
+          </div>
+          <div class="module-status">Verrouillé</div>
+        </a>
+
+        <a class="module-row locked">
+          <div class="module-num">06</div>
+          <div class="module-info">
+            <h3>Coaching installation</h3>
+            <span class="module-label">3 heures · Coaching individuel</span>
+          </div>
+          <div class="module-progress">
+            <div class="module-progress-bar"><div class="module-progress-bar-fill" style="width:0%;"></div></div>
+            <div class="module-progress-meta">Se déverrouille après le module 05</div>
+          </div>
+          <div class="module-status">Verrouillé</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div class="panel" id="panel-resources">
+      <div class="panel-header">
+        <div class="breadcrumb">03 / Bibliothèque</div>
+        <div>
+          <h1 class="page-title">La <em>bibliothèque.</em></h1>
+          <p class="page-subtitle">Toute la transmission Sanctuarys à ta disposition. Vidéos pédagogiques, audios de guidance, protocoles écrits, herbier illustré.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Module actuel</strong>02 · Autonomie</div>
+          <div class="meta-row"><strong>Total ressources</strong>4 disponibles</div>
+        </div>
+      </div>
+
+      <div class="resources-tabs">
+        <button class="resource-tab active" data-tab="all">Toutes</button>
+        <button class="resource-tab" data-tab="01">Module 01</button>
+        <button class="resource-tab" data-tab="02">Module 02</button>
+        <button class="resource-tab" data-tab="locked">À venir</button>
+      </div>
+
+      <div class="resources-grid" id="resourcesGrid">
+        <div class="resource-card" data-mod="01">
+          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/2c/74/5c/2c745c0cff274acc0603706903fcd940.jpg');">
+            <div class="resource-type">Vidéo</div>
+            <div class="resource-duration">12 min</div>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5 V 19 L 19 12 Z" fill="#FAF5EC"/></svg></div></div>
+          </div>
+          <div class="resource-body">
+            <div class="module-tag">Module 01 · Présentiel</div>
+            <h3>Le protocole vapeur à l'eau</h3>
+            <p>Démonstration intégrale du geste sacré par la formatrice référente. À revoir autant de fois que nécessaire.</p>
+          </div>
+        </div>
+
+        <div class="resource-card" data-mod="02">
+          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/3f/dc/2d/3fdc2d1511ac9366a1eb28119e0c158e.jpg');">
+            <div class="resource-type">PDF</div>
+            <div class="resource-duration">24 pages</div>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FAF5EC" stroke-width="2"><path d="M14 2 H 6 a 2 2 0 0 0 -2 2 v 16 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+          </div>
+          <div class="resource-body">
+            <div class="module-tag">Module 02 · Distanciel</div>
+            <h3>Carnet de journaling Sanctuarys</h3>
+            <p>Le carnet d'auto-évaluation Sanctuarys, version imprimable. Tu peux l'utiliser en parallèle du journal en ligne.</p>
+          </div>
+        </div>
+
+        <div class="resource-card" data-mod="02">
+          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/30/eb/3c/30eb3cdb14a9358084a7186cb7b5219c.jpg');">
+            <div class="resource-type">Audio</div>
+            <div class="resource-duration">8 min</div>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5 V 19 L 19 12 Z" fill="#FAF5EC"/></svg></div></div>
+          </div>
+          <div class="resource-body">
+            <div class="module-tag">Module 02 · Méditation</div>
+            <h3>Méditation guidée pour le journaling</h3>
+            <p>Une pratique audio courte pour t'ancrer avant chaque session d'écriture. À utiliser en début de rituel quotidien.</p>
+          </div>
+        </div>
+
+        <div class="resource-card" data-mod="01">
+          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/0d/2a/d1/0d2ad15585dee35b8da70ab4dc154551.jpg');">
+            <div class="resource-type">PDF</div>
+            <div class="resource-duration">12 pages</div>
+            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FAF5EC" stroke-width="2"><path d="M14 2 H 6 a 2 2 0 0 0 -2 2 v 16 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+          </div>
+          <div class="resource-body">
+            <div class="module-tag">Module 01 · Plantes</div>
+            <h3>Mes plantes du protocole eau</h3>
+            <p>La fiche personnalisée des plantes sélectionnées pour ta signature corporelle, identifiées au présentiel.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="panel-notes">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Mes notes</div>
+        <div>
+          <h1 class="page-title">Mes <em>observations.</em></h1>
+          <p class="page-subtitle">Un espace différent du journal. Ici tu déposes ce qui surgit hors du rituel quotidien : intuitions, questions, citations, idées qui passent. C'est ton carnet intime.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Notes</strong><span id="notesCount">0</span> pour l'instant</div>
+        </div>
+      </div>
+
+      <div class="notes-toolbar">
+        <button class="new-note-btn" id="newNoteBtn">
+          <span>+</span>
+          <span>Nouvelle note</span>
+        </button>
+        <span class="mono" style="color: var(--marron-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">Tes notes restent privées</span>
+      </div>
+
+      <div class="notes-grid" id="notesGrid">
+        <!-- Notes inserted by JS -->
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="panel" id="panel-messages">
+      <div class="panel-header">
+        <div class="breadcrumb">05 / Messages</div>
+        <div>
+          <h1 class="page-title">Échanger avec <em>Princesse.</em></h1>
+          <p class="page-subtitle">Une question, un doute, une joie à partager. Princesse te lit personnellement et te répond sous 24h en jours ouvrés.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Formatrice</strong>Princesse Tchassi</div>
+          <div class="meta-row"><strong>Disponibilité</strong>Lun-Ven · 9h-18h</div>
+        </div>
+      </div>
+
+      <div class="messages-layout">
+        <div class="message-card">
+          <div class="message-header">
+            <div class="message-header-avatar">P</div>
+            <div class="message-header-info">
+              <h4>Princesse Tchassi</h4>
+              <div class="role">Formatrice référente Sanctuarys</div>
+            </div>
+            <div class="message-status">
+              <div class="dot"></div>
+              En ligne aujourd'hui
+            </div>
+          </div>
+
+          <div class="message-thread" id="messageThread">
+            <!-- Messages chargés depuis Supabase -->
+          </div>
+
+          <div class="message-input-row">
+            <textarea id="messageInput" placeholder="Écris ton message à Princesse..."></textarea>
+            <button class="send-btn" id="sendBtn">Envoyer →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon">✦</div>
+  <div id="toastText">Sauvegardé</div>
+</div>
+
+<script src="js/sanctuarys.js"></script>
+<script>
+  // ============ STATE GLOBAL ============
+  let CURRENT_USER = null;       // session user
+  let PROFILE = null;            // ligne profiles
+  let ADMIN = null;              // profile de la formatrice
+  let CURRENT_ENTRY = null;      // journal entry du jour
+  let CURRENT_PROMPT = null;     // prompt du jour
+  let NOTES_CACHE = [];
+
+  // ============ TOAST ============
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+  let toastTimer = null;
+  function showToast(message) {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastText.textContent = message;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  // ============ LOGIN ============
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const err = document.getElementById('loginError');
+    err.classList.remove('show');
+    try {
+      await Sanctuarys.signIn(email, password);
+      await bootstrap();
+    } catch (e) {
+      err.textContent = 'Email ou mot de passe incorrect.';
+      err.classList.add('show');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+    }
+  });
+
+  // Auto-login si session active
+  Sanctuarys.onReady(async () => {
+    const session = await Sanctuarys.getSession();
+    if (session) {
+      await bootstrap();
+    } else {
+      document.getElementById('loginEmail').focus();
+    }
+  });
+  Sanctuarys.init();
+
+  // ============ BOOTSTRAP ============
+  async function bootstrap() {
+    document.getElementById('loginGate').classList.add('hidden');
+    PROFILE = await Sanctuarys.getProfile();
+    if (!PROFILE) {
+      showToast('Profil introuvable. Contacte Princesse.');
+      return;
+    }
+    if (PROFILE.role === 'admin') {
+      // Redirige vers admin
+      window.location.href = 'admin.html';
+      return;
+    }
+    ADMIN = await Sanctuarys.getAdminProfile();
+
+    // Hydrate l'UI avec le profil
+    hydrateProfile();
+    await Promise.all([
+      loadJournalForToday(),
+      loadCalendar(),
+      loadNotes(),
+      loadMessages()
+    ]);
+    setupMessagesRealtime();
+  }
+
+  function hydrateProfile() {
+    // User card
+    const av = document.querySelector('.user-avatar');
+    const nm = document.querySelector('.user-name');
+    const co = document.querySelector('.user-cohort');
+    if (av) av.textContent = Sanctuarys.initialOf(PROFILE.prenom);
+    if (nm) nm.textContent = PROFILE.prenom;
+    if (co) co.textContent = `Promo ${PROFILE.cohort} · Jour ${PROFILE.current_day}/14`;
+
+    // Dashboard title
+    const titleEm = document.querySelector('#panel-dashboard .page-title em');
+    if (titleEm) titleEm.textContent = PROFILE.prenom + '.';
+
+    // Sidebar badge
+    const journalBadge = document.querySelector('.nav-item[data-panel="journal"] .badge');
+    if (journalBadge) journalBadge.textContent = `${PROFILE.current_day}/14`;
+
+    // Progress
+    const percent = Math.round((PROFILE.current_day / 14) * 100);
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) progressBar.style.width = percent + '%';
+    const progressPercent = document.querySelector('.progress-percent strong');
+    if (progressPercent) progressPercent.textContent = percent + '%';
+    const progressStats = document.querySelector('.progress-stats span');
+    if (progressStats) progressStats.textContent = `Jour ${PROFILE.current_day} sur 14`;
+
+    // Meta on dashboard
+    document.querySelectorAll('#panel-dashboard .panel-meta .meta-row').forEach((row, i) => {
+      if (i === 1) row.innerHTML = `<strong>Avancement</strong>Jour ${PROFILE.current_day} sur 14`;
+    });
+  }
+
+  // ============ PANEL SWITCHING ============
+  const navItems = document.querySelectorAll('.nav-item[data-panel]');
+  const panels = document.querySelectorAll('.panel');
+  function openPanel(id) {
+    navItems.forEach(n => n.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    const item = document.querySelector(`.nav-item[data-panel="${id}"]`);
+    const panel = document.getElementById('panel-' + id);
+    if (item) item.classList.add('active');
+    if (panel) panel.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'messages') markMessagesRead();
+  }
+  navItems.forEach(item => {
+    item.addEventListener('click', e => { e.preventDefault(); openPanel(item.dataset.panel); });
+  });
+
+  // ============ LOGOUT ============
+  document.querySelectorAll('.sidebar-footer a').forEach(a => {
+    if (a.textContent.trim().toLowerCase().includes('déconnex')) {
+      a.addEventListener('click', async e => {
+        e.preventDefault();
+        await Sanctuarys.signOut();
+        location.reload();
+      });
+    }
+  });
+
+  // ============ CALENDAR ============
+  function loadCalendar() {
+    const calendarGrid = document.getElementById('calendarGrid');
+    if (!calendarGrid) return;
+    calendarGrid.innerHTML = '';
+    // Récupère les jours complétés depuis les journals déjà soumis
+    Sanctuarys.listJournalEntries(PROFILE.id).then(entries => {
+      const submittedDays = entries.filter(e => e.submitted && e.module_number === PROFILE.current_module).map(e => e.day_number);
+      const startDay = new Date();
+      startDay.setDate(startDay.getDate() - (PROFILE.current_day - 1));
+      const labels = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      for (let i = 1; i <= 14; i++) {
+        const d = new Date(startDay);
+        d.setDate(startDay.getDate() + (i - 1));
+        const label = labels[d.getDay()];
+        let status = 'locked';
+        if (submittedDays.includes(i)) status = 'completed';
+        else if (i === PROFILE.current_day) status = 'today';
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day ' + status;
+        cell.innerHTML = `<div class="day-num">${i}</div><div class="day-label">${label}</div>`;
+        cell.title = `Jour ${i} sur 14`;
+        calendarGrid.appendChild(cell);
+      }
+    });
+  }
+
+  // ============ JOURNAL ============
+  async function loadJournalForToday() {
+    // Prompt du jour
+    CURRENT_PROMPT = await Sanctuarys.getTodayPrompt(PROFILE.current_module, PROFILE.current_day);
+    if (CURRENT_PROMPT) {
+      const promptText = document.getElementById('dailyPrompt');
+      if (promptText) promptText.textContent = '"' + CURRENT_PROMPT.prompt_text + '"';
+      const dateSub = document.querySelector('.date-sub');
+      if (dateSub) dateSub.textContent = CURRENT_PROMPT.title;
+    }
+    // Date du jour
+    const today = new Date();
+    const dateMain = document.querySelector('.date-main');
+    if (dateMain) dateMain.textContent = today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const dateDay = document.querySelector('.date-day');
+    if (dateDay) dateDay.textContent = `Jour ${String(PROFILE.current_day).padStart(2, '0')} sur 14${CURRENT_PROMPT ? ' · ' + CURRENT_PROMPT.title : ''}`;
+
+    // Entrée existante (ou null)
+    CURRENT_ENTRY = await Sanctuarys.getJournalEntry(PROFILE.id, PROFILE.current_module, PROFILE.current_day);
+    if (CURRENT_ENTRY) {
+      // Pré-remplir les ratings
+      const ratings = CURRENT_ENTRY.ratings || {};
+      document.querySelectorAll('.rating-dots').forEach(group => {
+        const key = group.dataset.rating;
+        const value = ratings[key] || 0;
+        group.querySelectorAll('.rating-dot').forEach((d, i) => {
+          d.classList.toggle('active', i < value);
+        });
+      });
+      const journalText = document.getElementById('journalText');
+      if (journalText) journalText.value = CURRENT_ENTRY.body || '';
+      const obsInput = document.getElementById('obsInput');
+      if (obsInput) obsInput.value = CURRENT_ENTRY.observation || '';
+      updateWordCount();
+    }
+  }
+
+  // Ratings interaction
+  document.querySelectorAll('.rating-dots').forEach(group => {
+    const dots = group.querySelectorAll('.rating-dot');
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        dots.forEach((d, j) => d.classList.toggle('active', j <= i));
+        autoSaveJournal();
+      });
+    });
+  });
+
+  // Journal text + observation
+  const journalText = document.getElementById('journalText');
+  const wordCount = document.getElementById('wordCount');
+  const obsInput = document.getElementById('obsInput');
+
+  function updateWordCount() {
+    if (!journalText) return;
+    const words = (journalText.value || '').trim().split(/\s+/).filter(w => w.length > 0);
+    if (wordCount) wordCount.textContent = words.length;
+  }
+
+  if (journalText) {
+    journalText.addEventListener('input', () => {
+      updateWordCount();
+      autoSaveJournal();
+    });
+  }
+  if (obsInput) {
+    obsInput.addEventListener('input', autoSaveJournal);
+  }
+
+  let saveTimer = null;
+  function autoSaveJournal() {
+    if (!PROFILE) return;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      const ratings = {};
+      document.querySelectorAll('.rating-dots').forEach(group => {
+        const active = group.querySelectorAll('.rating-dot.active').length;
+        ratings[group.dataset.rating] = active;
+      });
+      const entry = {
+        student_id: PROFILE.id,
+        module_number: PROFILE.current_module,
+        day_number: PROFILE.current_day,
+        body: journalText ? journalText.value : '',
+        observation: obsInput ? obsInput.value : '',
+        ratings: ratings,
+        submitted: CURRENT_ENTRY ? CURRENT_ENTRY.submitted : false
+      };
+      if (CURRENT_ENTRY?.id) entry.id = CURRENT_ENTRY.id;
+      CURRENT_ENTRY = await Sanctuarys.upsertJournalEntry(entry);
+    }, 600);
+  }
+
+  // Save button (mark as submitted)
+  const saveBtn = document.getElementById('saveJournal');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      autoSaveJournal();
+      await new Promise(r => setTimeout(r, 700));
+      if (CURRENT_ENTRY?.id) {
+        await Sanctuarys.submitJournalEntry(CURRENT_ENTRY.id);
+        showToast(`Journal du jour ${PROFILE.current_day} envoyé à Princesse ✦`);
+      } else {
+        showToast('Écris quelque chose avant d\'envoyer');
+      }
+    });
+  }
+
+  // ============ NOTES ============
+  const notesGrid = document.getElementById('notesGrid');
+  const notesCount = document.getElementById('notesCount');
+
+  async function loadNotes() {
+    NOTES_CACHE = await Sanctuarys.listNotes(PROFILE.id);
+    renderNotes();
+  }
+
+  function renderNotes() {
+    if (!notesGrid) return;
+    notesGrid.innerHTML = '';
+    NOTES_CACHE.forEach(n => {
+      const card = document.createElement('div');
+      card.className = 'note-card';
+      card.innerHTML = `
+        <div class="note-date">${Sanctuarys.formatDateTime(n.created_at)}</div>
+        <h4>${escapeHTML(n.title || 'Note')}</h4>
+        <p>${escapeHTML(n.body)}</p>
+      `;
+      notesGrid.appendChild(card);
+    });
+    const empty = document.createElement('div');
+    empty.className = 'note-card note-empty';
+    empty.innerHTML = '<span style="font-size: 32px; color: var(--terracotta);">+</span><span>Ajouter une note</span>';
+    empty.addEventListener('click', addNote);
+    notesGrid.appendChild(empty);
+    if (notesCount) notesCount.textContent = NOTES_CACHE.length;
+  }
+
+  async function addNote() {
+    const title = prompt('Titre de ta note (optionnel)') || 'Note du jour';
+    if (title === null) return;
+    const body = prompt('Que veux-tu noter ?');
+    if (!body) return;
+    const newNote = await Sanctuarys.createNote(PROFILE.id, title, body);
+    if (newNote) {
+      NOTES_CACHE.unshift(newNote);
+      renderNotes();
+      showToast('Note enregistrée ✦');
+    }
+  }
+
+  const newNoteBtn = document.getElementById('newNoteBtn');
+  if (newNoteBtn) newNoteBtn.addEventListener('click', addNote);
+
+  // ============ MESSAGES ============
+  const messageThread = document.getElementById('messageThread');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  async function loadMessages() {
+    if (!ADMIN) return;
+    messageThread.innerHTML = '';
+    const msgs = await Sanctuarys.listMessages(PROFILE.id, ADMIN.id);
+    msgs.forEach(m => renderMessage(m));
+    messageThread.scrollTop = messageThread.scrollHeight;
+  }
+
+  function renderMessage(m) {
+    const isMe = m.from_id === PROFILE.id;
+    const div = document.createElement('div');
+    div.className = 'msg ' + (isMe ? 'from-student' : 'from-formatrice');
+    const who = isMe ? 'Toi' : (ADMIN?.prenom || 'Princesse');
+    div.innerHTML = `<div class="msg-meta">${who} · ${Sanctuarys.formatRelative(m.created_at)}</div><p>${escapeHTML(m.content)}</p>`;
+    messageThread.appendChild(div);
+  }
+
+  async function sendMessage() {
+    if (!ADMIN) return;
+    const text = messageInput.value.trim();
+    if (!text) return;
+    const msg = await Sanctuarys.sendMessage(PROFILE.id, ADMIN.id, text);
+    if (msg) {
+      renderMessage(msg);
+      messageInput.value = '';
+      messageThread.scrollTop = messageThread.scrollHeight;
+      showToast('Message envoyé à Princesse');
+    }
+  }
+  if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+  if (messageInput) {
+    messageInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  }
+
+  async function setupMessagesRealtime() {
+    await Sanctuarys.subscribeToMessages(PROFILE.id, (msg) => {
+      renderMessage(msg);
+      messageThread.scrollTop = messageThread.scrollHeight;
+      // Badge
+      const badge = document.querySelector('.nav-item[data-panel="messages"] .badge');
+      if (badge && !document.getElementById('panel-messages').classList.contains('active')) {
+        const current = parseInt(badge.textContent) || 0;
+        badge.textContent = current + 1;
+      }
+      showToast('Nouveau message de Princesse ✦');
+    });
+  }
+
+  async function markMessagesRead() {
+    if (ADMIN && PROFILE) {
+      await Sanctuarys.markMessagesRead(PROFILE.id, ADMIN.id);
+      const badge = document.querySelector('.nav-item[data-panel="messages"] .badge');
+      if (badge) badge.textContent = '';
+    }
+  }
+
+  // ============ RESOURCES TABS ============
+  document.querySelectorAll('.resource-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.tab;
+      document.querySelectorAll('.resource-card').forEach(card => {
+        if (filter === 'all') card.style.display = '';
+        else if (filter === 'locked') card.style.display = 'none';
+        else card.style.display = card.dataset.mod === filter ? '' : 'none';
+      });
+    });
+  });
+
+  // ============ HELPERS ============
+  function escapeHTML(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+</script>
+
+</body>
+</html>

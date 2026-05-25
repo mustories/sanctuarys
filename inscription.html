@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANCTUARY — Formation V-Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --beige: #ECDCC2;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --rose: #D4A89A;
+    --rose-pale: #E8C5B6;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { background: var(--blanc); }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--blanc);
+    color: var(--marron-deep);
+    line-height: 1.65;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 100;
+    opacity: 0.06; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--terracotta-deep);
+    pointer-events: none; z-index: 1000;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-trail {
+    position: fixed; width: 44px; height: 44px;
+    border: 1px solid var(--or); border-radius: 50%;
+    pointer-events: none; z-index: 999;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+    transition: width 0.4s, height 0.4s, opacity 0.4s, background 0.3s;
+  }
+  body.cursor-hover .cursor-trail { width: 80px; height: 80px; background: rgba(184, 137, 90, 0.1); border-color: var(--terracotta); }
+
+  h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    padding: 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background: rgba(250, 245, 236, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+    transition: padding 0.4s;
+  }
+  nav.scrolled { padding: 16px 40px; }
+
+  .nav-left { display: flex; align-items: center; gap: 30px; }
+  .nav-right { display: flex; align-items: center; gap: 30px; justify-self: end; }
+
+  .logo {
+    font-family: 'Italiana', serif;
+    font-size: 18px;
+    letter-spacing: 8px;
+    color: var(--marron-deep);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark { width: 22px; height: 22px; fill: var(--terracotta); }
+
+  .nav-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase; opacity: 0.75;
+  }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; justify-self: center; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--marron-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.4s; opacity: 0.85;
+    cursor: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-links a .idx { color: var(--terracotta); opacity: 0.7; font-size: 9px; }
+  .nav-links a:hover, .nav-links a.active { color: var(--terracotta-deep); }
+  .nav-links a.active { padding-bottom: 6px; border-bottom: 1px solid var(--terracotta-deep); }
+
+  .nav-cta {
+    padding: 11px 22px; background: transparent;
+    color: var(--marron-deep); text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative; overflow: hidden;
+    cursor: none;
+  }
+  .nav-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--terracotta);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .nav-cta span { position: relative; z-index: 2; display: inline-flex; gap: 8px; align-items: center; }
+  .nav-cta:hover { color: var(--blanc); }
+  .nav-cta:hover::before { transform: translateY(0); }
+
+  /* HERO */
+  .page-hero {
+    padding: 180px 40px 120px;
+    text-align: center;
+    background: var(--blanc);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-hero-inner { position: relative; z-index: 2; max-width: 1300px; margin: 0 auto; }
+
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 60px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .breadcrumb::before { content: ''; width: 40px; height: 1px; background: var(--terracotta-deep); }
+
+  .page-hero h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(64px, 9vw, 156px);
+    line-height: 0.9;
+    color: var(--marron-deep);
+    margin-bottom: 40px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .page-hero h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    font-weight: 300;
+    display: block;
+  }
+
+  .page-hero p {
+    font-size: 19px;
+    color: var(--marron);
+    max-width: 760px;
+    margin: 0 auto 60px;
+    line-height: 1.9;
+  }
+
+  .meta-pills {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 60px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    padding: 12px 24px;
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    background: var(--blanc-deep);
+  }
+
+  /* SECTION HEADER */
+  .section {
+    padding: 140px 40px;
+    position: relative;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-bottom: 120px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-num::before { content: ''; width: 30px; height: 1px; background: var(--terracotta-deep); }
+
+  .section-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 5.5vw, 92px);
+    line-height: 0.92;
+    color: var(--marron-deep);
+    font-weight: 400;
+  }
+  .section-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .section-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    line-height: 2;
+    margin-top: 14px;
+  }
+  .section-info strong { color: var(--terracotta-deep); font-weight: 400; display: block; margin-bottom: 4px; font-size: 9px; }
+  .section-info .info-row { padding-bottom: 16px; border-bottom: 1px solid var(--line-soft); margin-bottom: 16px; }
+  .section-info .info-row:last-child { border-bottom: none; }
+
+  /* MODULES DETAIL */
+  .modules-detail { background: var(--blanc); padding-top: 140px; }
+
+  .module-detail {
+    max-width: 1340px;
+    margin: 0 auto 140px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .module-detail:nth-child(even) { direction: rtl; }
+  .module-detail:nth-child(even) > * { direction: ltr; }
+
+  .module-visual {
+    height: 600px;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 40px 100px rgba(42, 24, 16, 0.18);
+  }
+  .module-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(15, 8, 5, 0.5));
+  }
+  .module-visual .badge {
+    position: absolute;
+    top: 24px; left: 24px;
+    padding: 10px 18px;
+    background: rgba(250, 245, 236, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--terracotta-deep);
+    z-index: 2;
+  }
+
+  .module-content { padding: 0 20px; }
+
+  .module-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 140px;
+    color: var(--terracotta);
+    line-height: 0.82;
+    opacity: 0.88;
+    margin-bottom: 32px;
+  }
+
+  .module-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .module-content h3 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(40px, 4.6vw, 64px);
+    color: var(--marron-deep);
+    line-height: 0.95;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  .module-content p {
+    color: var(--marron);
+    font-size: 16px;
+    line-height: 1.95;
+    margin-bottom: 32px;
+  }
+
+  .module-features {
+    list-style: none;
+    margin-top: 32px;
+  }
+  .module-features li {
+    padding: 14px 0;
+    color: var(--marron);
+    font-size: 14px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .module-features li::before {
+    content: '✦';
+    color: var(--terracotta);
+    font-size: 11px;
+    margin-top: 5px;
+  }
+
+  /* PRICING */
+  .pricing {
+    padding: 180px 40px;
+    background: var(--blanc-deep);
+    text-align: center;
+    position: relative;
+  }
+  .pricing-inner { max-width: 1300px; margin: 0 auto; }
+
+  .pricing-card {
+    max-width: 760px;
+    margin: 80px auto 0;
+    background: var(--blanc);
+    border: 1px solid var(--terracotta);
+    padding: 80px 60px;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(42, 24, 16, 0.12);
+  }
+
+  .pricing-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .pricing-card h3 {
+    font-family: 'Italiana', serif;
+    font-size: 48px;
+    color: var(--marron-deep);
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+
+  .price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 112px;
+    color: var(--terracotta-deep);
+    line-height: 1;
+    margin-bottom: 8px;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .price-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    margin-bottom: 48px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 56px;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .pricing-features li {
+    padding: 16px 0;
+    color: var(--marron-deep);
+    font-size: 15px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .pricing-features li::before { content: '✦'; color: var(--terracotta-deep); margin-top: 4px; }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 20px 48px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    border: 1px solid var(--terracotta);
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--marron-deep);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .btn-primary span { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 12px; }
+  .btn-primary:hover::before { transform: translateY(0); }
+  .btn-primary:hover { border-color: var(--marron-deep); }
+
+  /* INSCRIPTION FORM */
+  .form-section {
+    padding: 180px 40px;
+    background: var(--marron-noir);
+    position: relative;
+    color: var(--blanc);
+  }
+
+  .form-container {
+    max-width: 820px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(74, 48, 32, 0.4), rgba(15, 8, 5, 0.6));
+    padding: 90px 80px;
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    position: relative;
+  }
+
+  .form-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--terracotta), transparent);
+  }
+
+  .form-header { text-align: center; margin-bottom: 60px; }
+  .form-header .breadcrumb { color: var(--or-pale); }
+  .form-header .breadcrumb::before { background: var(--or-pale); }
+  .form-header h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(40px, 5vw, 64px);
+    color: var(--blanc);
+    margin-bottom: 20px;
+    line-height: 1.05;
+  }
+  .form-header h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-pale);
+  }
+  .form-header p { color: var(--rose-pale); font-size: 16px; line-height: 1.85; }
+
+  .form-group { margin-bottom: 32px; }
+
+  .form-group label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--or-pale);
+    margin-bottom: 14px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 18px 20px;
+    background: transparent;
+    border: 1px solid rgba(212, 160, 76, 0.25);
+    color: var(--blanc);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    transition: border-color 0.3s, background 0.3s;
+    border-radius: 0;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--terracotta-pale);
+    background: rgba(232, 176, 153, 0.05);
+  }
+  .form-group textarea { min-height: 140px; resize: vertical; }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .form-grid-2 .form-group { margin-bottom: 0; }
+
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin: 32px 0 40px;
+    color: var(--rose-pale);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .checkbox-group input { margin-top: 4px; accent-color: var(--terracotta); }
+  .checkbox-group a { color: var(--or-pale); text-decoration: underline; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 22px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: 1px solid var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: none;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--marron-noir);
+    transform: translateY(101%);
+    transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .btn-submit span { position: relative; z-index: 2; }
+  .btn-submit:hover::before { transform: translateY(0); }
+  .btn-submit:hover { border-color: var(--or-pale); }
+
+  .form-success {
+    display: none;
+    text-align: center;
+    padding: 60px 30px;
+  }
+  .form-success.show { display: block; }
+  .form-success svg { width: 64px; height: 64px; margin-bottom: 30px; }
+  .form-success h3 {
+    font-family: 'Italiana', serif;
+    font-size: 42px;
+    color: var(--terracotta-pale);
+    margin-bottom: 18px;
+  }
+  .form-success p { color: var(--rose-pale); font-size: 16px; line-height: 1.85; }
+
+  /* FOOTER */
+  footer {
+    background: var(--marron-noir);
+    color: var(--rose-pale);
+    padding: 80px 40px 40px;
+  }
+  .footer-grid {
+    max-width: 1700px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.15);
+  }
+  .footer-brand .logo { margin-bottom: 24px; color: var(--blanc); }
+  .footer-brand .logo svg { fill: var(--terracotta-pale); }
+  .footer-brand p { color: var(--rose-pale); font-size: 13px; line-height: 1.85; max-width: 380px; opacity: 0.85; }
+  .footer-col h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--or-pale); margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a { color: var(--rose-pale); text-decoration: none; font-size: 13px; transition: color 0.3s; cursor: none; }
+  .footer-col a:hover { color: var(--terracotta-pale); }
+  .footer-bottom {
+    max-width: 1700px;
+    margin: 32px auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--rose-pale); text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.2s, transform 1.2s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    body { cursor: default; }
+    .cursor, .cursor-trail { display: none; }
+    nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
+    .nav-links { display: none; }
+    .page-hero, .pricing, .form-section { padding: 100px 24px; }
+    .section { padding: 80px 24px; }
+    .section-header { grid-template-columns: 1fr; gap: 30px; margin-bottom: 60px; }
+    .module-detail { grid-template-columns: 1fr; gap: 40px; }
+    .module-detail:nth-child(even) { direction: ltr; }
+    .module-visual { height: 420px; }
+    .module-content { padding: 0; }
+    .pricing-card { padding: 60px 30px; }
+    .price { font-size: 80px; }
+    .form-container { padding: 60px 30px; }
+    .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
+    .form-grid-2 .form-group { margin-bottom: 32px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-left">
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 28 28"><path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/><circle cx="14" cy="14" r="3" fill="#FAF5EC"/></svg>
+      Sanctuarys
+    </a>
+    <div class="nav-meta">Édition 2026</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html"><span class="idx">00</span> Accueil</a></li>
+    <li><a href="inscription.html" class="active"><span class="idx">01</span> Formation</a></li>
+    <li><a href="espace-eleve.html"><span class="idx">02</span> Espace Élève</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-meta">Promotion · Mai 26</div>
+    <a href="#inscription" class="nav-cta"><span>Candidater →</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">Sanctuarys / Formation</div>
+    <h1>Six modules,<br><em>une renaissance.</em></h1>
+    <p>La formation V-Care fait de vous une facilitatrice irréprochable. Vous vivez chaque protocole dans votre corps, vous l'intégrez dans le silence du journaling, puis vous le maîtrisez par la théorie. Sanctuarys vous prépare à recevoir, à transmettre, à être choisie.</p>
+    <div class="meta-pills">
+      <div class="pill">6 Modules</div>
+      <div class="pill">3 mois de parcours</div>
+      <div class="pill">Présentiel + Distanciel</div>
+      <div class="pill">Certification Sanctuarys</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES DETAIL -->
+<section class="section modules-detail">
+  <div class="section-header reveal">
+    <div class="section-num">01 / Parcours</div>
+    <h2 class="section-title">Le voyage,<br><em>en détail.</em></h2>
+    <div class="section-info">
+      <div class="info-row"><strong>Total</strong>6 modules</div>
+      <div class="info-row"><strong>Durée</strong>3 mois</div>
+      <div class="info-row"><strong>Promotion</strong>Mai 2026</div>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/2c/74/5c/2c745c0cff274acc0603706903fcd940.jpg');">
+      <div class="badge">M / 01 · Présentiel</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">01</div>
+      <span class="module-label">Une demi-journée · Eau</span>
+      <h3>Je vois, je fais, je reçois</h3>
+      <p>Le premier seuil. Vous découvrez le bain de vapeur vaginal à l'eau au sein d'un cocon dédié, accompagnée par votre formatrice. Vous observez, vous appliquez, vous recevez. Le geste sacré entre dans votre corps.</p>
+      <ul class="module-features">
+        <li>Accueil sacré et préparation rituelle du protocole</li>
+        <li>Démonstration complète par la formatrice référente</li>
+        <li>Pratique guidée puis réception du soin</li>
+        <li>Sélection des plantes selon votre signature corporelle</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/3f/dc/2d/3fdc2d1511ac9366a1eb28119e0c158e.jpg');">
+      <div class="badge">M / 02 · 14 jours</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">02</div>
+      <span class="module-label">Auto-évaluation</span>
+      <h3>Autonomie et journaling</h3>
+      <p>Le silence après le geste. Pendant quatorze jours, vous tenez un journal quotidien guidé par notre méthode d'évaluation Sanctuarys. Vous observez les transformations subtiles que le soin provoque dans votre corps, vos émotions, vos rêves, votre énergie.</p>
+      <ul class="module-features">
+        <li>Carnet de journaling Sanctuarys remis en début de module</li>
+        <li>Protocole d'auto-évaluation en 7 dimensions</li>
+        <li>Bilan personnalisé en fin de cycle</li>
+        <li>Premier ancrage de votre signature de facilitatrice</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/30/eb/3c/30eb3cdb14a9358084a7186cb7b5219c.jpg');">
+      <div class="badge">M / 03 · Présentiel</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">03</div>
+      <span class="module-label">Une demi-journée · Encens</span>
+      <h3>Le bain à l'encens</h3>
+      <p>Un protocole plus subtil, plus mystique. Le bain de vapeur vaginal à l'encens vous initie à une dimension purement énergétique du soin. Les résines sacrées, la chaleur sèche, la fumée odorante composent un rituel d'une profondeur rare.</p>
+      <ul class="module-features">
+        <li>Sélection et préparation des résines sacrées</li>
+        <li>Maîtrise du braseur et de la chaleur sèche</li>
+        <li>Pédagogie immersive je vois, je fais, je reçois</li>
+        <li>Distinction des indications eau vs encens</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/51/77/1a/51771a3ab0c3149c7727212a5229eae4.jpg');">
+      <div class="badge">M / 04 · 3 jours</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">04</div>
+      <span class="module-label">Intégration</span>
+      <h3>Intégration à l'encens</h3>
+      <p>Trois nuits, trois aubes, trois journaux. L'intégration courte et intense du protocole encens vous fait mesurer la singularité de ce soin face au bain à l'eau. Vous affinez votre ressenti, vous comparez, vous distinguez.</p>
+      <ul class="module-features">
+        <li>Carnet d'intégration encens en trois cycles</li>
+        <li>Grille comparative eau vs encens</li>
+        <li>Identification de vos affinités personnelles</li>
+        <li>Premières intuitions de votre signature thérapeutique</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/61/95/4f/61954fd2d6603a343784c2d105fa0c8a.jpg');">
+      <div class="badge">M / 05 · Théorie</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">05</div>
+      <span class="module-label">Formation complète</span>
+      <h3>La théorie sacrée</h3>
+      <p>Le coeur conceptuel de la formation. Vous maîtrisez les fondements théoriques du V-Care, indications, contre-indications, anatomie féminine subtile, herbes et résines, sécurité, éthique, posture. Le savoir s'inscrit sur la chair déjà préparée.</p>
+      <ul class="module-features">
+        <li>Anatomie féminine subtile et physiologique</li>
+        <li>Pharmacopée des plantes et résines</li>
+        <li>Cycles, contre-indications, sécurité absolue</li>
+        <li>Éthique de la facilitatrice Sanctuarys</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="module-detail reveal">
+    <div class="module-visual" style="background-image: url('https://i.pinimg.com/736x/0d/2a/d1/0d2ad15585dee35b8da70ab4dc154551.jpg');">
+      <div class="badge">M / 06 · Individuel</div>
+    </div>
+    <div class="module-content">
+      <div class="module-num">06</div>
+      <span class="module-label">3 heures · Coaching</span>
+      <h3>Coaching installation</h3>
+      <p>Le seuil de sortie. Vous quittez la formation prête à recevoir vos premières clientes. Un coaching stratégique en tête à tête vous accompagne dans la construction de votre offre, votre tarification, votre posture publique, votre première communication.</p>
+      <ul class="module-features">
+        <li>Définition de votre offre signature Sanctuarys</li>
+        <li>Stratégie de tarification éthique et juste</li>
+        <li>Posture publique et communication incarnée</li>
+        <li>Plan d'action 90 jours pour vos premières clientes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-header reveal" style="border-bottom: none; margin-bottom: 40px;">
+      <div class="section-num">02 / Investissement</div>
+      <h2 class="section-title">Une formation,<br><em>une vocation entière.</em></h2>
+      <div class="section-info">
+        <div class="info-row"><strong>Promotion</strong>Mai 2026</div>
+        <div class="info-row"><strong>Places</strong>12 maximum</div>
+      </div>
+    </div>
+
+    <div class="pricing-card reveal">
+      <span class="pricing-label">Cycle V-Care complet</span>
+      <h3>Formation Facilitatrice Sanctuarys</h3>
+      <div class="price">2 400€</div>
+      <div class="price-detail">ou 4 mensualités de 620€</div>
+      <ul class="pricing-features">
+        <li>Les 6 modules complets, en présentiel et distanciel</li>
+        <li>Tous les supports Sanctuarys (carnets, protocoles, herbier)</li>
+        <li>Coaching stratégique individuel de 3 heures</li>
+        <li>Certification Facilitatrice Sanctuarys V-Care</li>
+        <li>Accès à vie à l'espace élève en ligne</li>
+        <li>Intégration au réseau des facilitatrices Sanctuarys</li>
+      </ul>
+      <a href="#inscription" class="btn-primary" data-cursor-hover><span>Réserver ma place →</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- INSCRIPTION FORM -->
+<section class="form-section" id="inscription">
+  <div class="form-container reveal">
+    <div class="form-header">
+      <div class="breadcrumb">03 / Candidature</div>
+      <h2>Franchir<br><em>le seuil.</em></h2>
+      <p>Remplissez ce formulaire pour recevoir le dossier complet, les prochaines dates et un entretien individuel avec une formatrice Sanctuarys.</p>
+    </div>
+
+    <form id="inscriptionForm">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" required>
+        </div>
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="telephone">Téléphone</label>
+          <input type="tel" id="telephone" name="telephone" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ville">Ville de résidence</label>
+        <input type="text" id="ville" name="ville">
+      </div>
+
+      <div class="form-group">
+        <label for="parcours">Parcours actuel</label>
+        <select id="parcours" name="parcours">
+          <option value="">Sélectionnez</option>
+          <option value="praticienne">Praticienne déjà installée</option>
+          <option value="reconversion">En reconversion professionnelle</option>
+          <option value="formation">En cours de formation</option>
+          <option value="curieuse">Curieuse, en exploration</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="motivation">Pourquoi Sanctuarys, pourquoi maintenant ?</label>
+        <textarea id="motivation" name="motivation" placeholder="Partagez ce qui vous appelle..." required></textarea>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="rgpd" name="rgpd" required>
+        <label for="rgpd">J'accepte que mes données soient utilisées par Sanctuarys pour me recontacter dans le cadre de cette demande.</label>
+      </div>
+
+      <button type="submit" class="btn-submit" data-cursor-hover><span>Envoyer ma candidature →</span></button>
+    </form>
+
+    <div class="form-success" id="formSuccess">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#D4A04C" stroke-width="1.5"/>
+        <path d="M20 33 L 28 41 L 44 23" stroke="#E8B099" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3>Votre candidature est reçue.</h3>
+      <p>Une formatrice Sanctuarys vous contactera sous 48h pour un entretien d'orientation. Bienvenue dans le seuil.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-mark" viewBox="0 0 28 28"><path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/><circle cx="14" cy="14" r="3" fill="#0F0805"/></svg>
+        Sanctuarys
+      </a>
+      <p>École du sacré féminin contemporain. Formation des facilitatrices V-Care depuis 2021. Édition 2026, sixième promotion.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Navigation</h5>
+      <ul>
+        <li><a href="index.html" data-cursor-hover>Accueil</a></li>
+        <li><a href="inscription.html" data-cursor-hover>La Formation</a></li>
+        <li><a href="espace-eleve.html" data-cursor-hover>Espace Élève</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Formation</h5>
+      <ul>
+        <li><a href="#" data-cursor-hover>Les six modules</a></li>
+        <li><a href="#pricing" data-cursor-hover>Investissement</a></li>
+        <li><a href="#inscription" data-cursor-hover>Candidater</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="mailto:info@sanctuarys.me" data-cursor-hover>info@sanctuarys.me</a></li>
+        <li><a data-cursor-hover>Sur rendez-vous</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Sanctuarys · École du sacré féminin</span>
+    <span>Conçu avec présence à Paris</span>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx = window.innerWidth/2, my = window.innerHeight/2, tx = mx, ty = my;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  function animCursor(){
+    tx += (mx - tx) * 0.18;
+    ty += (my - ty) * 0.18;
+    trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('[data-cursor-hover]').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('mainNav');
+    if (window.scrollY > 50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const form = document.getElementById('inscriptionForm');
+  const success = document.getElementById('formSuccess');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    form.style.display = 'none';
+    success.classList.add('show');
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+</script>
+
+</body>
+</html>

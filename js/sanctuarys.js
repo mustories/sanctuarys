@@ -1,0 +1,285 @@
+// =====================================================
+// SANCTUARYS · Client Supabase partagé
+// =====================================================
+// Charge ce fichier depuis chaque page avant ton script :
+// <script src="js/sanctuarys.js"></script>
+// =====================================================
+
+// Config (à modifier ici si tu changes de projet Supabase)
+const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t';
+
+// Import Supabase depuis le CDN ESM
+const supabasePromise = import('https://esm.sh/@supabase/supabase-js@2').then(({ createClient }) => {
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+});
+
+// Exposer le client dans window pour usage global
+window.Sanctuarys = {
+  client: null,
+  ready: false,
+  readyCallbacks: [],
+
+  async init() {
+    if (this.ready) return this.client;
+    this.client = await supabasePromise;
+    this.ready = true;
+    this.readyCallbacks.forEach(cb => cb(this.client));
+    this.readyCallbacks = [];
+    return this.client;
+  },
+
+  onReady(cb) {
+    if (this.ready) cb(this.client);
+    else this.readyCallbacks.push(cb);
+  },
+
+  // === AUTH ===
+  async signIn(email, password) {
+    const supa = await this.init();
+    const { data, error } = await supa.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
+  },
+
+  async signOut() {
+    const supa = await this.init();
+    await supa.auth.signOut();
+  },
+
+  async getSession() {
+    const supa = await this.init();
+    const { data } = await supa.auth.getSession();
+    return data.session;
+  },
+
+  async getProfile() {
+    const supa = await this.init();
+    const session = await this.getSession();
+    if (!session) return null;
+    const { data, error } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+    if (error) console.error('getProfile error', error);
+    return data;
+  },
+
+  // === STUDENT DATA ===
+  async getTodayPrompt(moduleNumber, dayNumber) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('daily_prompts')
+      .select('*')
+      .eq('module_number', moduleNumber)
+      .eq('day_number', dayNumber)
+      .maybeSingle();
+    return data;
+  },
+
+  async getJournalEntry(studentId, moduleNumber, dayNumber) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('journal_entries')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('module_number', moduleNumber)
+      .eq('day_number', dayNumber)
+      .maybeSingle();
+    return data;
+  },
+
+  async upsertJournalEntry(entry) {
+    const supa = await this.init();
+    const { data, error } = await supa
+      .from('journal_entries')
+      .upsert(entry, { onConflict: 'student_id,module_number,day_number' })
+      .select()
+      .single();
+    if (error) console.error('upsertJournalEntry error', error);
+    return data;
+  },
+
+  async submitJournalEntry(id) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('journal_entries')
+      .update({ submitted: true })
+      .eq('id', id)
+      .select()
+      .single();
+    return data;
+  },
+
+  async listJournalEntries(studentId) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('journal_entries')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('module_number', { ascending: true })
+      .order('day_number', { ascending: true });
+    return data || [];
+  },
+
+  async listNotes(studentId) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('notes')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('created_at', { ascending: false });
+    return data || [];
+  },
+
+  async createNote(studentId, title, body) {
+    const supa = await this.init();
+    const { data, error } = await supa
+      .from('notes')
+      .insert({ student_id: studentId, title, body })
+      .select()
+      .single();
+    if (error) console.error('createNote error', error);
+    return data;
+  },
+
+  async deleteNote(noteId) {
+    const supa = await this.init();
+    await supa.from('notes').delete().eq('id', noteId);
+  },
+
+  // === MESSAGES ===
+  async listMessages(myId, otherId) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('messages')
+      .select('*')
+      .or(`and(from_id.eq.${myId},to_id.eq.${otherId}),and(from_id.eq.${otherId},to_id.eq.${myId})`)
+      .order('created_at', { ascending: true });
+    return data || [];
+  },
+
+  async sendMessage(fromId, toId, content) {
+    const supa = await this.init();
+    const { data, error } = await supa
+      .from('messages')
+      .insert({ from_id: fromId, to_id: toId, content })
+      .select()
+      .single();
+    if (error) console.error('sendMessage error', error);
+    return data;
+  },
+
+  async markMessagesRead(toId, fromId) {
+    const supa = await this.init();
+    await supa
+      .from('messages')
+      .update({ read: true })
+      .eq('to_id', toId)
+      .eq('from_id', fromId)
+      .eq('read', false);
+  },
+
+  // === REALTIME ===
+  async subscribeToMessages(myId, callback) {
+    const supa = await this.init();
+    const channel = supa
+      .channel(`messages_${myId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `to_id=eq.${myId}`
+      }, payload => callback(payload.new))
+      .subscribe();
+    return channel;
+  },
+
+  // === MODULE PROGRESS ===
+  async getModuleProgress(studentId) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('module_progress')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('module_number');
+    return data || [];
+  },
+
+  // === ADMIN ===
+  async getAdminProfile() {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('role', 'admin')
+      .limit(1)
+      .maybeSingle();
+    return data;
+  },
+
+  async listStudents() {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('role', 'student')
+      .order('created_at', { ascending: false });
+    return data || [];
+  },
+
+  async getStudent(id) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+    return data;
+  },
+
+  async updateStudent(id, updates) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    return data;
+  },
+
+  // === UTILS ===
+  formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  },
+
+  formatDateTime(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + ' · ' +
+           d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  },
+
+  formatRelative(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - d;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffH = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffH / 24);
+
+    if (diffMin < 1) return 'à l\'instant';
+    if (diffMin < 60) return `il y a ${diffMin} min`;
+    if (diffH < 24) return `il y a ${diffH}h`;
+    if (diffDays < 7) return `il y a ${diffDays}j`;
+    return this.formatDate(dateStr);
+  },
+
+  initialOf(name) {
+    return (name || '?').charAt(0).toUpperCase();
+  }
+};
