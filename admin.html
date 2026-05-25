@@ -1179,6 +1179,25 @@
   </div>
 </div>
 
+<!-- ============ FIRST PASSWORD GATE (invite / recovery) ============ -->
+<div class="login-gate" id="firstPwdGate" style="display: none;">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <div class="login-greeting" id="firstPwdGreeting">Bienvenue dans le sanctuaire</div>
+    <h1 class="login-title">Choisis ton<br><em>mot de passe.</em></h1>
+    <div class="login-sub">Première étape avant d'entrer dans ton espace</div>
+
+    <form class="login-form" id="firstPwdForm">
+      <input type="password" class="login-input" id="firstPwd1" placeholder="Nouveau mot de passe" autocomplete="new-password" minlength="8" required>
+      <input type="password" class="login-input" id="firstPwd2" placeholder="Confirme le mot de passe" autocomplete="new-password" minlength="8" required>
+      <button type="submit" class="login-btn"><span>Activer mon accès ✦</span></button>
+      <div class="login-error" id="firstPwdError"></div>
+    </form>
+
+    <div class="login-footer">Sanctuarys · au moins 8 caractères</div>
+  </div>
+</div>
+
 <div class="app">
 
   <!-- ============ SIDEBAR ============ -->
@@ -1889,6 +1908,22 @@
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
+  // ============ DETECTION INVITATION / RECUPERATION ============
+  // On capture le hash AVANT que le SDK Supabase le nettoie
+  const INITIAL_HASH = window.location.hash || '';
+  const INITIAL_HASH_PARAMS = new URLSearchParams(INITIAL_HASH.startsWith('#') ? INITIAL_HASH.substring(1) : INITIAL_HASH);
+  const AUTH_FLOW_TYPE = INITIAL_HASH_PARAMS.get('type') || '';
+  const IS_FIRST_TIME = ['invite', 'recovery', 'magiclink', 'signup'].includes(AUTH_FLOW_TYPE);
+
+  function showFirstPwdGate() {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('firstPwdGate').style.display = 'flex';
+    setTimeout(() => document.getElementById('firstPwd1').focus(), 100);
+  }
+  function hideFirstPwdGate() {
+    document.getElementById('firstPwdGate').style.display = 'none';
+  }
+
   // ============ LOGIN ============
   document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -1906,10 +1941,48 @@
     }
   });
 
-  Sanctuarys.onReady(async () => {
+  // ============ FIRST PASSWORD SETUP ============
+  document.getElementById('firstPwdForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const pwd1 = document.getElementById('firstPwd1').value;
+    const pwd2 = document.getElementById('firstPwd2').value;
+    const err = document.getElementById('firstPwdError');
+    err.classList.remove('show');
+    if (pwd1 !== pwd2) {
+      err.textContent = 'Les deux mots de passe ne correspondent pas.';
+      err.classList.add('show');
+      return;
+    }
+    if (pwd1.length < 8) {
+      err.textContent = 'Au moins 8 caractères.';
+      err.classList.add('show');
+      return;
+    }
+    try {
+      await Sanctuarys.updatePassword(pwd1);
+      // Nettoie l'URL pour retirer le token
+      history.replaceState(null, '', window.location.pathname);
+      hideFirstPwdGate();
+      await bootstrap();
+    } catch (ex) {
+      err.textContent = ex.message || 'Erreur d\'activation';
+      err.classList.add('show');
+    }
+  });
+
+  Sanctuarys.onReady(async (supa) => {
+    // Ecoute les évènements PASSWORD_RECOVERY au cas où
+    supa.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') showFirstPwdGate();
+    });
     const session = await Sanctuarys.getSession();
-    if (session) await bootstrap();
-    else document.getElementById('loginEmail').focus();
+    if (session && IS_FIRST_TIME) {
+      showFirstPwdGate();
+    } else if (session) {
+      await bootstrap();
+    } else {
+      document.getElementById('loginEmail').focus();
+    }
   });
   Sanctuarys.init();
 
