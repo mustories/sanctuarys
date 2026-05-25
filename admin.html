@@ -702,6 +702,91 @@
     justify-content: center;
   }
 
+  /* ============ MODAL CHANGE PASSWORD ============ */
+  .pwd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 15, 8, 0.78);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    backdrop-filter: blur(10px);
+  }
+  .pwd-overlay.show { display: flex; }
+  .pwd-modal {
+    background: var(--blanc);
+    max-width: 480px;
+    width: 100%;
+    border: 1px solid var(--line);
+    padding: 50px 50px;
+    position: relative;
+  }
+  .pwd-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 36px; height: 36px;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+  }
+  .pwd-close:hover { background: var(--marron-deep); color: var(--blanc); border-color: var(--marron-deep); }
+  .pwd-title { font-family: 'Italiana', serif; font-size: 32px; color: var(--marron-deep); margin-bottom: 10px; }
+  .pwd-title em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .pwd-sub { color: var(--marron-soft); margin-bottom: 28px; font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 17px; }
+  .pwd-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pwd-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    transition: border-color 0.3s;
+  }
+  .pwd-input:focus { outline: none; border-color: var(--terracotta); }
+  .pwd-error {
+    color: var(--terracotta-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 14px;
+    min-height: 20px;
+  }
+  .pwd-submit {
+    width: 100%;
+    padding: 18px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: 1px solid var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pwd-submit::before { content: ''; position: absolute; inset: 0; background: var(--marron-deep); transform: translateY(101%); transition: transform 0.5s; }
+  .pwd-submit span { position: relative; z-index: 2; }
+  .pwd-submit:hover::before { transform: translateY(0); }
+  .pwd-submit:hover { border-color: var(--marron-deep); }
+
   /* ============ LOGIN GATE ============ */
   .login-gate {
     position: fixed;
@@ -896,8 +981,8 @@
 
     <div class="sidebar-footer">
       <a href="index.html">Voir le site</a>
-      <a href="#">Paramètres</a>
-      <a href="#">Déconnexion</a>
+      <a href="#" id="changePasswordLink">Changer mon mot de passe</a>
+      <a href="#" id="logoutLink">Déconnexion</a>
     </div>
   </aside>
 
@@ -1268,6 +1353,23 @@
   </div>
 </div>
 
+<!-- MODAL · CHANGE PASSWORD -->
+<div class="pwd-overlay" id="pwdOverlay">
+  <div class="pwd-modal">
+    <button class="pwd-close" id="pwdClose" type="button">×</button>
+    <h2 class="pwd-title">Changer mon <em>mot de passe</em></h2>
+    <p class="pwd-sub">Choisis un nouveau mot de passe d'au moins 8 caractères.</p>
+    <form id="pwdForm" class="pwd-form">
+      <label class="pwd-label">Nouveau mot de passe</label>
+      <input type="password" class="pwd-input" id="pwdNew" minlength="8" placeholder="••••••••" required>
+      <label class="pwd-label" style="margin-top: 18px;">Confirme le nouveau mot de passe</label>
+      <input type="password" class="pwd-input" id="pwdConfirm" minlength="8" placeholder="••••••••" required>
+      <div class="pwd-error" id="pwdError"></div>
+      <button type="submit" class="pwd-submit"><span>Mettre à jour →</span></button>
+    </form>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-icon">✦</div>
@@ -1356,13 +1458,50 @@
   });
 
   // ============ LOGOUT ============
-  document.querySelectorAll('.sidebar-footer a').forEach(a => {
-    if (a.textContent.trim().toLowerCase().includes('déconnex')) {
-      a.addEventListener('click', async e => {
-        e.preventDefault();
-        await Sanctuarys.signOut();
-        location.reload();
-      });
+  document.getElementById('logoutLink').addEventListener('click', async e => {
+    e.preventDefault();
+    await Sanctuarys.signOut();
+    location.reload();
+  });
+
+  // ============ CHANGE PASSWORD ============
+  const pwdOverlay = document.getElementById('pwdOverlay');
+  const pwdForm = document.getElementById('pwdForm');
+  const pwdError = document.getElementById('pwdError');
+  const pwdNew = document.getElementById('pwdNew');
+  const pwdConfirm = document.getElementById('pwdConfirm');
+
+  document.getElementById('changePasswordLink').addEventListener('click', e => {
+    e.preventDefault();
+    pwdError.textContent = '';
+    pwdNew.value = '';
+    pwdConfirm.value = '';
+    pwdOverlay.classList.add('show');
+    setTimeout(() => pwdNew.focus(), 100);
+  });
+
+  document.getElementById('pwdClose').addEventListener('click', () => pwdOverlay.classList.remove('show'));
+  pwdOverlay.addEventListener('click', e => { if (e.target === pwdOverlay) pwdOverlay.classList.remove('show'); });
+
+  pwdForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    pwdError.textContent = '';
+    const newPwd = pwdNew.value;
+    const confirmPwd = pwdConfirm.value;
+    if (newPwd.length < 8) {
+      pwdError.textContent = 'Le mot de passe doit faire au moins 8 caractères.';
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      pwdError.textContent = 'Les deux mots de passe ne correspondent pas.';
+      return;
+    }
+    try {
+      await Sanctuarys.updatePassword(newPwd);
+      pwdOverlay.classList.remove('show');
+      showToast('Mot de passe mis à jour ✦');
+    } catch (err) {
+      pwdError.textContent = err.message || 'Une erreur est survenue.';
     }
   });
 

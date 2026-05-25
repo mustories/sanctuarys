@@ -49,6 +49,13 @@ window.Sanctuarys = {
     await supa.auth.signOut();
   },
 
+  async updatePassword(newPassword) {
+    const supa = await this.init();
+    const { data, error } = await supa.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return data;
+  },
+
   async getSession() {
     const supa = await this.init();
     const { data } = await supa.auth.getSession();

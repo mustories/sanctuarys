@@ -1365,6 +1365,120 @@
     flex-shrink: 0;
   }
 
+  /* ============ MODAL CHANGE PASSWORD ============ */
+  .pwd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 15, 8, 0.78);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    backdrop-filter: blur(10px);
+  }
+  .pwd-overlay.show { display: flex; }
+
+  .pwd-modal {
+    background: var(--blanc);
+    max-width: 480px;
+    width: 100%;
+    border: 1px solid var(--line);
+    padding: 50px 50px;
+    position: relative;
+  }
+
+  .pwd-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 36px; height: 36px;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+  }
+  .pwd-close:hover { background: var(--marron-deep); color: var(--blanc); border-color: var(--marron-deep); }
+
+  .pwd-title {
+    font-family: 'Italiana', serif;
+    font-size: 32px;
+    color: var(--marron-deep);
+    margin-bottom: 10px;
+  }
+  .pwd-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .pwd-sub {
+    color: var(--marron-soft);
+    font-size: 14px;
+    margin-bottom: 28px;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+  }
+
+  .pwd-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .pwd-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    transition: border-color 0.3s;
+  }
+  .pwd-input:focus { outline: none; border-color: var(--terracotta); }
+
+  .pwd-error {
+    color: var(--terracotta-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 14px;
+    min-height: 20px;
+  }
+
+  .pwd-submit {
+    width: 100%;
+    padding: 18px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: 1px solid var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pwd-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--marron-deep);
+    transform: translateY(101%);
+    transition: transform 0.5s;
+  }
+  .pwd-submit span { position: relative; z-index: 2; }
+  .pwd-submit:hover::before { transform: translateY(0); }
+  .pwd-submit:hover { border-color: var(--marron-deep); }
+
   /* ============ LOGIN GATE ============ */
   .login-gate {
     position: fixed;
@@ -1590,8 +1704,8 @@
     </a>
 
     <div class="sidebar-footer">
-      <a href="#">Paramètres</a>
-      <a href="index.html">Déconnexion</a>
+      <a href="#" id="changePasswordLink">Changer mon mot de passe</a>
+      <a href="#" id="logoutLink">Déconnexion</a>
     </div>
   </aside>
 
@@ -1661,9 +1775,9 @@
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="6"/></svg>
             Bibliothèque
           </div>
-          <h3>Revoir le protocole vapeur</h3>
-          <p>Vidéos pédagogiques, audios de guidance, herbier Sanctuarys. Revisite la transmission du module 01.</p>
-          <div class="tile-arrow">Accéder aux ressources →</div>
+          <h3>Mes ressources personnalisées</h3>
+          <p>Princesse y déposera tes ressources au fil du parcours : protocoles écrits, fiches plantes, audios de guidance.</p>
+          <div class="tile-arrow">Accéder à la bibliothèque →</div>
         </div>
 
         <div class="tile" onclick="openPanel('notes')">
@@ -1949,68 +2063,14 @@
         </div>
         <div class="panel-meta">
           <div class="meta-row"><strong>Module actuel</strong>02 · Autonomie</div>
-          <div class="meta-row"><strong>Total ressources</strong>4 disponibles</div>
+          <div class="meta-row"><strong>Ressources</strong>Bientôt disponibles</div>
         </div>
-      </div>
-
-      <div class="resources-tabs">
-        <button class="resource-tab active" data-tab="all">Toutes</button>
-        <button class="resource-tab" data-tab="01">Module 01</button>
-        <button class="resource-tab" data-tab="02">Module 02</button>
-        <button class="resource-tab" data-tab="locked">À venir</button>
       </div>
 
       <div class="resources-grid" id="resourcesGrid">
-        <div class="resource-card" data-mod="01">
-          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/2c/74/5c/2c745c0cff274acc0603706903fcd940.jpg');">
-            <div class="resource-type">Vidéo</div>
-            <div class="resource-duration">12 min</div>
-            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5 V 19 L 19 12 Z" fill="#FAF5EC"/></svg></div></div>
-          </div>
-          <div class="resource-body">
-            <div class="module-tag">Module 01 · Présentiel</div>
-            <h3>Le protocole vapeur à l'eau</h3>
-            <p>Démonstration intégrale du geste sacré par la formatrice référente. À revoir autant de fois que nécessaire.</p>
-          </div>
-        </div>
-
-        <div class="resource-card" data-mod="02">
-          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/3f/dc/2d/3fdc2d1511ac9366a1eb28119e0c158e.jpg');">
-            <div class="resource-type">PDF</div>
-            <div class="resource-duration">24 pages</div>
-            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FAF5EC" stroke-width="2"><path d="M14 2 H 6 a 2 2 0 0 0 -2 2 v 16 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
-          </div>
-          <div class="resource-body">
-            <div class="module-tag">Module 02 · Distanciel</div>
-            <h3>Carnet de journaling Sanctuarys</h3>
-            <p>Le carnet d'auto-évaluation Sanctuarys, version imprimable. Tu peux l'utiliser en parallèle du journal en ligne.</p>
-          </div>
-        </div>
-
-        <div class="resource-card" data-mod="02">
-          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/30/eb/3c/30eb3cdb14a9358084a7186cb7b5219c.jpg');">
-            <div class="resource-type">Audio</div>
-            <div class="resource-duration">8 min</div>
-            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5 V 19 L 19 12 Z" fill="#FAF5EC"/></svg></div></div>
-          </div>
-          <div class="resource-body">
-            <div class="module-tag">Module 02 · Méditation</div>
-            <h3>Méditation guidée pour le journaling</h3>
-            <p>Une pratique audio courte pour t'ancrer avant chaque session d'écriture. À utiliser en début de rituel quotidien.</p>
-          </div>
-        </div>
-
-        <div class="resource-card" data-mod="01">
-          <div class="resource-cover" style="background-image: url('https://i.pinimg.com/736x/0d/2a/d1/0d2ad15585dee35b8da70ab4dc154551.jpg');">
-            <div class="resource-type">PDF</div>
-            <div class="resource-duration">12 pages</div>
-            <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FAF5EC" stroke-width="2"><path d="M14 2 H 6 a 2 2 0 0 0 -2 2 v 16 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
-          </div>
-          <div class="resource-body">
-            <div class="module-tag">Module 01 · Plantes</div>
-            <h3>Mes plantes du protocole eau</h3>
-            <p>La fiche personnalisée des plantes sélectionnées pour ta signature corporelle, identifiées au présentiel.</p>
-          </div>
+        <div style="grid-column: 1 / -1; padding: 80px 40px; text-align: center; background: var(--blanc-deep); border: 1px dashed var(--line);">
+          <div style="font-family: 'Italiana', serif; font-size: 32px; color: var(--marron-deep); margin-bottom: 12px;">Ta bibliothèque <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">se construit.</em></div>
+          <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--marron-soft); max-width: 480px; margin: 0 auto;">Princesse ajoutera ici tes ressources personnalisées au fil du parcours : protocoles écrits, fiches plantes, audios de guidance.</p>
         </div>
       </div>
     </div>
@@ -2082,6 +2142,23 @@
     </div>
 
   </main>
+</div>
+
+<!-- MODAL · CHANGE PASSWORD -->
+<div class="pwd-overlay" id="pwdOverlay">
+  <div class="pwd-modal">
+    <button class="pwd-close" id="pwdClose" type="button">×</button>
+    <h2 class="pwd-title">Changer mon <em>mot de passe</em></h2>
+    <p class="pwd-sub">Choisis un nouveau mot de passe d'au moins 8 caractères.</p>
+    <form id="pwdForm" class="pwd-form">
+      <label class="pwd-label">Nouveau mot de passe</label>
+      <input type="password" class="pwd-input" id="pwdNew" minlength="8" placeholder="••••••••" required>
+      <label class="pwd-label" style="margin-top: 18px;">Confirme le nouveau mot de passe</label>
+      <input type="password" class="pwd-input" id="pwdConfirm" minlength="8" placeholder="••••••••" required>
+      <div class="pwd-error" id="pwdError"></div>
+      <button type="submit" class="pwd-submit"><span>Mettre à jour →</span></button>
+    </form>
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -2216,13 +2293,50 @@
   });
 
   // ============ LOGOUT ============
-  document.querySelectorAll('.sidebar-footer a').forEach(a => {
-    if (a.textContent.trim().toLowerCase().includes('déconnex')) {
-      a.addEventListener('click', async e => {
-        e.preventDefault();
-        await Sanctuarys.signOut();
-        location.reload();
-      });
+  document.getElementById('logoutLink').addEventListener('click', async e => {
+    e.preventDefault();
+    await Sanctuarys.signOut();
+    location.reload();
+  });
+
+  // ============ CHANGE PASSWORD ============
+  const pwdOverlay = document.getElementById('pwdOverlay');
+  const pwdForm = document.getElementById('pwdForm');
+  const pwdError = document.getElementById('pwdError');
+  const pwdNew = document.getElementById('pwdNew');
+  const pwdConfirm = document.getElementById('pwdConfirm');
+
+  document.getElementById('changePasswordLink').addEventListener('click', e => {
+    e.preventDefault();
+    pwdError.textContent = '';
+    pwdNew.value = '';
+    pwdConfirm.value = '';
+    pwdOverlay.classList.add('show');
+    setTimeout(() => pwdNew.focus(), 100);
+  });
+
+  document.getElementById('pwdClose').addEventListener('click', () => pwdOverlay.classList.remove('show'));
+  pwdOverlay.addEventListener('click', e => { if (e.target === pwdOverlay) pwdOverlay.classList.remove('show'); });
+
+  pwdForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    pwdError.textContent = '';
+    const newPwd = pwdNew.value;
+    const confirmPwd = pwdConfirm.value;
+    if (newPwd.length < 8) {
+      pwdError.textContent = 'Le mot de passe doit faire au moins 8 caractères.';
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      pwdError.textContent = 'Les deux mots de passe ne correspondent pas.';
+      return;
+    }
+    try {
+      await Sanctuarys.updatePassword(newPwd);
+      pwdOverlay.classList.remove('show');
+      showToast('Mot de passe mis à jour ✦');
+    } catch (err) {
+      pwdError.textContent = err.message || 'Une erreur est survenue.';
     }
   });
 
@@ -2470,19 +2584,7 @@
     }
   }
 
-  // ============ RESOURCES TABS ============
-  document.querySelectorAll('.resource-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const filter = tab.dataset.tab;
-      document.querySelectorAll('.resource-card').forEach(card => {
-        if (filter === 'all') card.style.display = '';
-        else if (filter === 'locked') card.style.display = 'none';
-        else card.style.display = card.dataset.mod === filter ? '' : 'none';
-      });
-    });
-  });
+  // Resources tabs removed (placeholder bibliothèque vide pour l'instant)
 
   // ============ HELPERS ============
   function escapeHTML(s) {
