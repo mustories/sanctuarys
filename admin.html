@@ -1137,7 +1137,8 @@
 
           <div class="detail-card" style="margin-top: 20px;">
             <h3>Actions</h3>
-            <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="openPanel('messages')">Envoyer un message</button>
+            <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="editEleveDetailBtn">Modifier sa fiche</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="openPanel('messages')">Envoyer un message</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="resendInvitationBtn">Renvoyer l'invitation par email</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Programmer un coaching</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Exporter son parcours</button>
@@ -1440,6 +1441,94 @@
   </div>
 </div>
 
+<!-- ============ MODAL : EDIT PROFILE ============ -->
+<div class="modal-overlay" id="modalEditProfile">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditModal()">×</button>
+    <h2>Modifier la <em>fiche</em></h2>
+    <p class="modal-subtitle" id="editModalSubtitle">Modifier les informations de cette personne.</p>
+
+    <form id="editProfileForm">
+      <input type="hidden" name="profile_id">
+      <input type="hidden" name="profile_role">
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" name="prenom" required>
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" name="nom">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--marron-soft);">(non modifiable ici)</span></label>
+        <input type="email" name="email_display" disabled style="opacity:0.6;">
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" name="phone">
+      </div>
+
+      <div id="editStudentFields">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Module actuel</label>
+            <select name="current_module">
+              <option value="1">Module 01 · Présentiel eau</option>
+              <option value="2">Module 02 · Journaling</option>
+              <option value="3">Module 03 · Présentiel encens</option>
+              <option value="4">Module 04 · Intégration encens</option>
+              <option value="5">Module 05 · Théorie et intégration</option>
+              <option value="6">Module 06 · Coaching installation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jour actuel</label>
+            <input type="number" name="current_day" min="1" max="14" value="1">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Promotion</label>
+            <input type="text" name="cohort">
+          </div>
+          <div class="form-group">
+            <label>Statut</label>
+            <select name="status">
+              <option value="active">Active</option>
+              <option value="paused">En pause</option>
+              <option value="attention">Attention requise</option>
+              <option value="completed">Terminé</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group admin-only">
+          <label>Formatrice référente</label>
+          <select name="formatrice_id" id="editFormatriceSelect">
+            <option value="">Aucune</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Note interne</label>
+        <textarea name="internal_note" rows="3" placeholder="Particularités, attentions, intentions..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeEditModal()">Annuler</button>
+        <button type="submit" class="btn-primary"><span>Enregistrer les modifications ✦</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- MODAL · CHANGE PASSWORD -->
 <div class="pwd-overlay" id="pwdOverlay">
   <div class="pwd-modal">
@@ -1643,12 +1732,17 @@
         <div class="eleve-status ${statusClass}">${statusLabel}</div>
         <div class="eleve-actions">
           <button class="icon-btn" title="Voir le détail" data-action="view">→</button>
+          <button class="icon-btn" title="Modifier" data-action="edit">✎</button>
           <button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>
         </div>
       `;
       row.querySelector('[data-action="view"]').addEventListener('click', (ev) => {
         ev.stopPropagation();
         openStudentDetail(e.id);
+      });
+      row.querySelector('[data-action="edit"]').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        openEditModal(e);
       });
       row.querySelector('[data-action="delete"]').addEventListener('click', (ev) => {
         ev.stopPropagation();
@@ -1757,6 +1851,10 @@
       const delBtn = document.getElementById('deleteEleveDetailBtn');
       if (delBtn) {
         delBtn.onclick = () => confirmDeleteUser(CURRENT_STUDENT, 'élève');
+      }
+      const editBtn = document.getElementById('editEleveDetailBtn');
+      if (editBtn) {
+        editBtn.onclick = () => openEditModal(CURRENT_STUDENT);
       }
     }, 100);
 
@@ -1907,9 +2005,17 @@
         <div class="eleve-module">${isAdmin ? 'Direction' : 'Formatrice'}</div>
         <div class="eleve-status ${isAdmin ? 'completed' : 'active'}">${isAdmin ? 'Admin' : 'Active'}</div>
         <div class="eleve-actions">
+          <button class="icon-btn" title="Modifier" data-action="edit">✎</button>
           ${(!isAdmin && !isSelf) ? '<button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>' : ''}
         </div>
       `;
+      const editBtn = row.querySelector('[data-action="edit"]');
+      if (editBtn) {
+        editBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openEditModal(f);
+        });
+      }
       const deleteBtn = row.querySelector('[data-action="delete"]');
       if (deleteBtn) {
         deleteBtn.addEventListener('click', (ev) => {
@@ -1920,6 +2026,101 @@
       list.appendChild(row);
     });
   }
+
+  // ============ EDIT PROFILE MODAL ============
+  const modalEdit = document.getElementById('modalEditProfile');
+  function openEditModal(profile) {
+    const form = document.getElementById('editProfileForm');
+    form.profile_id.value = profile.id;
+    form.profile_role.value = profile.role;
+    form.prenom.value = profile.prenom || '';
+    form.nom.value = profile.nom || '';
+    form.email_display.value = profile.email || '';
+    form.phone.value = profile.phone || '';
+    form.internal_note.value = profile.internal_note || '';
+
+    // Sous-titre adapté
+    const subtitle = document.getElementById('editModalSubtitle');
+    subtitle.textContent = profile.role === 'student'
+      ? `Modifier les informations et le parcours de ${profile.prenom}.`
+      : `Modifier les informations de la formatrice ${profile.prenom}.`;
+
+    // Affichage / masquage des champs spécifiques aux élèves
+    const studentFields = document.getElementById('editStudentFields');
+    studentFields.style.display = profile.role === 'student' ? '' : 'none';
+
+    if (profile.role === 'student') {
+      form.current_module.value = profile.current_module || 1;
+      form.current_day.value = profile.current_day || 1;
+      form.cohort.value = profile.cohort || 'Lune 2026';
+      form.status.value = profile.status || 'active';
+
+      // Peuple le dropdown formatrice
+      const select = document.getElementById('editFormatriceSelect');
+      select.innerHTML = '<option value="">Aucune</option>';
+      FORMATRICES.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.id;
+        opt.textContent = `${f.prenom} ${f.nom || ''}`.trim() + (f.id === ADMIN_PROFILE.id ? ' (toi)' : '');
+        if (profile.formatrice_id === f.id) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    modalEdit.classList.add('show');
+  }
+  function closeEditModal() { modalEdit.classList.remove('show'); }
+  window.openEditModal = openEditModal;
+  window.closeEditModal = closeEditModal;
+  modalEdit.addEventListener('click', e => { if (e.target === modalEdit) closeEditModal(); });
+
+  document.getElementById('editProfileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>Enregistrement...</span>';
+
+    try {
+      const profileId = form.profile_id.value;
+      const role = form.profile_role.value;
+      const updates = {
+        prenom: form.prenom.value.trim(),
+        nom: form.nom.value.trim() || null,
+        phone: form.phone.value.trim() || null,
+        internal_note: form.internal_note.value.trim() || null
+      };
+
+      if (role === 'student') {
+        updates.current_module = parseInt(form.current_module.value, 10);
+        updates.current_day = parseInt(form.current_day.value, 10);
+        updates.cohort = form.cohort.value.trim() || 'Lune 2026';
+        updates.status = form.status.value;
+        if (ADMIN_PROFILE.role === 'admin') {
+          updates.formatrice_id = form.formatrice_id.value || null;
+        }
+      }
+
+      await Sanctuarys.updateStudent(profileId, updates);
+      closeEditModal();
+      showToast('✦ Fiche mise à jour');
+      await loadStudents();
+      if (ADMIN_PROFILE.role === 'admin') {
+        await loadFormatrices();
+      }
+      // Si on modifiait l'élève actuellement ouverte en détail, rafraîchit
+      if (CURRENT_STUDENT?.id === profileId) {
+        await openStudentDetail(profileId);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erreur de mise à jour :\n\n' + (err.message || 'modification impossible'));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  });
 
   // ============ DELETE CONFIRMATION ============
   async function confirmDeleteUser(user, type) {
