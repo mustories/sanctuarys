@@ -328,6 +328,75 @@ window.Sanctuarys = {
     return data;
   },
 
+  // === ISHTAR ===
+  async ishtarSummary(entryId, force = false) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/ishtar-summary`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ entry_id: entryId, force })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur Ishtar');
+    return data;
+  },
+
+  async ishtarBilan(studentId, moduleNumber = 2, force = false) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/ishtar-bilan`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ student_id: studentId, module_number: moduleNumber, force })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur Ishtar');
+    return data;
+  },
+
+  async listAlerts(limit = 20) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('ishtar_summaries')
+      .select('*, profiles!inner(prenom, nom)')
+      .neq('alert_level', 'none')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    return data || [];
+  },
+
+  async getSummariesForStudent(studentId) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('ishtar_summaries')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('day_number', { ascending: true });
+    return data || [];
+  },
+
+  async getLatestBilan(studentId, moduleNumber = 2) {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('ishtar_bilans')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('module_number', moduleNumber)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data;
+  },
+
   async listFormatrices() {
     const supa = await this.init();
     const { data } = await supa

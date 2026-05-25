@@ -234,6 +234,163 @@
   .panel-meta .meta-row { padding: 0 0 14px; border-bottom: 1px solid var(--line-soft); margin-bottom: 14px; }
   .panel-meta .meta-row:last-child { border: none; margin-bottom: 0; padding-bottom: 0; }
 
+  /* ============ ISHTAR ============ */
+  .ishtar-alerts-card {
+    background: linear-gradient(135deg, rgba(178, 43, 43, 0.08), var(--blanc-deep));
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--rouge-doux);
+    padding: 30px 36px;
+    margin-bottom: 30px;
+  }
+  .ishtar-alerts-card.empty {
+    background: var(--blanc-deep);
+    border-left-color: var(--vert-succes);
+  }
+  .ishtar-alerts-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .ishtar-alerts-header h2 {
+    font-family: 'Italiana', serif;
+    font-size: 28px;
+    color: var(--marron-deep);
+  }
+  .ishtar-alerts-header h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .ishtar-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--rouge-doux);
+    padding: 4px 10px;
+    border: 1px solid var(--rouge-doux);
+    text-transform: uppercase;
+  }
+  .ishtar-empty {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--marron-soft);
+    text-align: center;
+    padding: 16px 0;
+  }
+  .ishtar-alert-row {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition: padding 0.3s;
+  }
+  .ishtar-alert-row:hover { padding-left: 12px; }
+  .ishtar-alert-row:last-child { border-bottom: none; }
+  .ishtar-alert-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .ishtar-alert-row.urgent .ishtar-alert-level { color: var(--rouge-doux); font-weight: bold; }
+  .ishtar-alert-row.attention .ishtar-alert-level { color: var(--terracotta-deep); }
+  .ishtar-alert-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--marron);
+    line-height: 1.5;
+    border-left: 2px solid var(--terracotta);
+    padding-left: 14px;
+  }
+
+  .ishtar-summary {
+    background: linear-gradient(135deg, var(--blanc-deep), var(--beige));
+    border-left: 3px solid var(--terracotta);
+    padding: 18px 22px;
+    margin-top: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--marron);
+    font-size: 15px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .ishtar-summary::before {
+    content: '✦ Ishtar';
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    background: var(--blanc);
+    padding: 0 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+  }
+  .ishtar-summary.alert-attention { border-left-color: var(--terracotta-deep); background: linear-gradient(135deg, var(--blanc-deep), rgba(232, 176, 153, 0.4)); }
+  .ishtar-summary.alert-urgent { border-left-color: var(--rouge-doux); background: linear-gradient(135deg, var(--blanc-deep), rgba(178, 43, 43, 0.1)); }
+
+  .btn-ishtar {
+    padding: 10px 18px;
+    background: transparent;
+    border: 1px solid var(--terracotta);
+    color: var(--terracotta-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-ishtar:hover { background: var(--terracotta); color: var(--blanc); }
+  .btn-ishtar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .ishtar-bilan-card {
+    background: var(--blanc-deep);
+    border: 1px solid var(--terracotta);
+    padding: 36px 36px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .ishtar-bilan-card::before {
+    content: '✦ Ishtar';
+    position: absolute;
+    top: -12px;
+    left: 30px;
+    background: var(--blanc);
+    padding: 0 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+  }
+  .ishtar-bilan-card h4 {
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--marron-deep);
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  .ishtar-bilan-card h4 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .ishtar-bilan-card p {
+    color: var(--marron);
+    font-size: 15px;
+    line-height: 1.95;
+    margin-bottom: 16px;
+  }
+
   /* ============ STATS ============ */
   .stats-grid {
     display: grid;
@@ -1012,6 +1169,17 @@
         </div>
       </div>
 
+      <!-- ISHTAR ALERTS -->
+      <div class="ishtar-alerts-card empty" id="ishtarAlertsCard">
+        <div class="ishtar-alerts-header">
+          <h2>Veille <em>Ishtar</em></h2>
+          <span class="ishtar-badge" id="ishtarBadge">0 signal</span>
+        </div>
+        <div id="ishtarAlertsBody">
+          <div class="ishtar-empty">Rien à signaler. Ishtar veille sur tes élèves.</div>
+        </div>
+      </div>
+
       <!-- STATS -->
       <div class="stats-grid">
         <div class="stat-card">
@@ -1136,10 +1304,17 @@
           </div>
 
           <div class="detail-card" style="margin-top: 20px;">
+            <h3>Ishtar <em>(IA)</em></h3>
+            <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="ishtarGenerateAllBtn">Générer tous les résumés ✦</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="ishtarBilanBtn">Bilan complet du module ✦</button>
+          </div>
+
+          <div class="detail-card" style="margin-top: 20px;">
             <h3>Actions</h3>
             <button class="btn-primary" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="editEleveDetailBtn">Modifier sa fiche</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="openPanel('messages')">Envoyer un message</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="resendInvitationBtn">Renvoyer l'invitation par email</button>
+            <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;" id="resetPasswordBtn">Réinitialiser le mot de passe</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Programmer un coaching</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 10px;">Exporter son parcours</button>
             <button class="btn-outline" style="width: 100%; justify-content: center; color: var(--rouge-doux); border-color: var(--rouge-doux);" id="deleteEleveDetailBtn">Supprimer cette élève</button>
@@ -1616,7 +1791,52 @@
     } else {
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
+    await loadIshtarAlerts();
     setupAdminRealtime();
+  }
+
+  // ============ ISHTAR ALERTS WIDGET ============
+  async function loadIshtarAlerts() {
+    try {
+      const alerts = await Sanctuarys.listAlerts(10);
+      renderIshtarAlerts(alerts);
+    } catch (err) {
+      console.warn('Ishtar alerts unavailable:', err.message);
+    }
+  }
+
+  function renderIshtarAlerts(alerts) {
+    const card = document.getElementById('ishtarAlertsCard');
+    const body = document.getElementById('ishtarAlertsBody');
+    const badge = document.getElementById('ishtarBadge');
+    if (!card || !body || !badge) return;
+
+    if (!alerts || alerts.length === 0) {
+      card.classList.add('empty');
+      body.innerHTML = '<div class="ishtar-empty">Rien à signaler. Ishtar veille sur tes élèves.</div>';
+      badge.textContent = '0 signal';
+      return;
+    }
+
+    card.classList.remove('empty');
+    badge.textContent = `${alerts.length} signal${alerts.length > 1 ? 's' : ''}`;
+    body.innerHTML = '';
+    alerts.forEach(a => {
+      const row = document.createElement('div');
+      row.className = 'ishtar-alert-row ' + a.alert_level;
+      const prenom = a.profiles?.prenom || 'Élève';
+      const levelLabel = a.alert_level === 'urgent' ? '⚠ Urgent' : '○ Attention';
+      row.innerHTML = `
+        <div class="ishtar-alert-top">
+          <span><strong>${escapeHTML(prenom)}</strong> · Jour ${a.day_number}/14 · Module ${a.module_number}</span>
+          <span class="ishtar-alert-level">${levelLabel}</span>
+        </div>
+        <div class="ishtar-alert-quote">${escapeHTML(a.summary || '')}</div>
+        ${a.alert_message ? `<div class="ishtar-alert-quote" style="margin-top: 8px; color: var(--rouge-doux); border-left-color: var(--rouge-doux);">"${escapeHTML(a.alert_message)}"</div>` : ''}
+      `;
+      row.addEventListener('click', () => openStudentDetail(a.student_id));
+      body.appendChild(row);
+    });
   }
 
   function hydrateAdminProfile() {
@@ -1733,6 +1953,7 @@
         <div class="eleve-actions">
           <button class="icon-btn" title="Voir le détail" data-action="view">→</button>
           <button class="icon-btn" title="Modifier" data-action="edit">✎</button>
+          <button class="icon-btn" title="Renvoyer accès / Reset mot de passe" data-action="resend">✉</button>
           <button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>
         </div>
       `;
@@ -1743,6 +1964,21 @@
       row.querySelector('[data-action="edit"]').addEventListener('click', (ev) => {
         ev.stopPropagation();
         openEditModal(e);
+      });
+      row.querySelector('[data-action="resend"]').addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+        if (!confirm(`Envoyer un lien d'accès à ${e.prenom} ?`)) return;
+        try {
+          showToast('Envoi en cours...');
+          const r = await Sanctuarys.resendInvitation(e.id);
+          if (r.action_link) {
+            alert('Email non envoyé, voici le lien à transmettre :\n\n' + r.action_link);
+          } else {
+            showToast('✦ Email envoyé à ' + e.prenom);
+          }
+        } catch (err) {
+          alert('Erreur : ' + (err.message || 'envoi impossible'));
+        }
       });
       row.querySelector('[data-action="delete"]').addEventListener('click', (ev) => {
         ev.stopPropagation();
@@ -1856,6 +2092,23 @@
       if (editBtn) {
         editBtn.onclick = () => openEditModal(CURRENT_STUDENT);
       }
+      const resetBtn = document.getElementById('resetPasswordBtn');
+      if (resetBtn) {
+        resetBtn.onclick = async () => {
+          if (!confirm(`Envoyer un email de réinitialisation de mot de passe à ${CURRENT_STUDENT.prenom} ?`)) return;
+          try {
+            showToast('Envoi du lien de réinitialisation...');
+            const r = await Sanctuarys.resendInvitation(CURRENT_STUDENT.id);
+            if (r.action_link) {
+              alert('Email non envoyé, voici le lien à transmettre :\n\n' + r.action_link);
+            } else {
+              showToast('✦ Lien de réinitialisation envoyé');
+            }
+          } catch (err) {
+            alert('Erreur : ' + (err.message || 'envoi impossible'));
+          }
+        };
+      }
     }, 100);
 
     document.getElementById('detailName').textContent = CURRENT_STUDENT.prenom;
@@ -1900,17 +2153,26 @@
 
   async function renderStudentJournal(studentId) {
     const entries = await Sanctuarys.listJournalEntries(studentId);
+    const summaries = await Sanctuarys.getSummariesForStudent(studentId);
+    const summariesMap = {};
+    summaries.forEach(s => { summariesMap[s.journal_entry_id] = s; });
+
     const containers = document.querySelectorAll('#panel-eleve-detail .detail-card');
-    const journalCard = containers[3];
+    // Le panel détail a maintenant : Infos, Progression, Ishtar, Actions, Journal, Notes
+    const journalCard = Array.from(containers).find(c => c.querySelector('h3')?.textContent.includes('entrées'));
     if (!journalCard) return;
-    const list = journalCard.querySelector('.journal-entries-list');
-    if (!list) return;
+    let list = journalCard.querySelector('.journal-entries-list');
+    if (!list) {
+      list = document.createElement('ul');
+      list.className = 'journal-entries-list';
+      journalCard.appendChild(list);
+    }
     list.innerHTML = '';
     if (entries.length === 0) {
       list.innerHTML = '<li style="opacity:0.7;"><p class="entry-preview" style="font-style: italic; color: var(--marron-soft);">Aucune entrée pour le moment.</p></li>';
       return;
     }
-    entries.reverse().forEach(e => {
+    entries.slice().reverse().forEach(e => {
       const li = document.createElement('li');
       const ratings = e.ratings || {};
       const ratingsHtml = Object.entries(ratings).map(([key, val]) => {
@@ -1919,14 +2181,123 @@
         return `<span>${label} <span class="rt-val">${dots}</span></span>`;
       }).join('');
       const submittedTag = e.submitted ? '' : ' <span style="color: var(--marron-soft); font-style: italic;">(brouillon)</span>';
+      const summary = summariesMap[e.id];
+      const summaryHtml = summary
+        ? `<div class="ishtar-summary alert-${summary.alert_level}">${escapeHTML(summary.summary)}${summary.alert_message ? `<div style="margin-top: 8px; font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--rouge-doux); letter-spacing: 1px;">⚠ ${escapeHTML(summary.alert_message)}</div>` : ''}</div>`
+        : (e.body ? `<button class="btn-ishtar" style="margin-top: 12px;" data-entry-id="${e.id}">✦ Générer le résumé Ishtar</button>` : '');
       li.innerHTML = `
         <div class="entry-date">Jour ${e.day_number} · ${Sanctuarys.formatDateTime(e.updated_at)}${submittedTag}</div>
         <p class="entry-preview">${e.body ? '"' + escapeHTML(e.body.substring(0, 280)) + (e.body.length > 280 ? '..."' : '"') : '<em>Aucun texte écrit pour l\'instant.</em>'}</p>
         ${ratingsHtml ? `<div class="entry-ratings">${ratingsHtml}</div>` : ''}
         ${e.observation ? `<p class="entry-preview" style="margin-top: 8px; font-size: 12px;"><strong>Observation :</strong> ${escapeHTML(e.observation)}</p>` : ''}
+        ${summaryHtml}
       `;
+      const btn = li.querySelector('.btn-ishtar[data-entry-id]');
+      if (btn) {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          btn.textContent = 'Ishtar réfléchit...';
+          try {
+            await Sanctuarys.ishtarSummary(btn.dataset.entryId);
+            await renderStudentJournal(studentId);
+            await loadIshtarAlerts();
+          } catch (err) {
+            alert('Erreur Ishtar : ' + (err.message || 'génération impossible'));
+            btn.disabled = false;
+            btn.textContent = '✦ Générer le résumé Ishtar';
+          }
+        });
+      }
       list.appendChild(li);
     });
+
+    // Hook le bouton "Générer tous les résumés"
+    const allBtn = document.getElementById('ishtarGenerateAllBtn');
+    if (allBtn) {
+      allBtn.onclick = async () => {
+        const todo = entries.filter(e => e.body && !summariesMap[e.id]);
+        if (todo.length === 0) {
+          showToast('Tous les résumés sont déjà générés ✦');
+          return;
+        }
+        allBtn.disabled = true;
+        for (let i = 0; i < todo.length; i++) {
+          allBtn.innerHTML = `<span>Ishtar travaille... (${i + 1}/${todo.length})</span>`;
+          try {
+            await Sanctuarys.ishtarSummary(todo[i].id);
+          } catch (err) {
+            console.error('Ishtar error on entry', todo[i].id, err);
+          }
+        }
+        allBtn.disabled = false;
+        allBtn.innerHTML = '<span>Générer tous les résumés ✦</span>';
+        await renderStudentJournal(studentId);
+        await loadIshtarAlerts();
+        showToast(`✦ ${todo.length} résumés générés`);
+      };
+    }
+
+    // Hook le bouton "Bilan complet"
+    const bilanBtn = document.getElementById('ishtarBilanBtn');
+    if (bilanBtn) {
+      bilanBtn.onclick = () => generateOrShowBilan(studentId);
+    }
+
+    // Affiche le bilan existant s'il y en a un
+    await renderExistingBilan(studentId);
+  }
+
+  async function generateOrShowBilan(studentId) {
+    const btn = document.getElementById('ishtarBilanBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = 'Ishtar prépare le bilan...';
+    try {
+      const r = await Sanctuarys.ishtarBilan(studentId, CURRENT_STUDENT?.current_module || 2, true);
+      btn.innerHTML = 'Régénérer le bilan ✦';
+      btn.disabled = false;
+      await renderExistingBilan(studentId);
+      showToast('✦ Bilan Ishtar généré');
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = 'Bilan complet du module ✦';
+      alert('Erreur Ishtar : ' + (err.message || 'génération impossible'));
+    }
+  }
+
+  async function renderExistingBilan(studentId) {
+    const bilan = await Sanctuarys.getLatestBilan(studentId, CURRENT_STUDENT?.current_module || 2);
+    // Cherche ou crée la zone bilan dans le panel détail
+    const detailPanel = document.getElementById('panel-eleve-detail');
+    let bilanCard = detailPanel.querySelector('.ishtar-bilan-card');
+    if (!bilan) {
+      if (bilanCard) bilanCard.remove();
+      return;
+    }
+    if (!bilanCard) {
+      bilanCard = document.createElement('div');
+      bilanCard.className = 'ishtar-bilan-card';
+      const eleveDetail = detailPanel.querySelector('.eleve-detail');
+      if (eleveDetail) eleveDetail.appendChild(bilanCard);
+    }
+    const c = bilan.content || {};
+    bilanCard.innerHTML = `
+      <h4 style="margin-top: 0;">Synthèse <em>globale</em></h4>
+      <p>${escapeHTML(c.synthese_globale || '')}</p>
+      <h4>Le corps <em>physique</em></h4>
+      <p>${escapeHTML(c.corps_physique || '')}</p>
+      <h4>Le territoire <em>émotionnel</em></h4>
+      <p>${escapeHTML(c.territoire_emotionnel || '')}</p>
+      <h4>L'énergie et <em>le sommeil</em></h4>
+      <p>${escapeHTML(c.energie_sommeil || '')}</p>
+      <h4>Le cycle et <em>l'intuition</em></h4>
+      <p>${escapeHTML(c.cycle_intuition || '')}</p>
+      <h4>Patterns et <em>signaux</em></h4>
+      <p>${escapeHTML(c.patterns_signaux || '')}</p>
+      <h4>Vers <em>le module 03</em></h4>
+      <p>${escapeHTML(c.vers_module_03 || '')}</p>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase; margin-top: 24px;">Brouillon Ishtar · ${Sanctuarys.formatDateTime(bilan.created_at)} · À retravailler avec ta présence</p>
+    `;
   }
 
   async function renderStudentNotes(studentId) {
@@ -2006,6 +2377,7 @@
         <div class="eleve-status ${isAdmin ? 'completed' : 'active'}">${isAdmin ? 'Admin' : 'Active'}</div>
         <div class="eleve-actions">
           <button class="icon-btn" title="Modifier" data-action="edit">✎</button>
+          ${!isSelf ? '<button class="icon-btn" title="Renvoyer accès / Reset mot de passe" data-action="resend">✉</button>' : ''}
           ${(!isAdmin && !isSelf) ? '<button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>' : ''}
         </div>
       `;
@@ -2014,6 +2386,24 @@
         editBtn.addEventListener('click', (ev) => {
           ev.stopPropagation();
           openEditModal(f);
+        });
+      }
+      const resendBtn = row.querySelector('[data-action="resend"]');
+      if (resendBtn) {
+        resendBtn.addEventListener('click', async (ev) => {
+          ev.stopPropagation();
+          if (!confirm(`Envoyer un lien d'accès à ${f.prenom} ?\n\nElle recevra soit son invitation initiale (si jamais entrée), soit un lien de réinitialisation de mot de passe.`)) return;
+          try {
+            showToast('Envoi en cours...');
+            const r = await Sanctuarys.resendInvitation(f.id);
+            if (r.action_link) {
+              alert('Email non envoyé, voici le lien à transmettre :\n\n' + r.action_link);
+            } else {
+              showToast('✦ Email envoyé à ' + f.prenom);
+            }
+          } catch (err) {
+            alert('Erreur : ' + (err.message || 'envoi impossible'));
+          }
         });
       }
       const deleteBtn = row.querySelector('[data-action="delete"]');
