@@ -142,25 +142,21 @@
   }
   nav.scrolled { padding: 16px 40px; background: rgba(250, 245, 236, 0.96); }
   nav.on-dark { background: rgba(15, 8, 5, 0.6); border-bottom-color: rgba(212, 160, 76, 0.15); }
-  nav.on-dark .logo, nav.on-dark .nav-meta, nav.on-dark .nav-links a, nav.on-dark .nav-cta { color: var(--blanc); }
+  nav.on-dark .nav-meta, nav.on-dark .nav-links a, nav.on-dark .nav-cta { color: var(--blanc); }
+  nav.on-dark .logo-mark { filter: brightness(0) invert(1); }
 
   .nav-left { display: flex; align-items: center; gap: 30px; }
   .nav-right { display: flex; align-items: center; gap: 30px; justify-self: end; }
 
   .logo {
-    font-family: 'Italiana', serif;
-    font-size: 18px;
-    letter-spacing: 8px;
-    color: var(--marron-deep);
-    text-transform: uppercase;
     text-decoration: none;
     cursor: none;
     display: flex;
     align-items: center;
-    gap: 10px;
-    transition: color 0.4s;
+    transition: opacity 0.4s;
   }
-  .logo-mark { width: 22px; height: 22px; fill: var(--terracotta); }
+  .logo:hover { opacity: 0.75; }
+  .logo-mark { height: 48px; width: auto; display: block; transition: filter 0.4s; }
 
   .nav-meta {
     font-family: 'JetBrains Mono', monospace;
@@ -946,8 +942,8 @@
     padding-bottom: 60px;
     border-bottom: 1px solid rgba(212, 160, 76, 0.15);
   }
-  .footer-brand .logo { margin-bottom: 24px; color: var(--blanc); }
-  .footer-brand .logo svg { fill: var(--terracotta-pale); }
+  .footer-brand .logo { margin-bottom: 24px; }
+  .footer-brand .logo-mark { height: 54px; filter: brightness(0) invert(1); opacity: 0.92; }
   .footer-brand p { color: var(--rose-pale); font-size: 13px; line-height: 1.85; max-width: 380px; opacity: 0.85; }
 
   .footer-col h5 {
@@ -985,8 +981,11 @@
   @media (max-width: 1100px) {
     body { cursor: default; }
     .cursor, .cursor-trail, .side-index { display: none; }
-    nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
+    nav { grid-template-columns: 1fr auto; padding: 16px 20px; }
     .nav-links { display: none; }
+    .logo-mark { height: 38px; }
+    .footer-brand .logo-mark { height: 44px; }
+    .nav-meta { display: none; }
     .hero { padding: 110px 24px 40px; }
     .hero-bottom-bar { grid-template-columns: 1fr; gap: 24px; }
     .scroll-indicator { display: none; }
@@ -1037,11 +1036,7 @@
 <nav id="mainNav" class="on-dark">
   <div class="nav-left">
     <a href="index.html" class="logo">
-      <svg class="logo-mark" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/>
-        <circle cx="14" cy="14" r="3" fill="#0F0805"/>
-      </svg>
-      Sanctuarys
+      <img class="logo-mark" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
     </a>
     <div class="nav-meta">Édition 2026</div>
   </div>
@@ -1360,11 +1355,7 @@
   <div class="footer-grid">
     <div class="footer-brand">
       <a href="index.html" class="logo">
-        <svg class="logo-mark" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 2 L 22 14 L 14 26 L 6 14 Z" fill="currentColor" opacity="0.9"/>
-          <circle cx="14" cy="14" r="3" fill="#0F0805"/>
-        </svg>
-        Sanctuarys
+        <img class="logo-mark" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
       </a>
       <p>École des soins féminins ancestraux. Sagesse ancestrale et accompagnement holistique. Formation des facilitatrices V-Care depuis 2021.</p>
     </div>
