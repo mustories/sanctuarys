@@ -510,6 +510,8 @@
   }
   .icon-btn:hover { background: var(--marron-deep); color: var(--blanc); border-color: var(--marron-deep); }
   .icon-btn svg { width: 14px; height: 14px; }
+  .icon-btn-danger { color: var(--rouge-doux); border-color: rgba(178, 43, 43, 0.4); font-size: 14px; line-height: 1; }
+  .icon-btn-danger:hover { background: var(--rouge-doux); color: var(--blanc); border-color: var(--rouge-doux); }
 
   /* ============ MODAL : NEW ELEVE ============ */
   .modal-overlay {
@@ -1638,9 +1640,18 @@
         <div class="eleve-module">Module <strong>${moduleNum}</strong></div>
         <div class="eleve-status ${statusClass}">${statusLabel}</div>
         <div class="eleve-actions">
-          <button class="icon-btn" title="Voir le détail">→</button>
+          <button class="icon-btn" title="Voir le détail" data-action="view">→</button>
+          <button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>
         </div>
       `;
+      row.querySelector('[data-action="view"]').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        openStudentDetail(e.id);
+      });
+      row.querySelector('[data-action="delete"]').addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        confirmDeleteUser(e, 'élève');
+      });
       row.addEventListener('click', () => openStudentDetail(e.id));
       list.appendChild(row);
     });
@@ -1854,23 +1865,62 @@
     FORMATRICES.forEach(f => {
       const row = document.createElement('div');
       row.className = 'eleve-row';
-      row.style.gridTemplateColumns = '1fr 1fr 100px 100px';
+      row.style.gridTemplateColumns = '1fr 1fr 100px 100px 60px';
       const isAdmin = f.role === 'admin';
+      const isSelf = f.id === ADMIN_PROFILE.id;
       const myStudentsCount = STUDENTS.filter(s => s.formatrice_id === f.id).length;
       row.innerHTML = `
         <div class="eleve-name">
           <div class="eleve-avatar">${Sanctuarys.initialOf(f.prenom)}</div>
           <div>
-            <div class="name">${escapeHTML(f.prenom)} ${escapeHTML(f.nom || '')}</div>
+            <div class="name">${escapeHTML(f.prenom)} ${escapeHTML(f.nom || '')}${isSelf ? ' <span style="color: var(--terracotta-deep); font-size: 11px;">(toi)</span>' : ''}</div>
             <div class="email">${escapeHTML(f.email || '')}</div>
           </div>
         </div>
         <div class="eleve-module">${myStudentsCount} élève${myStudentsCount > 1 ? 's' : ''} <strong>référente${myStudentsCount > 1 ? 's' : ''}</strong></div>
         <div class="eleve-module">${isAdmin ? 'Direction' : 'Formatrice'}</div>
         <div class="eleve-status ${isAdmin ? 'completed' : 'active'}">${isAdmin ? 'Admin' : 'Active'}</div>
+        <div class="eleve-actions">
+          ${(!isAdmin && !isSelf) ? '<button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>' : ''}
+        </div>
       `;
+      const deleteBtn = row.querySelector('[data-action="delete"]');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          confirmDeleteUser(f, 'formatrice');
+        });
+      }
       list.appendChild(row);
     });
+  }
+
+  // ============ DELETE CONFIRMATION ============
+  async function confirmDeleteUser(user, type) {
+    const fullName = `${user.prenom} ${user.nom || ''}`.trim();
+    const message = type === 'formatrice'
+      ? `Supprimer définitivement la formatrice ${fullName} ?\n\nToutes ses données seront effacées. Ses élèves référentes seront détachées (mais conservées).`
+      : `Supprimer définitivement l'élève ${fullName} ?\n\nToutes ses entrées de journal, notes et messages seront effacés.`;
+
+    const confirmed = window.confirm(message);
+    if (!confirmed) return;
+
+    // Double confirmation pour les comptes avec activité
+    const second = window.confirm(`Es-tu vraiment sûre ? Cette action est irréversible.`);
+    if (!second) return;
+
+    try {
+      showToast(`Suppression de ${user.prenom}...`);
+      await Sanctuarys.deleteUser(user.id);
+      showToast(`✦ ${fullName} supprimé`);
+      await loadStudents();
+      if (ADMIN_PROFILE.role === 'admin') {
+        await loadFormatrices();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Erreur · ' + (err.message || 'suppression impossible'));
+    }
   }
 
   function populateFormatriceSelect() {
