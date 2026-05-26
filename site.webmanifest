@@ -1,0 +1,13 @@
+{
+  "name": "Sanctuarys",
+  "short_name": "Sanctuarys",
+  "description": "Sagesse ancestrale et accompagnement holistique",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#C8704D",
+  "background_color": "#FAF5EC",
+  "display": "standalone",
+  "start_url": "/"
+}
