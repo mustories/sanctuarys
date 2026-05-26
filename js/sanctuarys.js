@@ -444,8 +444,34 @@ window.Sanctuarys = {
     return await this.naharCall({ action: 'load_messages', session_id: sessionId });
   },
 
-  async naharSend(sessionId, userMessage) {
-    return await this.naharCall({ session_id: sessionId, user_message: userMessage });
+  async naharSend(sessionId, userMessage, imageData) {
+    const payload = { session_id: sessionId, user_message: userMessage };
+    if (imageData) payload.image = imageData;
+    return await this.naharCall(payload);
+  },
+
+  async naharNewSessionForClient(clientId) {
+    return await this.naharCall({ action: 'create_session', client_id: clientId });
+  },
+
+  async naharListClients() {
+    return await this.naharCall({ action: 'list_clients' });
+  },
+
+  async naharCreateClient(payload) {
+    return await this.naharCall({ action: 'create_client', ...payload });
+  },
+
+  async naharUpdateClient(clientId, patch) {
+    return await this.naharCall({ action: 'update_client', client_id: clientId, ...patch });
+  },
+
+  async naharDeleteClient(clientId) {
+    return await this.naharCall({ action: 'delete_client', client_id: clientId });
+  },
+
+  async naharListClientSessions(clientId) {
+    return await this.naharCall({ action: 'list_client_sessions', client_id: clientId });
   },
 
   async listOutils() {

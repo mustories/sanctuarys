@@ -210,21 +210,105 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json()
-    const { session_id, user_message, action } = body
+    const { session_id, user_message, action, image } = body
 
     // Action : créer une nouvelle session
     if (action === 'create_session') {
+      const insertData: any = {
+        user_id: user.id,
+        outil_slug: 'nahar',
+        titre: 'Session avec Nahar'
+      }
+      if (body.client_id) {
+        insertData.client_id = body.client_id
+        insertData.scan_type = 'client'
+      } else {
+        insertData.scan_type = 'self'
+      }
       const { data: newSession, error: createErr } = await admin
         .from('outils_sessions')
-        .insert({
-          user_id: user.id,
-          outil_slug: 'nahar',
-          titre: 'Session avec Nahar'
-        })
+        .insert(insertData)
         .select()
         .single()
       if (createErr) return json({ error: createErr.message }, 500)
       return json({ success: true, session: newSession })
+    }
+
+    // === ACTIONS CLIENTS ===
+    if (action === 'list_clients') {
+      const { data: clients } = await admin
+        .from('outils_clients')
+        .select('*')
+        .eq('praticien_id', user.id)
+        .eq('archive', false)
+        .order('updated_at', { ascending: false })
+      return json({ success: true, clients: clients || [] })
+    }
+
+    if (action === 'create_client') {
+      const { prenom, nom, email, telephone, date_premiere_rencontre, notes_privees } = body
+      if (!prenom) return json({ error: 'Prénom requis' }, 400)
+      const { data: client, error: cErr } = await admin
+        .from('outils_clients')
+        .insert({
+          praticien_id: user.id,
+          prenom,
+          nom: nom || null,
+          email: email || null,
+          telephone: telephone || null,
+          date_premiere_rencontre: date_premiere_rencontre || null,
+          notes_privees: notes_privees || null
+        })
+        .select()
+        .single()
+      if (cErr) return json({ error: cErr.message }, 500)
+      return json({ success: true, client })
+    }
+
+    if (action === 'update_client') {
+      const { client_id, prenom, nom, email, telephone, date_premiere_rencontre, notes_privees, archive } = body
+      if (!client_id) return json({ error: 'client_id requis' }, 400)
+      const patch: any = {}
+      if (prenom !== undefined) patch.prenom = prenom
+      if (nom !== undefined) patch.nom = nom
+      if (email !== undefined) patch.email = email
+      if (telephone !== undefined) patch.telephone = telephone
+      if (date_premiere_rencontre !== undefined) patch.date_premiere_rencontre = date_premiere_rencontre
+      if (notes_privees !== undefined) patch.notes_privees = notes_privees
+      if (archive !== undefined) patch.archive = archive
+      const { data: client, error: uErr } = await admin
+        .from('outils_clients')
+        .update(patch)
+        .eq('id', client_id)
+        .eq('praticien_id', user.id)
+        .select()
+        .single()
+      if (uErr) return json({ error: uErr.message }, 500)
+      return json({ success: true, client })
+    }
+
+    if (action === 'delete_client') {
+      const { client_id } = body
+      if (!client_id) return json({ error: 'client_id requis' }, 400)
+      const { error: dErr } = await admin
+        .from('outils_clients')
+        .delete()
+        .eq('id', client_id)
+        .eq('praticien_id', user.id)
+      if (dErr) return json({ error: dErr.message }, 500)
+      return json({ success: true })
+    }
+
+    if (action === 'list_client_sessions') {
+      const { client_id } = body
+      if (!client_id) return json({ error: 'client_id requis' }, 400)
+      const { data: sessions } = await admin
+        .from('outils_sessions')
+        .select('*')
+        .eq('client_id', client_id)
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+      return json({ success: true, sessions: sessions || [] })
     }
 
     // Action : lister les sessions de l'utilisateur
@@ -264,11 +348,11 @@ Deno.serve(async (req) => {
       return json({ error: 'Session introuvable' }, 404)
     }
 
-    // Sauvegarde le message utilisateur
+    // Sauvegarde le message utilisateur (texte uniquement en DB pour l'instant)
     await admin.from('outils_messages').insert({
       session_id,
       role: 'user',
-      content: user_message
+      content: user_message + (image ? '\n[photo jointe]' : '')
     })
 
     // Charge l'historique de la session pour mémoire
@@ -278,10 +362,63 @@ Deno.serve(async (req) => {
       .eq('session_id', session_id)
       .order('created_at', { ascending: true })
 
-    const messages = (history || []).map(m => ({
-      role: m.role,
-      content: m.content
-    }))
+    // Construit les messages pour Claude : historique texte + dernier message avec image éventuelle
+    const messages: any[] = []
+    const histArr = history || []
+    for (let i = 0; i < histArr.length - 1; i++) {
+      messages.push({ role: histArr[i].role, content: histArr[i].content })
+    }
+    // Le dernier message utilisateur peut contenir une image
+    if (image && image.base64) {
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: image.type || 'image/jpeg', data: image.base64 } },
+          { type: 'text', text: user_message || 'Voici la photo de mes mesures au pendule.' }
+        ]
+      })
+    } else if (histArr.length > 0) {
+      const last = histArr[histArr.length - 1]
+      messages.push({ role: last.role, content: last.content })
+    }
+
+    // === MÉMOIRE TRANSVERSALE PAR CLIENTE ===
+    // Si la session a un client_id, ajoute le contexte des sessions précédentes
+    let extendedSystem = SYSTEM_PROMPT
+    if (session.client_id) {
+      const { data: clientData } = await admin
+        .from('outils_clients')
+        .select('prenom, nom, notes_privees')
+        .eq('id', session.client_id)
+        .single()
+
+      const { data: priorSessions } = await admin
+        .from('outils_sessions')
+        .select('id, titre, created_at')
+        .eq('client_id', session.client_id)
+        .neq('id', session_id)
+        .order('created_at', { ascending: true })
+        .limit(8)
+
+      if (priorSessions && priorSessions.length > 0) {
+        const summaries: string[] = []
+        for (const ps of priorSessions) {
+          const { data: lastMsg } = await admin
+            .from('outils_messages')
+            .select('content')
+            .eq('session_id', ps.id)
+            .eq('role', 'assistant')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          const excerpt = lastMsg?.content ? lastMsg.content.substring(0, 800) : '(session sans bilan finalisé)'
+          summaries.push(`SESSION DU ${new Date(ps.created_at).toLocaleDateString('fr-FR')} :\n${excerpt}\n---`)
+        }
+        const clientName = clientData ? `${clientData.prenom}${clientData.nom ? ' ' + clientData.nom : ''}` : 'la cliente'
+        const clientNotes = clientData?.notes_privees ? `\n\nNotes privées de la praticienne sur ${clientName} :\n${clientData.notes_privees}` : ''
+        extendedSystem = SYSTEM_PROMPT + `\n\n=== HISTORIQUE DE ${clientName.toUpperCase()} ===\n\nTu connais déjà cette personne. Voici l'historique de tes sessions précédentes avec elle. Réfère-toi à ces mesures et à ces décrets quand c'est pertinent, et observe les évolutions chiffrées s'il y en a.${clientNotes}\n\n${summaries.join('\n')}\n\n=== FIN DE L'HISTORIQUE ===\n\nDans la session présente, prends en compte cet historique mais sans le ressasser. Tu peux faire des liens explicites entre les sessions, comparer les pourcentages dans le temps, et célébrer ou nommer les évolutions.`
+      }
+    }
 
     // Appel Claude Sonnet 4.6
     const claudeResp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -294,7 +431,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4096,
-        system: SYSTEM_PROMPT,
+        system: extendedSystem,
         messages: messages
       })
     })
