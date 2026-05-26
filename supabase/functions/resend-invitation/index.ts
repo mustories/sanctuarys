@@ -80,9 +80,14 @@ Deno.serve(async (req) => {
       }
     }
 
-    const redirectTo = targetProfile.role === 'student'
-      ? 'https://sanctuarys.me/espace-eleve'
-      : 'https://sanctuarys.me/admin'
+    let redirectTo: string
+    if (targetProfile.role === 'student') {
+      redirectTo = 'https://sanctuarys.me/espace-eleve'
+    } else if (targetProfile.role === 'praticienne') {
+      redirectTo = 'https://sanctuarys.me/outils'
+    } else {
+      redirectTo = 'https://sanctuarys.me/admin'
+    }
 
     // Génère un nouveau lien d'invitation et envoie l'email
     // generateLink type 'invite' fonctionne pour les users non confirmés
@@ -134,7 +139,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; }
 .footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
 </style></head><body>
 <div class="container">
-  <p class="meta">— Sanctuarys</p>
+  <p class="meta">✦ Sanctuarys</p>
   <h1>Ton espace<br><em>t'attend.</em></h1>
   <p>Bonjour ${targetProfile.prenom},</p>
   <p>Voici ton lien d'accès à ton espace Sanctuarys. Clique sur le bouton ci-dessous, tu pourras choisir ton mot de passe et entrer dans ton espace.</p>

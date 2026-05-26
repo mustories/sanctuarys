@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nahar · Conseil Quantique · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#C8704D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --or-pale: #E8C57A;
+    --rouge-doux: #B22B2B;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+
+  body {
+    background: var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    background: linear-gradient(180deg, #1A0F08 0%, #2A1810 100%);
+    color: var(--blanc);
+    padding: 32px 24px;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0 20px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.18);
+    margin-bottom: 24px;
+  }
+  .sidebar-logo img {
+    width: 100%;
+    max-width: 160px;
+    filter: invert(94%) sepia(11%) saturate(394%) hue-rotate(341deg) brightness(99%) contrast(92%);
+  }
+
+  .nahar-badge {
+    background: linear-gradient(135deg, var(--terracotta), var(--or));
+    padding: 14px 14px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .nahar-badge .name {
+    font-family: 'Italiana', serif;
+    font-size: 28px;
+    color: var(--blanc);
+    letter-spacing: 4px;
+  }
+  .nahar-badge .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--blanc-deep);
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+
+  .new-session-btn {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--terracotta);
+    color: var(--terracotta-pale);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: all 0.3s;
+  }
+  .new-session-btn:hover {
+    background: var(--terracotta);
+    color: var(--blanc);
+  }
+
+  .sessions-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.7;
+  }
+
+  .session-item {
+    padding: 12px 14px;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 4px;
+  }
+  .session-item:hover {
+    background: rgba(212, 160, 76, 0.05);
+    border-left-color: var(--terracotta);
+  }
+  .session-item.active {
+    background: rgba(200, 112, 77, 0.12);
+    border-left-color: var(--terracotta);
+  }
+  .session-item .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--blanc-deep);
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .session-item .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--or-pale);
+    opacity: 0.6;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 160, 76, 0.18);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--or-pale);
+    opacity: 0.55;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .sidebar-footer a { color: var(--terracotta-pale); text-decoration: none; }
+  .sidebar-footer a:hover { color: var(--or-pale); }
+
+  /* ============ MAIN CHAT ============ */
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 24px 60px;
+    border-bottom: 1px solid var(--line);
+    background: var(--blanc);
+  }
+  .chat-header .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .chat-header h1 {
+    font-family: 'Italiana', serif;
+    font-size: 36px;
+    color: var(--marron-deep);
+    line-height: 1;
+  }
+  .chat-header h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 60px 30px;
+  }
+  .messages::-webkit-scrollbar { width: 6px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+  .message {
+    max-width: 760px;
+    margin: 0 auto 32px;
+  }
+  .message.assistant .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .message.user .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: right;
+  }
+  .message.user {
+    text-align: right;
+  }
+  .bubble {
+    display: inline-block;
+    max-width: 100%;
+    text-align: left;
+    padding: 22px 28px;
+    border: 1px solid var(--line);
+  }
+  .message.assistant .bubble {
+    background: var(--blanc);
+    border-left: 3px solid var(--terracotta);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--marron-deep);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .message.user .bubble {
+    background: var(--blanc-deep);
+    color: var(--marron-deep);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 600px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .typing {
+    display: inline-flex;
+    gap: 6px;
+    padding: 8px 0;
+  }
+  .typing span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    opacity: 0.4;
+    animation: typing 1.4s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing {
+    0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-4px); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 24px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .empty-state h2 {
+    font-family: 'Italiana', serif;
+    font-size: 44px;
+    color: var(--marron-deep);
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .empty-state h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .empty-state p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--marron);
+    margin-bottom: 30px;
+  }
+  .start-btn {
+    display: inline-block;
+    padding: 16px 36px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .start-btn:hover {
+    background: var(--terracotta);
+  }
+
+  /* ============ COMPOSER ============ */
+  .composer {
+    padding: 20px 60px 28px;
+    border-top: 1px solid var(--line);
+    background: var(--blanc);
+  }
+  .composer-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .composer textarea {
+    flex: 1;
+    padding: 14px 18px;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    max-height: 200px;
+    transition: border-color 0.3s;
+  }
+  .composer textarea:focus {
+    outline: none;
+    border-color: var(--terracotta);
+  }
+  .composer textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .send-btn {
+    padding: 14px 22px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .send-btn:hover:not(:disabled) {
+    background: var(--terracotta);
+  }
+  .send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .composer-hint {
+    max-width: 760px;
+    margin: 8px auto 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  /* ============ LOGIN GATE ============ */
+  .login-gate {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #1A0F08 0%, #2A1810 100%);
+    color: var(--blanc);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .login-gate.hidden { display: none; }
+  .login-card {
+    background: rgba(250, 245, 236, 0.06);
+    border: 1px solid rgba(212, 160, 76, 0.25);
+    padding: 50px 40px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+  .login-logo {
+    width: 220px;
+    max-width: 75%;
+    margin: 0 auto 32px;
+    display: block;
+    filter: invert(94%) sepia(11%) saturate(394%) hue-rotate(341deg) brightness(99%) contrast(92%);
+  }
+  .login-title {
+    font-family: 'Italiana', serif;
+    font-size: 36px;
+    color: var(--blanc);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .login-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-pale);
+  }
+  .login-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(250, 245, 236, 0.06);
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    color: var(--blanc);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .login-input:focus {
+    outline: none;
+    border-color: var(--terracotta);
+  }
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: background 0.3s;
+    margin-top: 12px;
+  }
+  .login-btn:hover { background: var(--terracotta-deep); }
+  .login-error {
+    color: var(--rouge-doux);
+    font-size: 12px;
+    margin-top: 12px;
+    min-height: 16px;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; padding: 20px 24px; }
+    .sidebar-logo img { max-width: 130px; }
+    .chat-header { padding: 20px 24px; }
+    .chat-header h1 { font-size: 28px; }
+    .messages { padding: 24px 20px; }
+    .message.assistant .bubble { padding: 18px 20px; font-size: 16px; }
+    .composer { padding: 14px 20px 20px; }
+    .composer-inner { flex-direction: column; align-items: stretch; }
+    .send-btn { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <h1 class="login-title">Nahar<br><em>Conseil Quantique.</em></h1>
+    <div class="login-sub">Accès praticien.ne Sanctuarys Outils</div>
+    <form id="loginForm">
+      <input type="email" class="login-input" id="loginEmail" placeholder="Email" required>
+      <input type="password" class="login-input" id="loginPassword" placeholder="Mot de passe" required>
+      <button type="submit" class="login-btn">Entrer dans la rivière de lumière ✦</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- FIRST PASSWORD GATE -->
+<div class="login-gate" id="firstPwdGate" style="display: none;">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <h1 class="login-title">Choisis ton<br><em>mot de passe.</em></h1>
+    <div class="login-sub">Première étape avant d'entrer</div>
+    <form id="firstPwdForm">
+      <input type="password" class="login-input" id="firstPwd1" placeholder="Nouveau mot de passe" minlength="8" required>
+      <input type="password" class="login-input" id="firstPwd2" placeholder="Confirme le mot de passe" minlength="8" required>
+      <button type="submit" class="login-btn">Activer mon accès ✦</button>
+      <div class="login-error" id="firstPwdError"></div>
+    </form>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="outils.html"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+    </div>
+    <div class="nahar-badge">
+      <div class="name">Nahar</div>
+      <div class="role">Conseil Quantique</div>
+    </div>
+    <button class="new-session-btn" id="newSessionBtn">+ Nouvelle activation</button>
+    <div class="sessions-label">Sessions précédentes</div>
+    <div id="sessionsList"></div>
+    <div class="sidebar-footer">
+      <a href="outils.html">← Sanctuarys Outils</a><br><br>
+      <a href="#" id="logoutLink">Déconnexion</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="chat-header">
+      <div class="breadcrumb">Sanctuarys Outils · Nahar</div>
+      <h1>Le <em>Conseil Quantique.</em></h1>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="empty-state" id="emptyState">
+        <h2>Bienvenue,<br><em>praticien.ne.</em></h2>
+        <p>Nahar t'écoute. Elle est prête à scanner avec toi les 12 piliers de l'hygiène vibratoire, pour toi ou pour la personne que tu accompagnes. Ouvre une activation pour commencer.</p>
+        <button class="start-btn" id="startBtn">Ouvrir une activation ✦</button>
+      </div>
+    </div>
+
+    <div class="composer" id="composer" style="display: none;">
+      <div class="composer-inner">
+        <textarea id="userInput" placeholder="Réponds à Nahar..." rows="2"></textarea>
+        <button class="send-btn" id="sendBtn">Envoyer ✦</button>
+      </div>
+      <div class="composer-hint">Entrée pour envoyer · Maj+Entrée pour aller à la ligne</div>
+    </div>
+  </main>
+</div>
+
+<script src="js/sanctuarys.js"></script>
+<script>
+  // ============ STATE ============
+  let CURRENT_SESSION_ID = null;
+  let SESSIONS = [];
+  let PROFILE = null;
+
+  // ============ DETECTION INVITATION / RECUPERATION ============
+  const INITIAL_HASH = window.location.hash || '';
+  const INITIAL_HASH_PARAMS = new URLSearchParams(INITIAL_HASH.startsWith('#') ? INITIAL_HASH.substring(1) : INITIAL_HASH);
+  const AUTH_FLOW_TYPE = INITIAL_HASH_PARAMS.get('type') || '';
+  const IS_FIRST_TIME = ['invite', 'recovery', 'magiclink', 'signup'].includes(AUTH_FLOW_TYPE);
+
+  function showFirstPwdGate() {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('firstPwdGate').style.display = 'flex';
+    setTimeout(() => document.getElementById('firstPwd1').focus(), 100);
+  }
+  function hideFirstPwdGate() {
+    document.getElementById('firstPwdGate').style.display = 'none';
+  }
+
+  // ============ LOGIN ============
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const err = document.getElementById('loginError');
+    err.textContent = '';
+    try {
+      await Sanctuarys.signIn(email, password);
+      await bootstrap();
+    } catch (e) {
+      err.textContent = 'Identifiants incorrects.';
+      document.getElementById('loginPassword').value = '';
+    }
+  });
+
+  document.getElementById('firstPwdForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const pwd1 = document.getElementById('firstPwd1').value;
+    const pwd2 = document.getElementById('firstPwd2').value;
+    const err = document.getElementById('firstPwdError');
+    err.textContent = '';
+    if (pwd1 !== pwd2) { err.textContent = 'Les deux mots de passe ne correspondent pas.'; return; }
+    if (pwd1.length < 8) { err.textContent = 'Au moins 8 caractères.'; return; }
+    try {
+      await Sanctuarys.updatePassword(pwd1);
+      history.replaceState(null, '', window.location.pathname);
+      hideFirstPwdGate();
+      await bootstrap();
+    } catch (ex) {
+      err.textContent = ex.message || 'Erreur d\'activation';
+    }
+  });
+
+  Sanctuarys.onReady(async (supa) => {
+    supa.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') showFirstPwdGate();
+    });
+    const session = await Sanctuarys.getSession();
+    if (session && IS_FIRST_TIME) {
+      showFirstPwdGate();
+    } else if (session) {
+      await bootstrap();
+    } else {
+      document.getElementById('loginEmail').focus();
+    }
+  });
+  Sanctuarys.init();
+
+  // ============ BOOTSTRAP ============
+  async function bootstrap() {
+    PROFILE = await Sanctuarys.getProfile();
+    if (!PROFILE) {
+      alert('Profil introuvable. Contacte Sanctuarys.');
+      await Sanctuarys.signOut();
+      window.location.reload();
+      return;
+    }
+    if (!['admin', 'formatrice', 'praticienne'].includes(PROFILE.role)) {
+      alert('Cet outil est réservé aux praticien.nes Sanctuarys Outils.');
+      await Sanctuarys.signOut();
+      window.location.reload();
+      return;
+    }
+    document.getElementById('loginGate').classList.add('hidden');
+    await loadSessions();
+  }
+
+  async function loadSessions() {
+    try {
+      const r = await Sanctuarys.naharListSessions();
+      SESSIONS = r.sessions || [];
+      renderSessions();
+    } catch (err) {
+      console.error('loadSessions', err);
+    }
+  }
+
+  function renderSessions() {
+    const list = document.getElementById('sessionsList');
+    list.innerHTML = '';
+    if (SESSIONS.length === 0) {
+      list.innerHTML = '<div style="opacity:0.5; font-family:\'Cormorant Garamond\', serif; font-style:italic; font-size:13px; padding:8px 14px; color:var(--blanc-deep);">Aucune session pour l\'instant.</div>';
+      return;
+    }
+    SESSIONS.forEach(s => {
+      const item = document.createElement('div');
+      item.className = 'session-item' + (s.id === CURRENT_SESSION_ID ? ' active' : '');
+      const date = new Date(s.updated_at);
+      item.innerHTML = `
+        <div class="title">${escapeHTML(s.titre || 'Session')}</div>
+        <div class="date">${date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} · ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
+      `;
+      item.addEventListener('click', () => openSession(s.id));
+      list.appendChild(item);
+    });
+  }
+
+  async function openSession(sessionId) {
+    CURRENT_SESSION_ID = sessionId;
+    renderSessions();
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('composer').style.display = 'block';
+    const messagesEl = document.getElementById('messages');
+    messagesEl.innerHTML = '<div class="message assistant" style="text-align:center; opacity:0.6;"><div class="meta">✦ Chargement</div></div>';
+    try {
+      const r = await Sanctuarys.naharLoadMessages(sessionId);
+      messagesEl.innerHTML = '';
+      (r.messages || []).forEach(m => appendMessage(m.role, m.content));
+      scrollToBottom();
+      document.getElementById('userInput').focus();
+    } catch (err) {
+      messagesEl.innerHTML = '';
+      appendMessage('assistant', 'Erreur de chargement : ' + (err.message || 'inconnue'));
+    }
+  }
+
+  async function startNewSession() {
+    try {
+      const r = await Sanctuarys.naharNewSession();
+      CURRENT_SESSION_ID = r.session.id;
+      SESSIONS.unshift(r.session);
+      renderSessions();
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('composer').style.display = 'block';
+      document.getElementById('messages').innerHTML = '';
+      // Envoie un premier message vide pour déclencher l'accueil de Nahar
+      await sendMessage('Bonjour Nahar, je suis prête.');
+    } catch (err) {
+      alert('Erreur : ' + (err.message || 'session impossible'));
+    }
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startNewSession);
+  document.getElementById('newSessionBtn').addEventListener('click', startNewSession);
+
+  // ============ MESSAGES ============
+  function appendMessage(role, content) {
+    const messagesEl = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'message ' + role;
+    const meta = role === 'assistant' ? '✦ Nahar' : 'Toi';
+    div.innerHTML = `
+      <div class="meta">${meta}</div>
+      <div class="bubble">${escapeHTML(content)}</div>
+    `;
+    messagesEl.appendChild(div);
+    return div;
+  }
+
+  function scrollToBottom() {
+    const messagesEl = document.getElementById('messages');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  async function sendMessage(text) {
+    if (!text || !CURRENT_SESSION_ID) return;
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+    appendMessage('user', text);
+    // Bulle typing pour Nahar
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message assistant';
+    typingDiv.innerHTML = '<div class="meta">✦ Nahar</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+    document.getElementById('messages').appendChild(typingDiv);
+    scrollToBottom();
+    try {
+      const r = await Sanctuarys.naharSend(CURRENT_SESSION_ID, text);
+      typingDiv.remove();
+      appendMessage('assistant', r.message.content);
+      scrollToBottom();
+      // Met à jour la liste des sessions pour refléter le nouveau titre / updated_at
+      await loadSessions();
+    } catch (err) {
+      typingDiv.remove();
+      appendMessage('assistant', 'Erreur : ' + (err.message || 'la rivière est interrompue.'));
+      scrollToBottom();
+    } finally {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const text = document.getElementById('userInput').value.trim();
+    if (text) sendMessage(text);
+  });
+
+  document.getElementById('userInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const text = e.target.value.trim();
+      if (text) sendMessage(text);
+    }
+  });
+
+  // Auto-resize textarea
+  document.getElementById('userInput').addEventListener('input', e => {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+  });
+
+  // ============ LOGOUT ============
+  document.getElementById('logoutLink').addEventListener('click', async e => {
+    e.preventDefault();
+    await Sanctuarys.signOut();
+    window.location.reload();
+  });
+
+  // ============ UTILS ============
+  function escapeHTML(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>

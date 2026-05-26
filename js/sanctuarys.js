@@ -294,6 +294,23 @@ window.Sanctuarys = {
     return data;
   },
 
+  async invitePraticienne(payload) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-praticienne`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur lors de la création');
+    return data;
+  },
+
   async deleteUser(userId) {
     const session = await this.getSession();
     if (!session) throw new Error('Session expirée');
@@ -395,6 +412,60 @@ window.Sanctuarys = {
       .limit(1)
       .maybeSingle();
     return data;
+  },
+
+  // === SANCTUARYS OUTILS (NAHAR) ===
+  async naharCall(payload) {
+    const session = await this.getSession();
+    if (!session) throw new Error('Session expirée');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/outil-nahar`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur Nahar');
+    return data;
+  },
+
+  async naharNewSession() {
+    return await this.naharCall({ action: 'create_session' });
+  },
+
+  async naharListSessions() {
+    return await this.naharCall({ action: 'list_sessions' });
+  },
+
+  async naharLoadMessages(sessionId) {
+    return await this.naharCall({ action: 'load_messages', session_id: sessionId });
+  },
+
+  async naharSend(sessionId, userMessage) {
+    return await this.naharCall({ session_id: sessionId, user_message: userMessage });
+  },
+
+  async listOutils() {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('outils_catalogue')
+      .select('*')
+      .eq('actif', true)
+      .order('ordre', { ascending: true });
+    return data || [];
+  },
+
+  async listPraticiennes() {
+    const supa = await this.init();
+    const { data } = await supa
+      .from('profiles')
+      .select('*')
+      .eq('role', 'praticienne')
+      .order('created_at', { ascending: false });
+    return data || [];
   },
 
   async listFormatrices() {

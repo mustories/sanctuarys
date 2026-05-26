@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanctuarys Outils · Le Laboratoire des Praticien.nes</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#C8704D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --or-pale: #E8C57A;
+    --rouge-doux: #B22B2B;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+  body {
+    background: var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+  .top {
+    padding: 32px 60px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--blanc);
+  }
+  .top-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .top img.logo {
+    height: 56px;
+  }
+  .top .nav {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+  .top .nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .top .nav a:hover { color: var(--terracotta-deep); }
+  .top .nav a.cta {
+    padding: 12px 22px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    border: none;
+    cursor: pointer;
+  }
+  .top .nav a.cta:hover { background: var(--terracotta); color: var(--blanc); }
+
+  .hero {
+    padding: 100px 60px 80px;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .hero .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Italiana', serif;
+    font-size: 80px;
+    color: var(--marron-deep);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .hero h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .hero .lead {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    line-height: 1.7;
+    color: var(--marron);
+    max-width: 660px;
+    margin: 0 auto;
+  }
+
+  .tools-section {
+    padding: 40px 60px 100px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .tools-section h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 24px;
+  }
+  .tool-card {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 50px 44px;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--terracotta), var(--or));
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 0;
+  }
+  .tool-card:hover { transform: translateY(-4px); border-color: var(--terracotta); }
+  .tool-card > * { position: relative; z-index: 1; }
+  .tool-card .icon {
+    font-family: 'Italiana', serif;
+    font-size: 54px;
+    color: var(--terracotta-deep);
+    margin-bottom: 14px;
+  }
+  .tool-card h3 {
+    font-family: 'Italiana', serif;
+    font-size: 42px;
+    color: var(--marron-deep);
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .tool-card h3 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .tool-card .role-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .tool-card p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--marron);
+    margin-bottom: 26px;
+  }
+  .tool-card .enter-btn {
+    display: inline-block;
+    padding: 13px 28px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: background 0.3s;
+  }
+  .tool-card:hover .enter-btn { background: var(--terracotta); }
+  .tool-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .tool-card.locked .enter-btn { background: var(--marron-soft); }
+
+  /* LOGIN GATE */
+  .login-gate {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #1A0F08 0%, #2A1810 100%);
+    color: var(--blanc);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .login-gate.hidden { display: none; }
+  .login-card {
+    background: rgba(250, 245, 236, 0.06);
+    border: 1px solid rgba(212, 160, 76, 0.25);
+    padding: 50px 40px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+  .login-logo {
+    width: 220px; max-width: 75%; margin: 0 auto 32px; display: block;
+    filter: invert(94%) sepia(11%) saturate(394%) hue-rotate(341deg) brightness(99%) contrast(92%);
+  }
+  .login-title {
+    font-family: 'Italiana', serif; font-size: 36px; color: var(--blanc); line-height: 1; margin-bottom: 12px;
+  }
+  .login-title em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-pale); }
+  .login-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--or-pale); margin-bottom: 32px; text-transform: uppercase; opacity: 0.7;
+  }
+  .login-input {
+    width: 100%; padding: 14px 16px; background: rgba(250, 245, 236, 0.06);
+    border: 1px solid rgba(212, 160, 76, 0.3); color: var(--blanc);
+    font-family: 'Inter', sans-serif; font-size: 14px; margin-bottom: 12px;
+  }
+  .login-input:focus { outline: none; border-color: var(--terracotta); }
+  .login-btn {
+    width: 100%; padding: 16px; background: var(--terracotta); color: var(--blanc);
+    border: none; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-top: 12px;
+  }
+  .login-btn:hover { background: var(--terracotta-deep); }
+  .login-error { color: var(--rouge-doux); font-size: 12px; margin-top: 12px; min-height: 16px; }
+
+  @media (max-width: 900px) {
+    .top { padding: 20px 24px; }
+    .top img.logo { height: 44px; }
+    .top .nav { gap: 16px; }
+    .top .nav a { font-size: 10px; }
+    .hero { padding: 60px 24px 40px; }
+    .hero h1 { font-size: 52px; }
+    .hero .lead { font-size: 17px; }
+    .tools-section { padding: 30px 24px 80px; }
+    .tool-card { padding: 36px 28px; }
+    .tool-card h3 { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <h1 class="login-title">Sanctuarys<br><em>Outils.</em></h1>
+    <div class="login-sub">Accès praticien.ne</div>
+    <form id="loginForm">
+      <input type="email" class="login-input" id="loginEmail" placeholder="Email" required>
+      <input type="password" class="login-input" id="loginPassword" placeholder="Mot de passe" required>
+      <button type="submit" class="login-btn">Entrer dans le Laboratoire ✦</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- FIRST PASSWORD GATE -->
+<div class="login-gate" id="firstPwdGate" style="display: none;">
+  <div class="login-card">
+    <img class="login-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <h1 class="login-title">Choisis ton<br><em>mot de passe.</em></h1>
+    <div class="login-sub">Première étape avant d'entrer</div>
+    <form id="firstPwdForm">
+      <input type="password" class="login-input" id="firstPwd1" placeholder="Nouveau mot de passe" minlength="8" required>
+      <input type="password" class="login-input" id="firstPwd2" placeholder="Confirme le mot de passe" minlength="8" required>
+      <button type="submit" class="login-btn">Activer mon accès ✦</button>
+      <div class="login-error" id="firstPwdError"></div>
+    </form>
+  </div>
+</div>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="index.html"><img class="logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+    <nav class="nav">
+      <span id="welcomeText" style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--marron-soft);"></span>
+      <a href="#" id="logoutLink">Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="breadcrumb">Sanctuarys Outils</div>
+  <h1>Le <em>Laboratoire</em><br>des praticien.nes.</h1>
+  <p class="lead">Une bibliothèque d'outils Sanctuarys, pensée pour les praticien.nes en radiesthésie qui veulent affiner leur travail, libérer leur temps et offrir à leurs clientes une transmutation de précision.</p>
+</section>
+
+<section class="tools-section">
+  <h2>Outils disponibles</h2>
+  <div class="tools-grid" id="toolsGrid">
+    <div style="opacity:0.5; font-family:'Cormorant Garamond', serif; font-style:italic; padding: 40px;">Chargement...</div>
+  </div>
+</section>
+
+<script src="js/sanctuarys.js"></script>
+<script>
+  let PROFILE = null;
+
+  const INITIAL_HASH = window.location.hash || '';
+  const INITIAL_HASH_PARAMS = new URLSearchParams(INITIAL_HASH.startsWith('#') ? INITIAL_HASH.substring(1) : INITIAL_HASH);
+  const AUTH_FLOW_TYPE = INITIAL_HASH_PARAMS.get('type') || '';
+  const IS_FIRST_TIME = ['invite', 'recovery', 'magiclink', 'signup'].includes(AUTH_FLOW_TYPE);
+
+  function showFirstPwdGate() {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('firstPwdGate').style.display = 'flex';
+    setTimeout(() => document.getElementById('firstPwd1').focus(), 100);
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const err = document.getElementById('loginError');
+    err.textContent = '';
+    try {
+      await Sanctuarys.signIn(email, password);
+      await bootstrap();
+    } catch (e) {
+      err.textContent = 'Identifiants incorrects.';
+    }
+  });
+
+  document.getElementById('firstPwdForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const pwd1 = document.getElementById('firstPwd1').value;
+    const pwd2 = document.getElementById('firstPwd2').value;
+    const err = document.getElementById('firstPwdError');
+    if (pwd1 !== pwd2) { err.textContent = 'Les deux mots de passe ne correspondent pas.'; return; }
+    if (pwd1.length < 8) { err.textContent = 'Au moins 8 caractères.'; return; }
+    try {
+      await Sanctuarys.updatePassword(pwd1);
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('firstPwdGate').style.display = 'none';
+      await bootstrap();
+    } catch (ex) {
+      err.textContent = ex.message || 'Erreur';
+    }
+  });
+
+  Sanctuarys.onReady(async (supa) => {
+    supa.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') showFirstPwdGate();
+    });
+    const session = await Sanctuarys.getSession();
+    if (session && IS_FIRST_TIME) showFirstPwdGate();
+    else if (session) await bootstrap();
+  });
+  Sanctuarys.init();
+
+  async function bootstrap() {
+    PROFILE = await Sanctuarys.getProfile();
+    if (!PROFILE || !['admin', 'formatrice', 'praticienne'].includes(PROFILE.role)) {
+      alert('Sanctuarys Outils est réservé aux praticien.nes.');
+      await Sanctuarys.signOut();
+      window.location.reload();
+      return;
+    }
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('welcomeText').textContent = 'Bienvenue ' + (PROFILE.prenom || 'praticien.ne');
+    await loadTools();
+  }
+
+  async function loadTools() {
+    const tools = await Sanctuarys.listOutils();
+    const grid = document.getElementById('toolsGrid');
+    grid.innerHTML = '';
+    if (tools.length === 0) {
+      grid.innerHTML = '<div style="opacity:0.6; font-family:\'Cormorant Garamond\', serif; font-style:italic;">Catalogue en préparation.</div>';
+      return;
+    }
+    tools.forEach(t => {
+      const link = document.createElement('a');
+      link.className = 'tool-card';
+      link.href = 'outil-' + t.slug + '.html';
+      link.innerHTML = `
+        <div class="icon">${t.icone || '✦'}</div>
+        <h3>${escapeHTML(t.nom)}<br><em>Conseil Quantique.</em></h3>
+        <div class="role-line">12 piliers de l'hygiène vibratoire</div>
+        <p>${escapeHTML(t.description || '')}</p>
+        <span class="enter-btn">Ouvrir Nahar ✦</span>
+      `;
+      grid.appendChild(link);
+    });
+
+    // Carte placeholder pour outils à venir
+    const placeholder = document.createElement('div');
+    placeholder.className = 'tool-card locked';
+    placeholder.style.cursor = 'default';
+    placeholder.innerHTML = `
+      <div class="icon" style="opacity:0.4;">✦</div>
+      <h3 style="opacity:0.5;">Outil <em>à venir.</em></h3>
+      <div class="role-line">Bientôt révélé</div>
+      <p>Sanctuarys continue d'élaborer des outils sur-mesure pour ta pratique. Reste connectée.</p>
+      <span class="enter-btn">En préparation</span>
+    `;
+    grid.appendChild(placeholder);
+  }
+
+  document.getElementById('logoutLink').addEventListener('click', async e => {
+    e.preventDefault();
+    await Sanctuarys.signOut();
+    window.location.reload();
+  });
+
+  function escapeHTML(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>
