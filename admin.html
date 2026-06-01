@@ -1533,8 +1533,27 @@
         </div>
       </div>
 
+      <div class="eleves-toolbar">
+        <input type="text" class="search-box" placeholder="Rechercher une élève..." id="searchConversation">
+        <button class="btn-primary" id="newConversationBtn">
+          <span>+</span>
+          <span>Nouveau message</span>
+        </button>
+      </div>
+
       <div class="eleves-list" id="conversationsList">
         <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement des conversations...</div>
+      </div>
+    </div>
+
+    <!-- Modal "Nouveau message" : choisir un destinataire -->
+    <div class="modal-overlay" id="modalPickRecipient">
+      <div class="modal" style="max-width: 560px; padding: 44px 50px;">
+        <button class="modal-close" onclick="closePickRecipient()">×</button>
+        <div class="entry-modal-meta">Nouveau message</div>
+        <h2 class="entry-modal-title">À qui veux-tu <em>écrire ?</em></h2>
+        <input type="text" id="pickRecipientSearch" placeholder="Tape un prénom..." style="width: 100%; padding: 12px 16px; margin-top: 18px; background: var(--blanc-deep); border: 1px solid var(--line); font-family: 'Inter', sans-serif; font-size: 14px; color: var(--marron-deep);">
+        <div id="pickRecipientList" style="max-height: 50vh; overflow-y: auto; margin-top: 18px;"></div>
       </div>
     </div>
 
@@ -2256,6 +2275,69 @@
       e.preventDefault();
       sendConvoReply();
     }
+  });
+
+  // ============ NOUVEAU MESSAGE : PICKER ============
+  function openPickRecipient() {
+    document.getElementById('pickRecipientSearch').value = '';
+    renderPickRecipientList('');
+    document.getElementById('modalPickRecipient').classList.add('show');
+    setTimeout(() => document.getElementById('pickRecipientSearch').focus(), 100);
+  }
+  function closePickRecipient() {
+    document.getElementById('modalPickRecipient').classList.remove('show');
+  }
+  window.closePickRecipient = closePickRecipient;
+
+  function renderPickRecipientList(query) {
+    const list = document.getElementById('pickRecipientList');
+    list.innerHTML = '';
+    const q = (query || '').toLowerCase().trim();
+    // Combine élèves et formatrices (sauf moi-même)
+    const all = []
+      .concat((STUDENTS || []).map(s => ({ ...s, _type: 'élève' })))
+      .concat((FORMATRICES || []).filter(f => f.id !== ADMIN_PROFILE.id).map(f => ({ ...f, _type: 'formatrice' })));
+    const filtered = q
+      ? all.filter(p => (p.prenom || '').toLowerCase().includes(q) || (p.nom || '').toLowerCase().includes(q))
+      : all;
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 14px;">Aucun résultat.</div>';
+      return;
+    }
+    filtered.forEach(p => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.style.cssText = 'display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; background: var(--blanc-deep); border: 1px solid var(--line); margin-bottom: 6px; cursor: pointer; text-align: left; transition: all 0.3s;';
+      row.innerHTML = `
+        <div class="eleve-avatar" style="width: 38px; height: 38px; font-size: 14px;">${(p.prenom || 'A')[0].toUpperCase()}</div>
+        <div style="flex: 1;">
+          <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep);">${escapeHTML(p.prenom)}${p.nom ? ' ' + escapeHTML(p.nom) : ''}</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase; margin-top: 2px;">${p._type}</div>
+        </div>
+      `;
+      row.addEventListener('mouseover', () => { row.style.background = 'rgba(232, 176, 153, 0.18)'; row.style.borderColor = 'var(--terracotta)'; });
+      row.addEventListener('mouseout', () => { row.style.background = 'var(--blanc-deep)'; row.style.borderColor = 'var(--line)'; });
+      row.addEventListener('click', () => {
+        closePickRecipient();
+        openConversation(p.id, p);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('newConversationBtn').addEventListener('click', openPickRecipient);
+  document.getElementById('pickRecipientSearch').addEventListener('input', e => renderPickRecipientList(e.target.value));
+  document.getElementById('modalPickRecipient').addEventListener('click', e => {
+    if (e.target.id === 'modalPickRecipient') closePickRecipient();
+  });
+
+  // Recherche dans la liste des conversations
+  document.getElementById('searchConversation').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('#conversationsList .eleve-row').forEach(row => {
+      const name = (row.querySelector('.name')?.textContent || '').toLowerCase();
+      row.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
   });
 
   // Realtime : recharger quand nouveau message arrive
