@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenue Fondatrice · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Italiana&family=Inter:wght@300;400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --or-pale: #E8C57A;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.25), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.18), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .frame {
+    max-width: 680px;
+    text-align: center;
+    background: var(--blanc);
+    padding: 80px 60px;
+    border: 1px solid var(--line);
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 40px 100px rgba(74, 48, 32, 0.1);
+  }
+  .frame::before {
+    content: '✦';
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blanc);
+    padding: 0 18px;
+    font-size: 28px;
+    color: var(--terracotta-deep);
+  }
+
+  .logo {
+    width: 140px;
+    margin: 0 auto 40px;
+    display: block;
+  }
+
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 1.05;
+    color: var(--marron-deep);
+    margin-bottom: 24px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.85;
+    color: var(--marron);
+    margin-bottom: 36px;
+  }
+  .intro strong {
+    font-family: 'Italiana', serif;
+    font-weight: normal;
+    color: var(--terracotta-deep);
+    letter-spacing: 1px;
+  }
+
+  .steps {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 36px 36px;
+    margin: 36px 0 40px;
+    text-align: left;
+  }
+  .steps h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+  .step {
+    display: flex;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(106, 68, 35, 0.08);
+    align-items: flex-start;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--terracotta-deep);
+    flex-shrink: 0;
+    line-height: 1.2;
+    min-width: 26px;
+  }
+  .step-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--marron-deep);
+  }
+
+  .signature {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid var(--line);
+  }
+  .signature p {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--marron-soft);
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .signature .name {
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+    font-style: normal;
+    color: var(--marron-deep);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .footer-note {
+    margin-top: 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .footer-note a {
+    color: var(--terracotta-deep);
+    text-decoration: none;
+  }
+
+  @media (max-width: 600px) {
+    .frame { padding: 50px 26px; }
+    h1 { font-size: 38px; }
+    .intro { font-size: 16px; }
+    .steps { padding: 26px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <img class="logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+  <div class="meta">Pass Fondatrice · Validé ✦</div>
+
+  <h1>Bienvenue,<br><em>Fondatrice.</em></h1>
+
+  <p class="intro">
+    Ton paiement est validé. Tu fais désormais partie des <strong>123 Fondatrices</strong> du Yoni Social Club. Ton tarif est gravé dans la mémoire du Temple, à vie.
+  </p>
+
+  <div class="steps">
+    <h3>Les trois pas qui viennent</h3>
+    <div class="step">
+      <div class="step-num">I</div>
+      <div class="step-text"><strong>Vérifie ta boîte email.</strong> Tu reçois dans la minute un message d'accueil personnel de Princesse, avec un lien pour activer ton espace privé en choisissant ton mot de passe.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">II</div>
+      <div class="step-text"><strong>Remplis ton questionnaire d'entrée.</strong> Cinq étapes brèves pour que nous préparions tes protocoles personnalisés et ton analyse radiesthésique offerte.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">III</div>
+      <div class="step-text"><strong>Princesse te contacte personnellement</strong> dans les jours qui viennent pour planifier ta première séance YoniSpa et te transmettre les premières informations du Club.</div>
+    </div>
+  </div>
+
+  <div class="signature">
+    <p>Avec toute mon attention,</p>
+    <p class="name">Princesse Tchassi Bekou</p>
+    <p style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; margin-top: 14px; opacity: 0.7;">Fondatrice · Sanctuarys</p>
+  </div>
+
+  <div class="footer-note">
+    Tu n'as rien reçu ? Écris à <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a>
+  </div>
+</div>
+
+</body>
+</html>
