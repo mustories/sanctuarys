@@ -62,7 +62,25 @@
     line-height: 1.65;
     font-weight: 300;
     overflow-x: hidden;
-    cursor: none;
+  }
+  /* Curseur custom uniquement quand le JS a confirmé + device avec souris */
+  @media (hover: hover) and (pointer: fine) {
+    body.cursor-ready { cursor: none; }
+    body.cursor-ready a,
+    body.cursor-ready button,
+    body.cursor-ready input,
+    body.cursor-ready textarea,
+    body.cursor-ready select,
+    body.cursor-ready .expr-card,
+    body.cursor-ready .logo,
+    body.cursor-ready .nav-cta,
+    body.cursor-ready .nav-links a,
+    body.cursor-ready .btn-primary,
+    body.cursor-ready .btn-outline { cursor: none; }
+  }
+  /* Sur mobile ou tactile, on cache le faux curseur */
+  @media (hover: none), (pointer: coarse) {
+    .cursor, .cursor-trail { display: none !important; }
   }
   ::selection { background: var(--terracotta); color: var(--blanc); }
 
@@ -1448,27 +1466,49 @@
   // Et aussi au load complet si ça arrive avant
   window.addEventListener('load', () => setTimeout(hidePreloader, 1000));
 
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  const cursorTrail = document.getElementById('cursorTrail');
-  let mouseX = 0, mouseY = 0, trailX = 0, trailY = 0;
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    cursor.style.left = mouseX + 'px';
-    cursor.style.top = mouseY + 'px';
-  });
-  function animateTrail() {
-    trailX += (mouseX - trailX) * 0.12;
-    trailY += (mouseY - trailY) * 0.12;
-    cursorTrail.style.left = trailX + 'px';
-    cursorTrail.style.top = trailY + 'px';
-    requestAnimationFrame(animateTrail);
+  // Custom cursor : actif uniquement si device avec souris ET JS fonctionnel
+  try {
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (hasFinePointer) {
+      const cursor = document.getElementById('cursor');
+      const cursorTrail = document.getElementById('cursorTrail');
+      if (cursor && cursorTrail) {
+        let mouseX = 0, mouseY = 0, trailX = 0, trailY = 0;
+        let firstMove = true;
+        document.addEventListener('mousemove', (e) => {
+          if (firstMove) {
+            document.body.classList.add('cursor-ready');
+            firstMove = false;
+          }
+          mouseX = e.clientX; mouseY = e.clientY;
+          cursor.style.left = mouseX + 'px';
+          cursor.style.top = mouseY + 'px';
+        });
+        function animateTrail() {
+          trailX += (mouseX - trailX) * 0.12;
+          trailY += (mouseY - trailY) * 0.12;
+          cursorTrail.style.left = trailX + 'px';
+          cursorTrail.style.top = trailY + 'px';
+          requestAnimationFrame(animateTrail);
+        }
+        animateTrail();
+        document.querySelectorAll('a, button, .expr-card, input, textarea').forEach(el => {
+          el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+          el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+      }
+    } else {
+      // Sur touch/mobile, on retire les éléments curseur du DOM
+      const c = document.getElementById('cursor');
+      const ct = document.getElementById('cursorTrail');
+      if (c) c.style.display = 'none';
+      if (ct) ct.style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Cursor init failed:', err);
+    // Si erreur, on s'assure que le curseur système reste visible
+    document.body.style.cursor = 'auto';
   }
-  animateTrail();
-  document.querySelectorAll('a, button, .expr-card, input, textarea').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-  });
 
   // Nav scroll + on-dark detection
   const nav = document.getElementById('mainNav');
