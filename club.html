@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanctuarys · Yoni Social Club</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#C8704D">
+<meta name="apple-mobile-web-app-title" content="Sanctuarys">
+<meta name="application-name" content="Sanctuarys">
+<meta name="description" content="Yoni Social Club Sanctuarys. Temple moderne dédié à la femme et à son bien-être. 180€ par mois sans engagement, 3 séances YoniSpa, 2 événements offerts. 123 membres dans le temple.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sanctuarys.me/club">
+<meta property="og:title" content="Sanctuarys · Yoni Social Club">
+<meta property="og:description" content="Temple moderne dédié à la femme et à son bien-être. 180€ par mois sans engagement.">
+<meta property="og:image" content="https://sanctuarys.me/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Sanctuarys">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sanctuarys · Yoni Social Club">
+<meta name="twitter:description" content="Temple moderne dédié à la femme. 180€/mois sans engagement.">
+<meta name="twitter:image" content="https://sanctuarys.me/assets/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --or-pale: #E8C57A;
+    --rose: #C58A7A;
+    --rose-pale: #E8C2B5;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+  body {
+    background: var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* === NAV === */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 22px 60px;
+    background: rgba(250, 245, 236, 0.96);
+    border-bottom: 1px solid var(--line-soft);
+    backdrop-filter: blur(12px);
+    transition: padding 0.4s;
+  }
+  nav.scrolled { padding: 14px 60px; }
+  .nav-logo img { height: 44px; width: auto; display: block; }
+  .nav-right { display: flex; align-items: center; gap: 28px; }
+  .nav-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-link:hover { color: var(--terracotta-deep); }
+  .nav-cta {
+    padding: 12px 26px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .nav-cta:hover { background: var(--terracotta); }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100vh;
+    padding: 140px 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.22), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.16), transparent 50%),
+      var(--blanc);
+  }
+  .hero-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0.9;
+  }
+  .hero h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 9vw, 124px);
+    line-height: 0.95;
+    color: var(--marron-deep);
+    max-width: 1100px;
+    margin-bottom: 32px;
+    letter-spacing: -1px;
+  }
+  .hero h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+    font-weight: 400;
+  }
+  .hero-lead {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 2vw, 24px);
+    color: var(--marron);
+    max-width: 720px;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 48px;
+  }
+  .hero-tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 28px;
+    background: rgba(232, 176, 153, 0.22);
+    border: 1px solid var(--terracotta-pale);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+  .hero-tagline .dot {
+    width: 6px; height: 6px;
+    background: var(--terracotta);
+    border-radius: 50%;
+  }
+  .hero-cta {
+    display: inline-block;
+    padding: 22px 48px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+  }
+  .hero-cta:hover {
+    background: var(--terracotta);
+    letter-spacing: 6px;
+  }
+  .hero-scroll {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  /* === MANIFESTE / VALEURS === */
+  .manifeste {
+    padding: 140px 60px;
+    background: var(--blanc-deep);
+    border-top: 1px solid var(--line-soft);
+  }
+  .section-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(42px, 5vw, 64px);
+    color: var(--marron-deep);
+    line-height: 1;
+  }
+  .section-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .manifeste-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.85;
+    color: var(--marron-deep);
+  }
+  .manifeste-text p { margin-bottom: 20px; }
+  .manifeste-text p:last-child { margin-bottom: 0; }
+
+  /* === VALEURS === */
+  .valeurs {
+    padding: 140px 60px;
+    background: var(--blanc);
+  }
+  .valeurs-header {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    text-align: center;
+  }
+  .valeurs-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .valeur {
+    padding: 50px 32px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition: background 0.4s;
+  }
+  .valeur:hover { background: var(--blanc-deep); }
+  .valeur-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta-deep);
+    margin-bottom: 24px;
+  }
+  .valeur-name {
+    font-family: 'Italiana', serif;
+    font-size: 32px;
+    color: var(--marron-deep);
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+  }
+  .valeur-name em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .valeur-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--marron);
+  }
+
+  /* === OFFRE === */
+  .offre {
+    padding: 140px 60px;
+    background: linear-gradient(180deg, var(--blanc-deep), var(--blanc));
+  }
+  .offre-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 80px 70px;
+    position: relative;
+    text-align: center;
+  }
+  .offre-inner::before {
+    content: '✦';
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blanc);
+    padding: 0 18px;
+    font-size: 28px;
+    color: var(--terracotta-deep);
+  }
+  .offre-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .offre-title {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 6vw, 80px);
+    color: var(--marron-deep);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .offre-title em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .offre-prix {
+    font-family: 'Italiana', serif;
+    font-size: 96px;
+    color: var(--terracotta-deep);
+    line-height: 1;
+    margin: 36px 0 6px;
+    letter-spacing: -2px;
+  }
+  .offre-prix span {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 42px;
+    color: var(--marron-soft);
+  }
+  .offre-prix-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+  .offre-list {
+    list-style: none;
+    margin: 0 auto 50px;
+    max-width: 600px;
+    text-align: left;
+  }
+  .offre-list li {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--marron-deep);
+  }
+  .offre-list li:last-child { border-bottom: none; }
+  .offre-list li::before {
+    content: '✦';
+    color: var(--terracotta-deep);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .offre-list strong { font-family: 'Italiana', serif; font-weight: normal; letter-spacing: 1px; color: var(--marron-deep); }
+
+  .offre-cta {
+    display: inline-block;
+    padding: 24px 56px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    transition: all 0.4s;
+    margin-top: 12px;
+  }
+  .offre-cta:hover { background: var(--terracotta); letter-spacing: 6px; }
+  .offre-meta {
+    margin-top: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* === LES 123 === */
+  .les123 {
+    padding: 140px 60px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .les123::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(200, 112, 77, 0.22), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(212, 160, 76, 0.18), transparent 40%);
+    pointer-events: none;
+  }
+  .les123-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .les123 .section-label { color: var(--terracotta-pale); }
+  .les123 .nombre {
+    font-family: 'Italiana', serif;
+    font-size: clamp(180px, 28vw, 320px);
+    color: var(--blanc);
+    line-height: 0.85;
+    letter-spacing: -8px;
+    margin: 40px 0;
+    text-shadow: 0 2px 40px rgba(200, 112, 77, 0.3);
+  }
+  .les123 h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    color: var(--blanc);
+    line-height: 1.1;
+    margin-bottom: 32px;
+  }
+  .les123 h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-pale);
+  }
+  .les123 p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.85;
+    color: var(--rose-pale);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* === INSCRIPTION === */
+  .inscription {
+    padding: 140px 60px;
+    background: var(--blanc);
+  }
+  .inscription-inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .inscription-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .inscription-header h2 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(42px, 5vw, 64px);
+    color: var(--marron-deep);
+    line-height: 1.05;
+    margin: 14px 0 18px;
+  }
+  .inscription-header h2 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  .inscription-header p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--marron);
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .form-block {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 50px 50px;
+  }
+  .form-group { margin-bottom: 22px; }
+  .form-group:last-of-type { margin-bottom: 0; }
+  .form-group label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 16px 18px;
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    transition: border-color 0.3s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--terracotta);
+  }
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid-2 .form-group { margin-bottom: 0; }
+
+  .form-submit {
+    width: 100%;
+    padding: 22px;
+    background: var(--marron-deep);
+    color: var(--blanc);
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s;
+    margin-top: 30px;
+  }
+  .form-submit:hover {
+    background: var(--terracotta);
+    letter-spacing: 6px;
+  }
+  .form-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .form-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--marron-soft);
+    text-align: center;
+    margin-top: 22px;
+    line-height: 1.6;
+  }
+  .form-success {
+    background: rgba(212, 160, 76, 0.18);
+    border: 1px solid var(--or);
+    padding: 30px 36px;
+    margin-top: 20px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--marron-deep);
+    display: none;
+  }
+  .form-success.show { display: block; }
+  .form-success strong {
+    font-family: 'Italiana', serif;
+    font-weight: normal;
+    letter-spacing: 1px;
+    color: var(--terracotta-deep);
+    display: block;
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .form-error {
+    background: rgba(178, 43, 43, 0.08);
+    border: 1px solid rgba(178, 43, 43, 0.3);
+    padding: 14px 18px;
+    margin-top: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #B22B2B;
+    display: none;
+  }
+  .form-error.show { display: block; }
+
+  /* === FOOTER === */
+  footer {
+    background: #1A0F08;
+    color: var(--rose-pale);
+    padding: 80px 60px 40px;
+  }
+  .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 60px;
+    padding-bottom: 50px;
+    border-bottom: 1px solid rgba(212, 160, 76, 0.18);
+  }
+  .footer-brand img {
+    height: 54px;
+    filter: brightness(0) invert(1);
+    opacity: 0.92;
+    margin-bottom: 24px;
+  }
+  .footer-brand p {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--rose-pale);
+    opacity: 0.85;
+    max-width: 380px;
+  }
+  .footer-col h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a {
+    color: var(--rose-pale);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s;
+  }
+  .footer-col a:hover { color: var(--terracotta-pale); }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 30px auto 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-pale);
+    text-transform: uppercase;
+    opacity: 0.55;
+    text-align: center;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 1100px) {
+    nav { padding: 16px 24px; }
+    nav.scrolled { padding: 12px 24px; }
+    .nav-link { display: none; }
+    .hero { padding: 110px 24px 60px; }
+    .manifeste, .valeurs, .offre, .les123, .inscription { padding: 80px 24px; }
+    .section-grid { grid-template-columns: 1fr; gap: 30px; }
+    .valeurs-grid { grid-template-columns: 1fr 1fr; }
+    .offre-inner { padding: 50px 30px; }
+    .offre-prix { font-size: 72px; }
+    .form-block { padding: 36px 28px; }
+    .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
+    .form-grid-2 .form-group { margin-bottom: 22px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 600px) {
+    .valeurs-grid { grid-template-columns: 1fr; }
+    .offre-prix { font-size: 56px; }
+    .offre-prix span { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <div class="nav-right">
+    <a href="presentation.html" class="nav-link">L'école</a>
+    <a href="#offre" class="nav-link">L'offre</a>
+    <a href="#inscription" class="nav-cta">Devenir membre →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-mark">Sanctuarys · Yoni Social Club</div>
+  <h1>Le temple moderne<br>de la <em>femme.</em></h1>
+  <p class="hero-lead">Un espace privé, sensible et incarné où ton corps de femme est honoré chaque mois. Soins ancestraux, écoute du cycle, événements de sororité, rituels de saison.</p>
+  <div class="hero-tagline">
+    <span class="dot"></span>
+    Ouverture du Temple · 18 Juillet
+    <span class="dot"></span>
+  </div>
+  <a href="#inscription" class="hero-cta">Entrer dans le temple ✦</a>
+  <div class="hero-scroll">↓ Découvrir l'offre</div>
+</section>
+
+<!-- MANIFESTE -->
+<section class="manifeste">
+  <div class="section-grid">
+    <div>
+      <div class="section-label">Manifeste</div>
+      <h2 class="section-title">Un <em>Yoni</em><br>Social Club.</h2>
+    </div>
+    <div class="manifeste-text">
+      <p>Sanctuarys n'est ni un centre de soin classique, ni une école au sens habituel. C'est un Club, un cercle, une maison dans laquelle tu poses ton corps de femme avec confiance.</p>
+      <p>Chaque mois, ton temple t'accueille. Tu prends trois séances de YoniSpa personnalisées dans nos murs. Tu accèdes à deux événements minimum, en ligne ou en présentiel, réservés aux membres. Tu déposes ton cycle, tes ressentis, tes intuitions, dans un espace privé où une équipe sensible te lit et te répond.</p>
+      <p>Ce n'est pas un abonnement bien-être. C'est une adhésion à une manière d'habiter ton corps de femme dans la modernité.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VALEURS -->
+<section class="valeurs">
+  <div class="valeurs-header">
+    <div class="section-label">Les cinq valeurs</div>
+    <h2 class="section-title">Ce que <em>nous portons.</em></h2>
+  </div>
+  <div class="valeurs-grid">
+    <div class="valeur">
+      <div class="valeur-num">01</div>
+      <div class="valeur-name">Holistique<em>.</em></div>
+      <div class="valeur-desc">Le corps, l'âme, le business, le cycle, la lignée. Nous ne séparons pas. Tout se parle, tout circule, tout se régule ensemble.</div>
+    </div>
+    <div class="valeur">
+      <div class="valeur-num">02</div>
+      <div class="valeur-name">Véridique<em>.</em></div>
+      <div class="valeur-desc">Pas de marketing creux du bien-être. Nous disons ce qui est, nous validons par l'expérience vécue, nous honorons la vérité du corps.</div>
+    </div>
+    <div class="valeur">
+      <div class="valeur-num">03</div>
+      <div class="valeur-name">Originelle<em>.</em></div>
+      <div class="valeur-desc">Nous ancrons dans les sagesses anciennes, les traditions féminines pré-modernes, la mémoire ancestrale du corps féminin.</div>
+    </div>
+    <div class="valeur">
+      <div class="valeur-num">04</div>
+      <div class="valeur-name">Éthique<em>.</em></div>
+      <div class="valeur-desc">Ce que nous transmettons est honoré. Nos praticiennes sont formées en profondeur. L'argent qui circule respecte les deux côtés.</div>
+    </div>
+    <div class="valeur">
+      <div class="valeur-num">05</div>
+      <div class="valeur-name">Moderne<em>.</em></div>
+      <div class="valeur-desc">Pas de revival folklorique. Nous accueillons la femme contemporaine, dans son rythme, ses outils, ses contradictions assumées.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFRE -->
+<section class="offre" id="offre">
+  <div class="offre-inner">
+    <div class="offre-tag">L'abonnement Sanctuarys</div>
+    <h2 class="offre-title">Membre du <em>Club.</em></h2>
+    <div class="offre-prix">180<span> €</span></div>
+    <div class="offre-prix-meta">par mois · sans engagement</div>
+
+    <ul class="offre-list">
+      <li><div><strong>Trois séances YoniSpa</strong> personnalisées sur place chaque mois, à utiliser dans les 40 jours qui suivent ton paiement.</div></li>
+      <li><div><strong>Deux événements minimum</strong> offerts par mois, ateliers, cercles, rituels collectifs, en ligne ou en présentiel.</div></li>
+      <li><div><strong>Ton espace membre privé</strong> avec calendrier menstruel visuel, journal post-soin, suivi de tes séances et compte rendu des soins reçus.</div></li>
+      <li><div><strong>Un lien de parrainage unique</strong> qui t'offre 180 € de crédit sur les produits ou événements pour chaque femme que tu fais entrer dans le Temple.</div></li>
+      <li><div><strong>L'écoute et la réponse</strong> d'une équipe formée, qui te lit et te répond entre les séances quand tu en ressens le besoin.</div></li>
+    </ul>
+
+    <a href="#inscription" class="offre-cta">Devenir membre ✦</a>
+    <div class="offre-meta">Ouverture du Temple · 18 Juillet · 22 Juin pour les premières</div>
+  </div>
+</section>
+
+<!-- LES 123 -->
+<section class="les123">
+  <div class="les123-inner">
+    <div class="section-label">L'intention sacrée</div>
+    <div class="nombre">123</div>
+    <h2>Le Temple accueille<br><em>123 membres.</em></h2>
+    <p>Ce n'est pas une limite commerciale. C'est une intention. Trois fois quarante et un, le pas qui commence, l'unité qui se déploie. Chaque membre du Club est nommée, accueillie, lue. Quand les 123 places seront prises, une liste d'attente s'ouvrira. Les femmes qui sont prêtes savent qu'il est temps d'entrer.</p>
+  </div>
+</section>
+
+<!-- INSCRIPTION -->
+<section class="inscription" id="inscription">
+  <div class="inscription-inner">
+    <div class="inscription-header">
+      <div class="section-label">Demande d'entrée</div>
+      <h2>Entrer dans le <em>Temple.</em></h2>
+      <p>Laisse-nous ton adresse. Nous reviendrons vers toi personnellement pour t'accueillir dans le Club et activer ton abonnement.</p>
+    </div>
+
+    <div class="form-block">
+      <form id="memberSignupForm">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label>Prénom *</label>
+            <input type="text" name="prenom" required>
+          </div>
+          <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" name="nom" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" required placeholder="elle@email.com">
+        </div>
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input type="tel" name="phone" required placeholder="06 ...">
+        </div>
+        <div class="form-group">
+          <label>Comment as-tu entendu parler de nous ?</label>
+          <input type="text" name="referral_source" placeholder="Instagram, amie, podcast...">
+        </div>
+        <div class="form-group">
+          <label>Ce que tu viens chercher (optionnel)</label>
+          <textarea name="intention" rows="3" placeholder="Quelques mots sur ce qui t'amène."></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="submitBtn"><span id="submitBtnText">Demander mon entrée ✦</span></button>
+        <div class="form-error" id="formError"></div>
+        <div class="form-note">En envoyant ta demande, tu acceptes que Sanctuarys te contacte par email et téléphone pour t'accueillir dans le Club.</div>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <strong>Ta demande est reçue ✦</strong>
+        Sanctuarys reviendra vers toi très bientôt par email. Le Temple t'attend. Si tu souhaites accélérer ton entrée, tu peux écrire directement à info@sanctuarys.me.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+      <p>Yoni Social Club. Temple moderne dédié à la femme et à son bien-être. Sagesse ancestrale et accompagnement holistique.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Le Club</h5>
+      <ul>
+        <li><a href="#offre">L'abonnement</a></li>
+        <li><a href="#inscription">Devenir membre</a></li>
+        <li><a href="mailto:info@sanctuarys.me">Nous écrire</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Sanctuarys</h5>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="presentation.html">L'école V Care</a></li>
+        <li><a href="outils.html">Sanctuarys Outils</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">Sanctuarys · Yoni Social Club · sanctuarys.me · info@sanctuarys.me</div>
+</footer>
+
+<script src="js/sanctuarys.js"></script>
+<script>
+  // Nav scroll
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 30) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Form de pré-inscription
+  document.getElementById('memberSignupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('submitBtnText');
+    const errorEl = document.getElementById('formError');
+    const successEl = document.getElementById('formSuccess');
+    errorEl.classList.remove('show');
+    btn.disabled = true;
+    btnText.textContent = 'Envoi en cours...';
+
+    const data = new FormData(e.target);
+    const payload = {
+      prenom: data.get('prenom').trim(),
+      nom: data.get('nom').trim(),
+      email: data.get('email').trim().toLowerCase(),
+      phone: data.get('phone').trim(),
+      referral_source: data.get('referral_source')?.trim() || null,
+      intention: data.get('intention')?.trim() || null
+    };
+
+    try {
+      const supa = await Sanctuarys.init();
+      const { error } = await supa
+        .from('club_signups')
+        .insert(payload);
+      if (error) throw error;
+      e.target.style.display = 'none';
+      successEl.classList.add('show');
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      errorEl.textContent = 'Une erreur est survenue : ' + (err.message || 'inconnue') + '. Écris-nous directement à info@sanctuarys.me.';
+      errorEl.classList.add('show');
+      btn.disabled = false;
+      btnText.textContent = 'Demander mon entrée ✦';
+    }
+  });
+</script>
+</body>
+</html>
