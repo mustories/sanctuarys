@@ -1428,10 +1428,21 @@
 
 <script src="js/sanctuarys.js"></script>
 <script>
-  // Preloader
-  window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('preloader').classList.add('done'), 2400);
-  });
+  // Preloader avec triple sécurité : DOMContentLoaded + load + timeout absolu
+  function hidePreloader() {
+    const el = document.getElementById('preloader');
+    if (el && !el.classList.contains('done')) el.classList.add('done');
+  }
+  // Cache au DOMContentLoaded + 2.4s
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(hidePreloader, 2400));
+  } else {
+    setTimeout(hidePreloader, 2400);
+  }
+  // Filet de sécurité : on cache au plus tard 4 secondes après l'arrivée sur la page
+  setTimeout(hidePreloader, 4000);
+  // Et aussi au load complet si ça arrive avant
+  window.addEventListener('load', () => setTimeout(hidePreloader, 1000));
 
   // Custom cursor
   const cursor = document.getElementById('cursor');
