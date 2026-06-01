@@ -1473,50 +1473,24 @@
         <div class="breadcrumb">02 / Journaux</div>
         <div>
           <h1 class="page-title">Journaux <em>du jour.</em></h1>
-          <p class="page-subtitle">Les entrées de tes élèves arrivées ces dernières 24 heures. Lis, ressens, prépare ta réponse.</p>
+          <p class="page-subtitle">Toutes les entrées récentes de tes élèves. Clique sur une entrée pour la lire en entier.</p>
         </div>
         <div class="panel-meta">
-          <div class="meta-row"><strong>Nouveaux</strong>1 journal</div>
-          <div class="meta-row"><strong>En attente</strong>Angélique (Jour 1)</div>
+          <div class="meta-row"><strong>À lire</strong><span id="journalsUnreadCount">0</span> entrées</div>
         </div>
       </div>
 
-      <div class="eleves-list">
-        <div class="eleve-row" onclick="openEleveDetail('angelique')">
-          <div class="eleve-name">
-            <div class="eleve-avatar">A</div>
-            <div>
-              <div class="name">Angélique</div>
-              <div class="email">Jour 1 · Module 02 · Commence aujourd'hui</div>
-            </div>
-          </div>
-          <div class="eleve-progress">
-            <p style="color: var(--marron-soft); font-size: 13px; line-height: 1.7; font-style: italic;">Son espace vient d'être activé. Première entrée à venir dans la journée.</p>
-          </div>
-          <div class="eleve-module">Espace ouvert <strong>aujourd'hui</strong></div>
-          <div class="eleve-status">En attente</div>
-          <div class="eleve-actions">
-            <button class="icon-btn" title="Voir">→</button>
-          </div>
-        </div>
+      <div class="eleves-toolbar">
+        <input type="text" class="search-box" placeholder="Rechercher une élève..." id="searchJournals">
+        <select id="journalsFilter" style="padding: 12px 16px; background: var(--blanc-deep); border: 1px solid var(--line); font-family: 'Inter', sans-serif; font-size: 13px; color: var(--marron-deep); cursor: pointer;">
+          <option value="recent">Récents (7 jours)</option>
+          <option value="todo">À lire seulement</option>
+          <option value="all">Toutes les entrées</option>
+        </select>
+      </div>
 
-        <div class="eleve-row">
-          <div class="eleve-name">
-            <div class="eleve-avatar" style="background: linear-gradient(135deg, var(--or), var(--rose));">M</div>
-            <div>
-              <div class="name">Maï</div>
-              <div class="email">Jour 7 · Module 04</div>
-            </div>
-          </div>
-          <div class="eleve-progress">
-            <p style="color: var(--marron); font-size: 13px; line-height: 1.7; font-style: italic;">"Le bain à l'encens d'avant-hier continue de travailler en moi. Quelque chose de très ancien remonte..."</p>
-          </div>
-          <div class="eleve-module">Reçu il y a <strong>3h</strong></div>
-          <div class="eleve-status active">À lire</div>
-          <div class="eleve-actions">
-            <button class="icon-btn" title="Lire">→</button>
-          </div>
-        </div>
+      <div class="eleves-list" id="journalsList">
+        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement des journaux...</div>
       </div>
     </div>
 
@@ -2117,9 +2091,132 @@
     if (panel) panel.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (id === 'messages') loadConversations();
+    if (id === 'journals') loadJournalsPanel();
   }
   navItems.forEach(item => {
     item.addEventListener('click', e => { e.preventDefault(); openPanel(item.dataset.panel); });
+  });
+
+  // ============ JOURNAUX DU JOUR : VRAIES ENTRÉES ============
+  let ALL_JOURNAL_ENTRIES = [];
+  let JOURNAL_READ_IDS = JSON.parse(localStorage.getItem('sanctuarys_read_entries') || '[]');
+
+  function markEntryRead(entryId) {
+    if (!JOURNAL_READ_IDS.includes(entryId)) {
+      JOURNAL_READ_IDS.push(entryId);
+      localStorage.setItem('sanctuarys_read_entries', JSON.stringify(JOURNAL_READ_IDS));
+    }
+  }
+
+  async function loadJournalsPanel() {
+    if (!ADMIN_PROFILE) return;
+    const supa = await Sanctuarys.init();
+    const { data: entries } = await supa
+      .from('journal_entries')
+      .select('*')
+      .order('updated_at', { ascending: false })
+      .limit(200);
+    ALL_JOURNAL_ENTRIES = entries || [];
+    renderJournalsPanel();
+  }
+
+  function renderJournalsPanel() {
+    const list = document.getElementById('journalsList');
+    const filter = document.getElementById('journalsFilter').value;
+    const search = (document.getElementById('searchJournals').value || '').toLowerCase().trim();
+    list.innerHTML = '';
+
+    let filtered = ALL_JOURNAL_ENTRIES.filter(e => {
+      // Cache les entrées vides (juste un brouillon créé sans contenu)
+      const hasContent = (e.body && e.body.trim()) || (e.observation && e.observation.trim()) || (e.ratings && Object.keys(e.ratings).length > 0);
+      if (!hasContent) return false;
+
+      if (filter === 'recent') {
+        const now = Date.now();
+        const updated = new Date(e.updated_at).getTime();
+        if (now - updated > 7 * 24 * 60 * 60 * 1000) return false;
+      } else if (filter === 'todo') {
+        if (JOURNAL_READ_IDS.includes(e.id)) return false;
+      }
+
+      if (search) {
+        const student = (STUDENTS || []).find(s => s.id === e.student_id);
+        const name = ((student?.prenom || '') + ' ' + (student?.nom || '')).toLowerCase();
+        if (!name.includes(search)) return false;
+      }
+      return true;
+    });
+
+    let unreadCount = 0;
+    ALL_JOURNAL_ENTRIES.forEach(e => {
+      const hasContent = (e.body && e.body.trim()) || (e.observation && e.observation.trim());
+      if (hasContent && !JOURNAL_READ_IDS.includes(e.id)) unreadCount++;
+    });
+    document.getElementById('journalsUnreadCount').textContent = unreadCount;
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 18px;">Aucune entrée à afficher pour ce filtre.</div>';
+      return;
+    }
+
+    filtered.forEach(e => {
+      const student = (STUDENTS || []).find(s => s.id === e.student_id);
+      const prenom = student?.prenom || 'Élève';
+      const initial = (prenom[0] || 'A').toUpperCase();
+      const isRead = JOURNAL_READ_IDS.includes(e.id);
+      const date = new Date(e.updated_at);
+      const dateStr = Sanctuarys.formatRelative ? Sanctuarys.formatRelative(e.updated_at) : date.toLocaleString('fr-FR');
+      const preview = e.body ? e.body.substring(0, 180) + (e.body.length > 180 ? '...' : '') : '<em>Entrée sans texte écrit</em>';
+      const submittedTag = e.submitted ? '' : ' <span style="color: var(--marron-soft); font-style: italic; font-size: 11px;">(brouillon)</span>';
+      const statusClass = isRead ? '' : 'active';
+      const statusLabel = isRead ? 'Lue' : 'À lire';
+
+      const row = document.createElement('div');
+      row.className = 'eleve-row';
+      row.style.cursor = 'pointer';
+      row.innerHTML = `
+        <div class="eleve-name">
+          <div class="eleve-avatar"${!isRead ? ' style="background: linear-gradient(135deg, var(--or), var(--terracotta));"' : ''}>${initial}</div>
+          <div>
+            <div class="name">${escapeHTML(prenom)}${student?.nom ? ' ' + escapeHTML(student.nom) : ''}${submittedTag}</div>
+            <div class="email">Jour ${e.day_number} · Module ${String(e.module_number).padStart(2, '0')}</div>
+          </div>
+        </div>
+        <div class="eleve-progress">
+          <p style="color: ${isRead ? 'var(--marron-soft)' : 'var(--marron)'}; font-size: 13px; line-height: 1.7; font-style: italic;">${escapeHTML(preview)}</p>
+        </div>
+        <div class="eleve-module">${dateStr}</div>
+        <div class="eleve-status ${statusClass}">${statusLabel}</div>
+        <div class="eleve-actions">
+          <button class="icon-btn" title="Lire">→</button>
+        </div>
+      `;
+      row.addEventListener('click', () => {
+        // Marque comme lue puis ouvre la modale d'entrée
+        markEntryRead(e.id);
+        // Définit le student courant pour que la modale affiche le bon prénom
+        if (student) CURRENT_STUDENT = student;
+        // Cherche s'il y a un résumé Ishtar pour cette entrée
+        (async () => {
+          let summary = null;
+          try {
+            const sums = await Sanctuarys.getSummariesForStudent(e.student_id);
+            summary = (sums || []).find(s => s.journal_entry_id === e.id);
+          } catch (err) {}
+          openEntryModal(e, summary);
+        })();
+        // Re-render pour mettre à jour le badge
+        setTimeout(renderJournalsPanel, 100);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const search = document.getElementById('searchJournals');
+    const filter = document.getElementById('journalsFilter');
+    if (search) search.addEventListener('input', renderJournalsPanel);
+    if (filter) filter.addEventListener('change', renderJournalsPanel);
   });
 
   // ============ MESSAGES : VRAIES CONVERSATIONS ============
