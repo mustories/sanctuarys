@@ -12,19 +12,19 @@
 <meta name="theme-color" content="#C8704D">
 <meta name="apple-mobile-web-app-title" content="Sanctuarys">
 <meta name="application-name" content="Sanctuarys">
-<meta name="description" content="Yoni Social Club Sanctuarys. Fondé par Princesse Tchassi Bekou, 8 ans de gynécologie naturelle, 10 000+ femmes accompagnées, 2500 lectures radiesthésiques à 99,99% de précision. Temple moderne dédié à la femme. 180€/mois, 3 séances YoniSpa, 2 événements offerts.">
+<meta name="description" content="Sanctuarys Yoni Social Club. Avant-première juillet 2026. 123 femmes fondatrices entrent au Pass Fondatrice à 180€ pour tester le Temple avant son ouverture publique. Fondé par Princesse Tchassi Bekou, 8 ans, 10 000+ femmes accompagnées.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sanctuarys.me/club">
-<meta property="og:title" content="Sanctuarys · Yoni Social Club">
-<meta property="og:description" content="Fondé par Princesse Tchassi Bekou. 8 ans, 10 000+ femmes, 2500 lectures radiesthésiques à 99,99% de justesse, 350 soins énergétiques, 40 praticiennes formées.">
+<meta property="og:title" content="Sanctuarys · Pass Fondatrice · Avant-première">
+<meta property="og:description" content="123 femmes fondatrices à 180€ pour tester le Yoni Social Club avant son ouverture publique. Princesse Tchassi Bekou, 8 ans de transmission.">
 <meta property="og:image" content="https://sanctuarys.me/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Sanctuarys">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Sanctuarys · Yoni Social Club">
-<meta name="twitter:description" content="Princesse Tchassi Bekou. 8 ans, 10 000+ femmes, 2500 lectures à 99,99% de justesse, 350 soins, 40 formées.">
+<meta name="twitter:title" content="Sanctuarys · Pass Fondatrice · 123 places">
+<meta name="twitter:description" content="Avant-première juillet. 180€ pour les 123 fondatrices du Yoni Social Club.">
 <meta name="twitter:image" content="https://sanctuarys.me/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -743,7 +743,57 @@
   .galerie-3 { background-image: url('https://i.pinimg.com/736x/51/77/1a/51771a3ab0c3149c7727212a5229eae4.jpg'); }
   .galerie-4 { background-image: url('https://i.pinimg.com/736x/61/95/4f/61954fd2d6603a343784c2d105fa0c8a.jpg'); }
 
+  /* 07 FAQ */
+  .faq {
+    background: var(--blanc); padding: 140px 40px;
+    position: relative;
+  }
+  .faq-list {
+    max-width: 920px; margin: 0 auto;
+    border-top: 1px solid var(--line);
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-question {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding: 32px 8px;
+    cursor: none;
+    font-family: 'Italiana', serif;
+    font-size: clamp(20px, 2.2vw, 28px);
+    color: var(--marron-deep);
+    line-height: 1.3; letter-spacing: 0.5px;
+    transition: color 0.3s;
+    width: 100%; text-align: left;
+    background: transparent; border: none;
+  }
+  .faq-question:hover { color: var(--terracotta-deep); }
+  .faq-question .faq-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; color: var(--terracotta);
+    transition: transform 0.4s;
+    flex-shrink: 0; font-weight: 300;
+  }
+  .faq-item.open .faq-mark { transform: rotate(45deg); }
+  .faq-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .faq-item.open .faq-answer { max-height: 400px; }
+  .faq-answer-inner {
+    padding: 0 8px 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; line-height: 1.85;
+    color: var(--marron); font-style: italic;
+  }
+  .faq-answer-inner strong {
+    font-family: 'Italiana', serif; font-style: normal;
+    font-weight: normal; letter-spacing: 1px;
+    color: var(--marron-deep);
+  }
+
   /* 06 INSCRIPTION */
+  /* 08 INSCRIPTION */
   .inscription {
     background: var(--blanc-deep); padding: 140px 40px;
     position: relative; overflow: hidden;
@@ -953,9 +1003,10 @@
   <a href="#lignee" data-section="lignee"><span class="dot"></span>02 Lignée</a>
   <a href="#expressions" data-section="expressions"><span class="dot"></span>03 Expressions</a>
   <a href="#valeurs" data-section="valeurs"><span class="dot"></span>04 Valeurs</a>
-  <a href="#offre" data-section="offre"><span class="dot"></span>05 L'offre</a>
+  <a href="#offre" data-section="offre"><span class="dot"></span>05 Pass</a>
   <a href="#les123" data-section="les123"><span class="dot"></span>06 Les 123</a>
-  <a href="#inscription" data-section="inscription"><span class="dot"></span>07 Entrée</a>
+  <a href="#faq" data-section="faq"><span class="dot"></span>07 Questions</a>
+  <a href="#inscription" data-section="inscription"><span class="dot"></span>08 Entrée</a>
 </div>
 
 <!-- NAV -->
@@ -986,10 +1037,10 @@
       <span class="word l2"><span>de la <em>femme.</em></span></span>
     </h1>
     <div class="hero-bottom-bar">
-      <div class="hero-tagline">Un Yoni Social Club privé où ton corps de femme est honoré chaque mois. Soins ancestraux, écoute du cycle, événements de sororité, rituels de saison.<br><span style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--or-pale); text-transform: uppercase; opacity: 0.85; display: inline-block; margin-top: 16px;">Fondé par Princesse Tchassi Bekou</span></div>
-      <div class="hero-detail"><strong>Ouverture</strong>18 Juillet</div>
-      <div class="hero-detail"><strong>Forfait</strong>180 € / mois<br>sans engagement</div>
-      <div class="hero-detail"><strong>Membres</strong>123 dans le Temple</div>
+      <div class="hero-tagline">Avant-première du Yoni Social Club. Cent vingt-trois femmes entrent en juillet pour tester le Temple avant son ouverture publique.<br><span style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--or-pale); text-transform: uppercase; opacity: 0.85; display: inline-block; margin-top: 16px;">Fondé par Princesse Tchassi Bekou</span></div>
+      <div class="hero-detail"><strong>Avant-première</strong>Juillet 2026</div>
+      <div class="hero-detail"><strong>Pass Fondatrice</strong>180 €</div>
+      <div class="hero-detail"><strong>Places</strong>123 fondatrices</div>
     </div>
   </div>
   <div class="scroll-indicator"><span>Scroll</span><div class="line-anim"></div></div>
@@ -999,37 +1050,30 @@
 <div class="marquee">
   <div class="marquee-track">
     <div>
-      <span>Yoni Social Club</span>
-      <span>Temple Moderne</span>
-      <span>Sagesse Originelle</span>
-      <span>123 Membres</span>
-      <span>Sororité</span>
-      <span>Yoni Social Club</span>
-      <span>Temple Moderne</span>
-      <span>Sagesse Originelle</span>
-      <span>123 Membres</span>
-      <span>Sororité</span>
+      <span>Pass Fondatrice</span>
+      <span>Avant-Première</span>
+      <span>Juillet 2026</span>
+      <span>123 Places</span>
+      <span>Pass Fondatrice</span>
+      <span>Avant-Première</span>
+      <span>Juillet 2026</span>
+      <span>123 Places</span>
     </div>
   </div>
 </div>
 
 <!-- 01 MANIFESTE -->
 <section class="section manifesto" id="manifeste">
-  <div class="section-header">
+  <div class="section-header" style="grid-template-columns: 1fr 2fr;">
     <div class="section-num">01 / Manifeste</div>
     <h2 class="section-title">Un Yoni<br>Social <em>Club.</em></h2>
-    <div class="section-info">
-      <div class="info-row"><strong>Format</strong>Abonnement mensuel</div>
-      <div class="info-row"><strong>Esprit</strong>Cercle privé de femmes</div>
-      <div class="info-row"><strong>Valeur</strong>Adhésion, pas consommation</div>
-    </div>
   </div>
   <div class="manifesto-body">
-    <h3 class="manifesto-headline">Sanctuarys n'est ni un centre de soin classique, ni une école.<br><em>C'est un Club.</em></h3>
+    <h3 class="manifesto-headline">Le temple<br>n'est pas un soin.<br><em>C'est une maison.</em></h3>
     <div class="manifesto-text">
-      <p>Sanctuarys est un Club, un cercle, une maison dans laquelle tu poses ton corps de femme avec confiance. Chaque mois, ton temple t'accueille pour trois séances de YoniSpa personnalisées dans nos murs.</p>
-      <p>Tu accèdes à deux événements minimum, en ligne ou en présentiel, réservés aux membres. Tu déposes ton cycle, tes ressentis, tes intuitions, dans un espace privé où une équipe sensible te lit et te répond.</p>
-      <p>Ce n'est pas un abonnement bien-être. C'est une adhésion à une manière d'habiter ton corps de femme dans la modernité. Une promesse que ton corps a une maison, que tu n'es pas seule, que tu seras tenue.</p>
+      <p>Sanctuarys n'est ni un centre de soin, ni une école. C'est un Club. Un cercle. Une maison où ton corps de femme se dépose, où ta voix est lue, où ton cycle est entendu.</p>
+      <p>Nous ne vendons pas du bien-être. Nous offrons un seuil à franchir. Une appartenance à porter. Une lignée à laquelle ton corps peut s'adosser dans la modernité.</p>
+      <p>Tu n'es plus seule avec ton ventre, tes intuitions, ton temps féminin. Le Temple veille.</p>
     </div>
   </div>
 </section>
@@ -1142,82 +1186,77 @@
 
 <!-- 04 VALEURS -->
 <section class="section valeurs-section" id="valeurs">
-  <div class="section-header">
+  <div class="section-header" style="grid-template-columns: 1fr 2fr;">
     <div class="section-num">04 / Valeurs</div>
     <h2 class="section-title">Ce que nous<br><em>portons.</em></h2>
-    <div class="section-info">
-      <div class="info-row"><strong>Cinq</strong>Valeurs cardinales</div>
-      <div class="info-row"><strong>Une</strong>Direction unique</div>
-      <div class="info-row"><strong>123</strong>Femmes qui les vivent</div>
-    </div>
   </div>
   <div class="valeurs-grid">
     <div class="valeur">
       <div class="valeur-num">01</div>
       <div class="valeur-name">Holistique<em>.</em></div>
-      <div class="valeur-desc">Le corps, l'âme, le business, le cycle, la lignée. Nous ne séparons pas. Tout se parle, tout circule, tout se régule ensemble.</div>
+      <div class="valeur-desc">Corps, âme, cycle, business, lignée. Tout circule, rien n'est isolé.</div>
     </div>
     <div class="valeur">
       <div class="valeur-num">02</div>
       <div class="valeur-name">Véridique<em>.</em></div>
-      <div class="valeur-desc">Pas de marketing creux du bien-être. Nous disons ce qui est, nous validons par l'expérience vécue, nous honorons la vérité du corps.</div>
+      <div class="valeur-desc">Aucun marketing creux du bien-être. Seulement ce qui est vrai dans le corps.</div>
     </div>
     <div class="valeur">
       <div class="valeur-num">03</div>
       <div class="valeur-name">Originelle<em>.</em></div>
-      <div class="valeur-desc">Nous ancrons dans les sagesses anciennes, les traditions féminines pré-modernes, la mémoire ancestrale du corps féminin.</div>
+      <div class="valeur-desc">Sagesses anciennes, traditions féminines, mémoire ancestrale du corps.</div>
     </div>
     <div class="valeur">
       <div class="valeur-num">04</div>
       <div class="valeur-name">Éthique<em>.</em></div>
-      <div class="valeur-desc">Ce que nous transmettons est honoré. Nos praticiennes sont formées en profondeur. L'argent qui circule respecte les deux côtés.</div>
+      <div class="valeur-desc">Transmission honorée, équipe formée, argent qui circule avec respect.</div>
     </div>
     <div class="valeur">
       <div class="valeur-num">05</div>
       <div class="valeur-name">Moderne<em>.</em></div>
-      <div class="valeur-desc">Pas de revival folklorique. Nous accueillons la femme contemporaine, dans son rythme, ses outils, ses contradictions assumées.</div>
+      <div class="valeur-desc">Pas de revival folklorique. La femme contemporaine, accueillie telle qu'elle est.</div>
     </div>
   </div>
 </section>
 
-<!-- 05 OFFRE -->
+<!-- 05 PASS FONDATRICE -->
 <section class="section offre-section" id="offre">
   <div class="section-header">
-    <div class="section-num">05 / L'abonnement</div>
-    <h2 class="section-title">Le forfait<br><em>Membre.</em></h2>
+    <div class="section-num">05 / Pass Fondatrice</div>
+    <h2 class="section-title">L'avant-première<br><em>du Temple.</em></h2>
     <div class="section-info">
-      <div class="info-row"><strong>180€</strong>Par mois</div>
-      <div class="info-row"><strong>Sans</strong>Engagement</div>
-      <div class="info-row"><strong>40 jours</strong>Validité des séances</div>
+      <div class="info-row"><strong>Pass</strong>180 € unique</div>
+      <div class="info-row"><strong>Fenêtre</strong>Juillet 2026</div>
+      <div class="info-row"><strong>Places</strong>123 fondatrices</div>
     </div>
   </div>
 
   <div class="offre-card">
-    <div class="offre-tag">L'abonnement Sanctuarys</div>
-    <h3 class="offre-title">Devenir <em>Membre.</em></h3>
+    <div class="offre-tag">Avant-première · 123 fondatrices</div>
+    <h3 class="offre-title">Pass <em>Fondatrice.</em></h3>
     <div class="offre-prix">180<span> €</span></div>
-    <div class="offre-prix-meta">par mois · sans engagement</div>
+    <div class="offre-prix-meta">Pass d'entrée · Juillet 2026</div>
 
     <ul class="offre-list">
-      <li><div><strong>Trois séances YoniSpa</strong> personnalisées sur place chaque mois, à utiliser dans les 40 jours qui suivent ton paiement.</div></li>
-      <li><div><strong>Deux événements minimum</strong> offerts par mois, ateliers, cercles, rituels collectifs, en ligne ou en présentiel.</div></li>
-      <li><div><strong>Ton espace membre privé</strong> avec calendrier menstruel visuel, journal post-soin, suivi de tes séances et compte rendu des soins reçus.</div></li>
-      <li><div><strong>Un lien de parrainage unique</strong> qui t'offre 180 € de crédit sur les produits ou événements pour chaque femme que tu fais entrer dans le Temple.</div></li>
-      <li><div><strong>L'écoute et la réponse</strong> d'une équipe formée, qui te lit et te répond entre les séances quand tu en ressens le besoin.</div></li>
+      <li><div><strong>Trois séances YoniSpa</strong> personnalisées sur place, à utiliser dans les 40 jours qui suivent ton paiement.</div></li>
+      <li><div><strong>Deux événements minimum</strong> offerts, ateliers, cercles, rituels collectifs, en ligne ou en présentiel.</div></li>
+      <li><div><strong>Ton espace privé</strong> avec calendrier menstruel, journal post-soin, suivi de tes séances et compte rendu des soins reçus.</div></li>
+      <li><div><strong>Ton lien de parrainage</strong> qui t'offre 180 € de crédit sur les produits ou événements pour chaque femme que tu fais entrer.</div></li>
+      <li><div><strong>Le statut de Fondatrice</strong>, gravé dans la mémoire du Temple. Tu fais partie des 123 premières à l'avoir habité.</div></li>
     </ul>
 
-    <a href="#inscription" class="btn-primary"><span>Devenir membre ✦</span></a>
-    <div class="offre-meta">Ouverture du Temple · 18 Juillet</div>
+    <a href="#inscription" class="btn-primary"><span>Réserver ma place ✦</span></a>
+    <div class="offre-meta">Après juillet, le Yoni Social Club ouvrira au public au tarif réel.</div>
   </div>
 </section>
 
-<!-- 05 LES 123 -->
+<!-- 06 LES 123 -->
 <section class="les123" id="les123">
   <div class="les123-inner">
     <div class="les123-label">L'intention sacrée</div>
     <div class="nombre">123</div>
-    <h2>Le Temple accueille<br><em>123 membres.</em></h2>
-    <p>Ce n'est pas une limite commerciale. C'est une intention. Trois fois quarante et un, le pas qui commence, l'unité qui se déploie. Chaque membre du Club est nommée, accueillie, lue. Quand les 123 places seront prises, une liste d'attente s'ouvrira. Les femmes qui sont prêtes savent qu'il est temps d'entrer.</p>
+    <h2>Cent vingt-trois<br><em>fondatrices.</em></h2>
+    <p>Ce n'est pas une limite commerciale. C'est une intention. Trois fois quarante et un, le pas qui commence, l'unité qui se déploie. Chaque fondatrice est nommée, accueillie, lue. Quand les 123 places seront prises, une liste d'attente s'ouvrira. Les femmes qui sont prêtes savent qu'il est temps d'entrer.</p>
   </div>
 </section>
 
@@ -1229,13 +1268,77 @@
   <div class="galerie-photo galerie-4"></div>
 </div>
 
-<!-- 06 INSCRIPTION -->
+<!-- 07 FAQ -->
+<section class="faq" id="faq">
+  <div class="section-header" style="grid-template-columns: 1fr 2fr; max-width: 1700px; margin: 0 auto 80px;">
+    <div class="section-num">07 / Questions</div>
+    <h2 class="section-title">Avant de<br><em>franchir le seuil.</em></h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Qu'est-ce que le Pass Fondatrice ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        Une invitation privée à entrer dans le <strong>Yoni Social Club</strong> avant son ouverture publique. Cent vingt-trois femmes seront les premières à le tester en juillet, à un tarif d'avant-première unique. Le statut de Fondatrice reste à jamais inscrit dans ton dossier.
+      </div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Que contient exactement le Pass à 180€ ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <strong>Trois séances YoniSpa</strong> personnalisées sur place, <strong>deux événements minimum</strong> offerts (en ligne ou en présentiel), l'accès à ton <strong>espace privé</strong> (calendrier menstruel, journal, soins reçus), ton <strong>lien de parrainage</strong> à 180€ de crédit, et le <strong>statut de Fondatrice</strong>.
+      </div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Combien de temps pour utiliser mes trois séances ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        Quarante jours à partir de ton paiement. Le temps d'écouter ton corps, de poser tes intentions, de laisser le Temple agir.
+      </div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Les événements, je dois venir ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        Non. Ils te sont offerts, jamais imposés. Tu choisis ceux qui t'appellent. Ils sont une porte, pas une obligation.
+      </div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Qu'arrive-t-il après juillet ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        Le Yoni Social Club ouvrira au public à son <strong>tarif réel</strong>. Les Fondatrices recevront leurs conditions exclusives en avant-première, par message personnel. Ce statut a une valeur permanente.
+      </div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question" type="button">
+        <span>Comment je deviens Fondatrice ?</span>
+        <span class="faq-mark">+</span>
+      </button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        En envoyant ta <strong>demande d'entrée</strong> ci-dessous. Notre équipe revient personnellement vers toi pour t'accueillir, activer ton Pass et planifier ta première séance.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 INSCRIPTION -->
 <section class="inscription" id="inscription">
   <div class="inscription-inner">
     <div class="inscription-header">
-      <div class="inscription-label">07 / Demande d'entrée</div>
-      <h2>Entrer dans le<br><em>Temple.</em></h2>
-      <p>Laisse-nous ton adresse. Nous reviendrons vers toi personnellement pour t'accueillir dans le Club et activer ton abonnement.</p>
+      <div class="inscription-label">08 / Demande d'entrée</div>
+      <h2>Réserver ma place<br><em>de fondatrice.</em></h2>
+      <p>Laisse-nous ton adresse. Nous reviendrons vers toi personnellement pour t'accueillir et activer ton Pass Fondatrice.</p>
     </div>
 
     <div class="form-block">
@@ -1266,7 +1369,7 @@
           <label>Ce que tu viens chercher (optionnel)</label>
           <textarea name="intention" rows="3" placeholder="Quelques mots sur ce qui t'amène."></textarea>
         </div>
-        <button type="submit" class="form-submit" id="submitBtn"><span id="submitBtnText">Demander mon entrée ✦</span></button>
+        <button type="submit" class="form-submit" id="submitBtn"><span id="submitBtnText">Réserver ma place de fondatrice ✦</span></button>
         <div class="form-error" id="formError"></div>
         <div class="form-note">En envoyant ta demande, tu acceptes que Sanctuarys te contacte par email et téléphone pour t'accueillir dans le Club.</div>
       </form>
@@ -1355,7 +1458,15 @@
 
   // Side index active state
   const sideLinks = document.querySelectorAll('.side-index a');
-  const sectionEls = ['manifeste', 'lignee', 'expressions', 'valeurs', 'offre', 'les123', 'inscription'].map(id => document.getElementById(id));
+  const sectionEls = ['manifeste', 'lignee', 'expressions', 'valeurs', 'offre', 'les123', 'faq', 'inscription'].map(id => document.getElementById(id));
+
+  // FAQ accordéon
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      item.classList.toggle('open');
+    });
+  });
   window.addEventListener('scroll', () => {
     let active = null;
     sectionEls.forEach((s, i) => {
