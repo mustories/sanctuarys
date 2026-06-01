@@ -12,11 +12,11 @@
 <meta name="theme-color" content="#C8704D">
 <meta name="apple-mobile-web-app-title" content="Sanctuarys">
 <meta name="application-name" content="Sanctuarys">
-<meta name="description" content="Yoni Social Club Sanctuarys. Temple moderne dédié à la femme et à son bien-être. 180€ par mois sans engagement, 3 séances YoniSpa, 2 événements offerts. 123 membres dans le temple.">
+<meta name="description" content="Yoni Social Club Sanctuarys. Fondé par Princesse Tchassi Bekou, 8 ans de gynécologie naturelle, plus de 10 000 femmes accompagnées. Temple moderne dédié à la femme. 180€/mois, 3 séances YoniSpa, 2 événements offerts. 123 membres dans le temple.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sanctuarys.me/club">
 <meta property="og:title" content="Sanctuarys · Yoni Social Club">
-<meta property="og:description" content="Temple moderne dédié à la femme et à son bien-être. 180€ par mois sans engagement.">
+<meta property="og:description" content="Fondé par Princesse Tchassi Bekou, 8 ans de gynécologie naturelle, 10 000+ femmes accompagnées. Le temple moderne de la femme.">
 <meta property="og:image" content="https://sanctuarys.me/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -24,7 +24,7 @@
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sanctuarys · Yoni Social Club">
-<meta name="twitter:description" content="Temple moderne dédié à la femme. 180€/mois sans engagement.">
+<meta name="twitter:description" content="Fondé par Princesse Tchassi Bekou. 8 ans, 10 000+ femmes, 300 lectures, 40 formées.">
 <meta name="twitter:image" content="https://sanctuarys.me/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -391,6 +391,91 @@
     font-style: italic; font-size: 88px; line-height: 0.85;
     float: left; color: var(--terracotta-deep);
     margin: 6px 14px 0 0; font-weight: 400;
+  }
+
+  /* 02 LIGNÉE */
+  .lignee { background: var(--blanc-deep); padding: 180px 40px 140px; max-width: none; }
+  .lignee-inner { max-width: 1700px; margin: 0 auto; }
+  .lignee-body {
+    display: grid; grid-template-columns: 1.05fr 1fr;
+    gap: 100px; align-items: center;
+  }
+  .lignee-image-wrap {
+    position: relative; height: 740px;
+    overflow: hidden;
+  }
+  .lignee-image {
+    position: absolute; inset: 0;
+    background-image: url('https://i.pinimg.com/736x/41/38/bb/4138bbb5c728eca31b7c81ea01fec80b.jpg');
+    background-size: cover; background-position: center;
+    transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .lignee-image:hover { transform: scale(1.04); }
+  .lignee-image::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(15, 8, 5, 0.55));
+  }
+  .lignee-image-caption {
+    position: absolute; bottom: 32px; left: 32px; right: 32px;
+    z-index: 2; color: var(--blanc);
+  }
+  .lignee-image-caption-name {
+    font-family: 'Italiana', serif;
+    font-size: 30px; line-height: 1.05; margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .lignee-image-caption-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--terracotta-pale); text-transform: uppercase;
+  }
+  .lignee-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; line-height: 1.95;
+    color: var(--marron); font-weight: 300;
+  }
+  .lignee-text p { margin-bottom: 22px; }
+  .lignee-text p:last-of-type { margin-bottom: 0; }
+  .lignee-text strong {
+    font-family: 'Italiana', serif; font-weight: normal;
+    color: var(--marron-deep); letter-spacing: 0.5px;
+  }
+  .lignee-text em {
+    font-style: italic; color: var(--terracotta-deep);
+  }
+  .lignee-text p:first-of-type::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 88px; line-height: 0.85;
+    float: left; color: var(--terracotta-deep);
+    margin: 6px 14px 0 0; font-weight: 400;
+  }
+
+  .lignee-numbers {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    margin-top: 80px; border-top: 1px solid var(--line);
+  }
+  .lignee-num-cell {
+    padding: 50px 28px 50px;
+    border-right: 1px solid var(--line);
+    text-align: center;
+  }
+  .lignee-num-cell:last-child { border-right: none; }
+  .lignee-num-cell .num {
+    font-family: 'Italiana', serif;
+    font-size: clamp(54px, 6vw, 88px);
+    color: var(--terracotta-deep); line-height: 1;
+    margin-bottom: 14px; letter-spacing: -1px;
+  }
+  .lignee-num-cell .num span {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 0.55em;
+    color: var(--marron-soft); margin-left: 6px;
+  }
+  .lignee-num-cell .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--marron-soft); text-transform: uppercase;
+    line-height: 1.5;
   }
 
   /* 02 EXPRESSIONS (dark, 3 photos) */
@@ -783,6 +868,13 @@
     .section-header { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
     .manifesto-body { grid-template-columns: 1fr; gap: 40px; }
     .manifesto-headline { position: relative; top: auto; }
+    .lignee { padding: 80px 24px; }
+    .lignee-body { grid-template-columns: 1fr; gap: 50px; }
+    .lignee-image-wrap { height: 480px; }
+    .lignee-numbers { grid-template-columns: 1fr 1fr; }
+    .lignee-num-cell:nth-child(2) { border-right: none; }
+    .lignee-num-cell:nth-child(odd) { border-right: 1px solid var(--line); }
+    .lignee-num-cell:nth-child(1), .lignee-num-cell:nth-child(2) { border-bottom: 1px solid var(--line); }
     .expressions-grid { grid-template-columns: 1fr; gap: 4px; }
     .expr-card { height: 70vh; min-height: 480px; }
     .expr-card-roman { font-size: 100px; }
@@ -824,11 +916,12 @@
 <!-- SIDE INDEX -->
 <div class="side-index">
   <a href="#manifeste" data-section="manifeste"><span class="dot"></span>01 Manifeste</a>
-  <a href="#expressions" data-section="expressions"><span class="dot"></span>02 Expressions</a>
-  <a href="#valeurs" data-section="valeurs"><span class="dot"></span>03 Valeurs</a>
-  <a href="#offre" data-section="offre"><span class="dot"></span>04 L'offre</a>
-  <a href="#les123" data-section="les123"><span class="dot"></span>05 Les 123</a>
-  <a href="#inscription" data-section="inscription"><span class="dot"></span>06 Entrée</a>
+  <a href="#lignee" data-section="lignee"><span class="dot"></span>02 Lignée</a>
+  <a href="#expressions" data-section="expressions"><span class="dot"></span>03 Expressions</a>
+  <a href="#valeurs" data-section="valeurs"><span class="dot"></span>04 Valeurs</a>
+  <a href="#offre" data-section="offre"><span class="dot"></span>05 L'offre</a>
+  <a href="#les123" data-section="les123"><span class="dot"></span>06 Les 123</a>
+  <a href="#inscription" data-section="inscription"><span class="dot"></span>07 Entrée</a>
 </div>
 
 <!-- NAV -->
@@ -859,7 +952,7 @@
       <span class="word l2"><span>de la <em>femme.</em></span></span>
     </h1>
     <div class="hero-bottom-bar">
-      <div class="hero-tagline">Un Yoni Social Club privé où ton corps de femme est honoré chaque mois. Soins ancestraux, écoute du cycle, événements de sororité, rituels de saison.</div>
+      <div class="hero-tagline">Un Yoni Social Club privé où ton corps de femme est honoré chaque mois. Soins ancestraux, écoute du cycle, événements de sororité, rituels de saison.<br><span style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--or-pale); text-transform: uppercase; opacity: 0.85; display: inline-block; margin-top: 16px;">Fondé par Princesse Tchassi Bekou</span></div>
       <div class="hero-detail"><strong>Ouverture</strong>18 Juillet</div>
       <div class="hero-detail"><strong>Forfait</strong>180 € / mois<br>sans engagement</div>
       <div class="hero-detail"><strong>Membres</strong>123 dans le Temple</div>
@@ -907,11 +1000,62 @@
   </div>
 </section>
 
-<!-- 02 EXPRESSIONS -->
+<!-- 02 LIGNÉE -->
+<section class="lignee" id="lignee">
+  <div class="lignee-inner">
+    <div class="section-header">
+      <div class="section-num">02 / Lignée</div>
+      <h2 class="section-title">Un seuil porté<br>par une <em>filiation.</em></h2>
+      <div class="section-info">
+        <div class="info-row"><strong>Depuis</strong>2018</div>
+        <div class="info-row"><strong>Origine</strong>Gynécologie naturelle</div>
+        <div class="info-row"><strong>Continuité</strong>Sanctuarys, 2026</div>
+      </div>
+    </div>
+
+    <div class="lignee-body">
+      <div class="lignee-image-wrap">
+        <div class="lignee-image"></div>
+        <div class="lignee-image-caption">
+          <div class="lignee-image-caption-name">Princesse Tchassi Bekou</div>
+          <div class="lignee-image-caption-role">Fondatrice · Sanctuarys</div>
+        </div>
+      </div>
+      <div class="lignee-text">
+        <p>Sanctuarys n'est pas un projet de plus. C'est <strong>l'aboutissement d'une transmission de huit années</strong> dans la gynécologie naturelle et la radiesthésie féminine.</p>
+        <p>En <strong>2018</strong>, Princesse Tchassi Bekou fonde <em>Djailiworld</em>, la première marque française dédiée à la gynécologie naturelle. Deux ans plus tard, en <strong>2020</strong>, elle ouvre le <em>Djailimedspa</em>, premier yoni spa de France, par lequel le vajacial, le hifu vaginal et le yoni steam entrent dans le paysage féminin français.</p>
+        <p>En huit ans, plus de <strong>dix mille femmes</strong> ont été accompagnées. Des grossesses surgissent là où la médecine n'avait plus de réponse. Des corps se déposent là où la honte avait tout figé.</p>
+        <p>À cette gynécologie ancestrale s'ajoute, ces trois dernières années, la maîtrise de la <em>radiesthésie</em>. Trois cents lectures supplémentaires, quarante praticiennes formées. Une autre profondeur de lecture du corps féminin, à la fois physique et vibratoire.</p>
+        <p><strong>Sanctuarys est la fusion de ces deux lignées.</strong> Le temple qui les abrite ensemble.</p>
+      </div>
+    </div>
+
+    <div class="lignee-numbers">
+      <div class="lignee-num-cell">
+        <div class="num">8<span>ans</span></div>
+        <div class="label">Gynécologie<br>naturelle</div>
+      </div>
+      <div class="lignee-num-cell">
+        <div class="num">10 000<span>+</span></div>
+        <div class="label">Femmes<br>accompagnées</div>
+      </div>
+      <div class="lignee-num-cell">
+        <div class="num">300<span>+</span></div>
+        <div class="label">Lectures<br>en radiesthésie</div>
+      </div>
+      <div class="lignee-num-cell">
+        <div class="num">40<span>+</span></div>
+        <div class="label">Praticiennes<br>formées</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 EXPRESSIONS -->
 <section class="expressions" id="expressions">
   <div class="expressions-inner">
     <div class="section-header" style="border-color: rgba(212, 160, 76, 0.2);">
-      <div class="section-num" style="color: var(--or-pale);"><span style="background: var(--or-pale); width: 30px; height: 1px; display: inline-block;"></span>02 / Expressions</div>
+      <div class="section-num" style="color: var(--or-pale);"><span style="background: var(--or-pale); width: 30px; height: 1px; display: inline-block;"></span>03 / Expressions</div>
       <h2 class="section-title" style="color: var(--blanc);">Ce que tu reçois<br>en <em style="color: var(--terracotta-pale);">trois temps.</em></h2>
       <div class="section-info" style="color: var(--rose-pale);">
         <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Le corps</strong>YoniSpa, soins ancestraux</div>
@@ -961,10 +1105,10 @@
   </div>
 </section>
 
-<!-- 03 VALEURS -->
+<!-- 04 VALEURS -->
 <section class="section valeurs-section" id="valeurs">
   <div class="section-header">
-    <div class="section-num">03 / Valeurs</div>
+    <div class="section-num">04 / Valeurs</div>
     <h2 class="section-title">Ce que nous<br><em>portons.</em></h2>
     <div class="section-info">
       <div class="info-row"><strong>Cinq</strong>Valeurs cardinales</div>
@@ -1001,10 +1145,10 @@
   </div>
 </section>
 
-<!-- 04 OFFRE -->
+<!-- 05 OFFRE -->
 <section class="section offre-section" id="offre">
   <div class="section-header">
-    <div class="section-num">04 / L'abonnement</div>
+    <div class="section-num">05 / L'abonnement</div>
     <h2 class="section-title">Le forfait<br><em>Membre.</em></h2>
     <div class="section-info">
       <div class="info-row"><strong>180€</strong>Par mois</div>
@@ -1054,7 +1198,7 @@
 <section class="inscription" id="inscription">
   <div class="inscription-inner">
     <div class="inscription-header">
-      <div class="inscription-label">06 / Demande d'entrée</div>
+      <div class="inscription-label">07 / Demande d'entrée</div>
       <h2>Entrer dans le<br><em>Temple.</em></h2>
       <p>Laisse-nous ton adresse. Nous reviendrons vers toi personnellement pour t'accueillir dans le Club et activer ton abonnement.</p>
     </div>
@@ -1176,7 +1320,7 @@
 
   // Side index active state
   const sideLinks = document.querySelectorAll('.side-index a');
-  const sectionEls = ['manifeste', 'expressions', 'valeurs', 'offre', 'les123', 'inscription'].map(id => document.getElementById(id));
+  const sectionEls = ['manifeste', 'lignee', 'expressions', 'valeurs', 'offre', 'les123', 'inscription'].map(id => document.getElementById(id));
   window.addEventListener('scroll', () => {
     let active = null;
     sectionEls.forEach((s, i) => {
