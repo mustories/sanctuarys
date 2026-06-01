@@ -403,31 +403,62 @@
   .lignee-image-wrap {
     position: relative; height: 740px;
     overflow: hidden;
+    background:
+      radial-gradient(ellipse at center, rgba(232, 176, 153, 0.22), transparent 70%),
+      linear-gradient(180deg, var(--blanc) 0%, var(--blanc-deep) 100%);
+    border: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 60px 50px;
   }
-  .lignee-image {
-    position: absolute; inset: 0;
-    background-image: url('https://i.pinimg.com/736x/41/38/bb/4138bbb5c728eca31b7c81ea01fec80b.jpg');
-    background-size: cover; background-position: center;
-    transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  .lignee-image-wrap::before {
+    content: '✦'; position: absolute;
+    top: 30px; left: 50%; transform: translateX(-50%);
+    font-family: 'Italiana', serif;
+    font-size: 22px; color: var(--terracotta-deep);
   }
-  .lignee-image:hover { transform: scale(1.04); }
-  .lignee-image::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(15, 8, 5, 0.55));
+  .lignee-image-wrap::after {
+    content: 'Sagesse ancestrale & soins féminins';
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 4px;
+    color: var(--marron-soft); text-transform: uppercase;
+    opacity: 0.65; white-space: nowrap;
   }
+  .lignee-logo {
+    width: 100%; max-width: 380px; height: auto;
+    display: block; margin: 0 auto 50px;
+    filter: drop-shadow(0 8px 30px rgba(74, 48, 32, 0.12));
+    transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .lignee-image-wrap:hover .lignee-logo { transform: scale(1.03); }
   .lignee-image-caption {
-    position: absolute; bottom: 32px; left: 32px; right: 32px;
-    z-index: 2; color: var(--blanc);
+    text-align: center; max-width: 380px;
+  }
+  .lignee-image-caption-divider {
+    width: 60px; height: 1px;
+    background: var(--terracotta);
+    margin: 0 auto 22px;
   }
   .lignee-image-caption-name {
     font-family: 'Italiana', serif;
-    font-size: 30px; line-height: 1.05; margin-bottom: 10px;
-    letter-spacing: 1px;
+    font-size: 28px; line-height: 1.1;
+    color: var(--marron-deep);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
   }
   .lignee-image-caption-role {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: 3px;
-    color: var(--terracotta-pale); text-transform: uppercase;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+  }
+  .lignee-image-caption-role em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 13px;
+    color: var(--marron-soft); letter-spacing: 1px;
+    text-transform: none; display: block;
+    margin-top: 6px;
   }
   .lignee-text {
     font-family: 'Cormorant Garamond', serif;
@@ -870,7 +901,10 @@
     .manifesto-headline { position: relative; top: auto; }
     .lignee { padding: 80px 24px; }
     .lignee-body { grid-template-columns: 1fr; gap: 50px; }
-    .lignee-image-wrap { height: 480px; }
+    .lignee-image-wrap { height: 520px; padding: 40px 30px; }
+    .lignee-logo { max-width: 260px; margin-bottom: 36px; }
+    .lignee-image-caption-name { font-size: 22px; }
+    .lignee-image-wrap::after { font-size: 8px; letter-spacing: 3px; }
     .lignee-numbers { grid-template-columns: 1fr 1fr; }
     .lignee-num-cell:nth-child(2) { border-right: none; }
     .lignee-num-cell:nth-child(odd) { border-right: 1px solid var(--line); }
@@ -1015,10 +1049,11 @@
 
     <div class="lignee-body">
       <div class="lignee-image-wrap">
-        <div class="lignee-image"></div>
+        <img class="lignee-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
         <div class="lignee-image-caption">
+          <div class="lignee-image-caption-divider"></div>
           <div class="lignee-image-caption-name">Princesse Tchassi Bekou</div>
-          <div class="lignee-image-caption-role">Fondatrice · Sanctuarys</div>
+          <div class="lignee-image-caption-role">Fondatrice<em>Djailiworld · Djailimedspa · Sanctuarys</em></div>
         </div>
       </div>
       <div class="lignee-text">
