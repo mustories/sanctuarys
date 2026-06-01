@@ -2523,6 +2523,7 @@
     STUDENTS.forEach(e => {
       const row = document.createElement('div');
       row.className = 'eleve-row';
+      row.dataset.formatriceId = e.formatrice_id || '';
       const statusClass = e.status === 'attention' ? 'attention' : (e.status === 'completed' ? 'completed' : 'active');
       const statusLabel = e.status === 'attention' ? 'Attention' : (e.status === 'completed' ? 'Terminé' : 'Active');
       const moduleNum = String(e.current_module).padStart(2, '0');
@@ -2958,6 +2959,7 @@
       const row = document.createElement('div');
       row.className = 'eleve-row';
       row.style.gridTemplateColumns = '1fr 1fr 100px 100px 60px';
+      row.style.cursor = 'pointer';
       const isAdmin = f.role === 'admin';
       const isSelf = f.id === ADMIN_PROFILE.id;
       const myStudentsCount = STUDENTS.filter(s => s.formatrice_id === f.id).length;
@@ -2969,7 +2971,7 @@
             <div class="email">${escapeHTML(f.email || '')}</div>
           </div>
         </div>
-        <div class="eleve-module">${myStudentsCount} élève${myStudentsCount > 1 ? 's' : ''} <strong>référente${myStudentsCount > 1 ? 's' : ''}</strong></div>
+        <div class="eleve-module" data-action="view-students" style="cursor: pointer;">${myStudentsCount} élève${myStudentsCount > 1 ? 's' : ''} <strong style="text-decoration: underline; text-decoration-color: var(--terracotta);">référente${myStudentsCount > 1 ? 's' : ''}</strong></div>
         <div class="eleve-module">${isAdmin ? 'Direction' : 'Formatrice'}</div>
         <div class="eleve-status ${isAdmin ? 'completed' : 'active'}">${isAdmin ? 'Admin' : 'Active'}</div>
         <div class="eleve-actions">
@@ -2978,6 +2980,32 @@
           ${(!isAdmin && !isSelf) ? '<button class="icon-btn icon-btn-danger" title="Supprimer" data-action="delete">✕</button>' : ''}
         </div>
       `;
+      // Le clic sur la ligne (hors boutons) ouvre l'édition
+      row.addEventListener('click', (ev) => {
+        if (ev.target.closest('[data-action]')) return; // ignore les clics sur actions
+        openEditModal(f);
+      });
+      const viewStudentsBtn = row.querySelector('[data-action="view-students"]');
+      if (viewStudentsBtn && myStudentsCount > 0) {
+        viewStudentsBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          // Bascule vers le panel "eleves" et filtre par formatrice
+          openPanel('eleves');
+          const search = document.getElementById('searchEleve');
+          if (search) {
+            search.value = '';
+            search.dispatchEvent(new Event('input'));
+          }
+          // Surlignage des élèves de cette formatrice
+          setTimeout(() => {
+            document.querySelectorAll('#elevesList .eleve-row').forEach(r => {
+              const matched = r.dataset.formatriceId === f.id;
+              r.style.opacity = matched ? '1' : '0.3';
+            });
+            showToast(`Élèves de ${f.prenom} mises en avant`);
+          }, 200);
+        });
+      }
       const editBtn = row.querySelector('[data-action="edit"]');
       if (editBtn) {
         editBtn.addEventListener('click', (ev) => {
