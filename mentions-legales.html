@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Mentions légales de Sanctuarys Yoni Social Club, fondé par Madame Princesse Tchassi Bekou. SIREN 808 654 719.">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --or: #D4A04C;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.18), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.12), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.04; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  header {
+    padding: 32px 56px;
+    border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2;
+  }
+  header img { height: 44px; }
+  header nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft); text-decoration: none;
+    margin-left: 28px; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  header nav a:hover { color: var(--terracotta-deep); }
+
+  main {
+    max-width: 820px; margin: 0 auto;
+    padding: 70px 56px 100px;
+    position: relative; z-index: 2;
+  }
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(48px, 6vw, 78px);
+    line-height: 1.0; font-weight: 400;
+    color: var(--marron-deep);
+    letter-spacing: -0.5px; margin-bottom: 18px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: var(--terracotta-deep);
+  }
+  .intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 19px;
+    color: var(--marron); margin-bottom: 50px;
+    line-height: 1.7;
+  }
+  h2 {
+    font-family: 'Italiana', serif;
+    font-size: 26px; font-weight: 400;
+    color: var(--marron-deep);
+    margin-top: 46px; margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  h2::before {
+    content: counter(section, upper-roman) ' · ';
+    counter-increment: section;
+    color: var(--terracotta-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    margin-right: 4px;
+  }
+  main { counter-reset: section; }
+  p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; line-height: 1.8;
+    color: var(--marron); margin-bottom: 14px;
+  }
+  p strong {
+    font-family: 'Italiana', serif;
+    font-weight: 400; color: var(--marron-deep);
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px; padding: 10px 0;
+    border-bottom: 1px solid rgba(106, 68, 35, 0.08);
+  }
+  .field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft); text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .field-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; color: var(--marron-deep);
+    line-height: 1.6;
+  }
+  a { color: var(--terracotta-deep); text-decoration: none; border-bottom: 1px solid currentColor; }
+  a:hover { color: var(--marron-deep); }
+
+  .last-updated {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft); text-transform: uppercase;
+    text-align: center;
+  }
+  footer {
+    text-align: center;
+    padding: 36px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft);
+    border-top: 1px solid var(--line);
+    text-transform: uppercase;
+    position: relative; z-index: 2;
+  }
+
+  @media (max-width: 720px) {
+    header { padding: 20px 22px; flex-direction: column; gap: 12px; align-items: flex-start; }
+    header nav a { margin-left: 0; margin-right: 18px; }
+    main { padding: 40px 22px 60px; }
+    .field { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/index.html"><img src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <nav>
+    <a href="/index.html">Accueil</a>
+    <a href="/club">Le Club</a>
+    <a href="/cgv">CGV</a>
+    <a href="mailto:info@sanctuarys.me">Nous écrire</a>
+  </nav>
+</header>
+
+<main>
+  <div class="breadcrumb">Sanctuarys · Légal</div>
+  <h1>Mentions <em>légales.</em></h1>
+  <p class="intro">Les informations légales relatives à l'édition et à l'exploitation du site sanctuarys.me et du Yoni Social Club, conformément à l'article 6 III de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique.</p>
+
+  <h2>Éditeur du <em>site.</em></h2>
+  <div class="field"><span class="field-label">Raison sociale</span><span class="field-value">Madame Princesse Tchassi Bekou</span></div>
+  <div class="field"><span class="field-label">Forme juridique</span><span class="field-value">Entrepreneur individuel</span></div>
+  <div class="field"><span class="field-label">SIREN</span><span class="field-value">808 654 719</span></div>
+  <div class="field"><span class="field-label">SIRET du siège social</span><span class="field-value">808 654 719 00042</span></div>
+  <div class="field"><span class="field-label">Numéro de TVA intracommunautaire</span><span class="field-value">FR86 808654719</span></div>
+  <div class="field"><span class="field-label">Code APE / NAF</span><span class="field-value">4791A · Vente à distance sur catalogue général</span></div>
+  <div class="field"><span class="field-label">Date d'immatriculation</span><span class="field-value">26 décembre 2014</span></div>
+  <div class="field"><span class="field-label">Siège social</span><span class="field-value">1 Square Chalgrin, 92600 Asnières-sur-Seine</span></div>
+  <div class="field"><span class="field-label">Lieu de pratique YoniSpa</span><span class="field-value">Paris 12<sup>e</sup>, sur rendez-vous</span></div>
+  <div class="field"><span class="field-label">Email</span><span class="field-value"><a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a></span></div>
+  <div class="field"><span class="field-label">Directrice de la publication</span><span class="field-value">Princesse Tchassi Bekou</span></div>
+
+  <h2>Hébergeur du <em>site.</em></h2>
+  <div class="field"><span class="field-label">Hébergeur</span><span class="field-value">Vercel Inc.</span></div>
+  <div class="field"><span class="field-label">Adresse</span><span class="field-value">340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis</span></div>
+  <div class="field"><span class="field-label">Site</span><span class="field-value"><a href="https://vercel.com" target="_blank">vercel.com</a></span></div>
+  <div class="field"><span class="field-label">Base de données</span><span class="field-value">Supabase (Singapour / Union européenne)</span></div>
+
+  <h2>Activité de <em>Sanctuarys.</em></h2>
+  <p>Le site sanctuarys.me présente <strong>Sanctuarys, Yoni Social Club</strong>, espace dédié à la gynécologie naturelle, aux soins ancestraux du féminin et à l'accompagnement holistique des femmes. L'activité comprend des séances individuelles de soins (bain de vapeur vaginal, vajacial, hifu vaginal, lecture radiesthésique, accompagnement énergétique), la vente de produits naturels, l'organisation d'événements et d'ateliers, ainsi que la formation de praticiennes.</p>
+  <p>Les soins proposés relèvent du <strong>bien-être féminin</strong> et ne se substituent en aucun cas à un suivi médical ou gynécologique conventionnel. Les conseils, plantes et protocoles présentés ne constituent pas un diagnostic médical.</p>
+
+  <h2>Propriété <em>intellectuelle.</em></h2>
+  <p>L'ensemble du contenu du site sanctuarys.me, incluant les textes, images, photographies, vidéos, logos, marques, graphismes, charte typographique, ainsi que les protocoles, formations et méthodes développés par Princesse Tchassi Bekou, est protégé par le droit d'auteur et le droit des marques.</p>
+  <p>Toute reproduction, représentation, modification, publication ou adaptation, totale ou partielle, des éléments du site est interdite sans autorisation écrite préalable de l'éditeur. Toute exploitation non autorisée constituerait une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.</p>
+
+  <h2>Données <em>personnelles.</em></h2>
+  <p>Sanctuarys s'engage à protéger les données personnelles des utilisateurs conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés du 6 janvier 1978 modifiée.</p>
+  <p>Les données collectées via les formulaires (prénom, nom, email, téléphone, ville, allaitement, profil cyclique, antécédents gynécologiques, intentions) sont strictement utilisées pour préparer les protocoles personnalisés des Fondatrices, gérer leurs séances et leur communiquer les informations relatives au Club. <strong>Aucune donnée n'est transmise à des tiers commerciaux.</strong></p>
+  <p>Les données sont stockées chez Supabase (infrastructure Union européenne) et chez Stripe pour les transactions de paiement.</p>
+  <p>Conformément au RGPD, chaque Fondatrice dispose d'un <strong>droit d'accès, de rectification, d'effacement, de portabilité et d'opposition</strong> au traitement de ses données. Pour exercer ces droits, écrire à <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a> avec en objet "Demande RGPD".</p>
+  <p>Durée de conservation : les données sont conservées tant que la Fondatrice est active dans le Club, puis 3 ans après la fin de son abonnement à des fins de suivi et de continuité du protocole, sauf demande de suppression antérieure.</p>
+
+  <h2>Cookies et <em>traceurs.</em></h2>
+  <p>Le site sanctuarys.me utilise uniquement des cookies <strong>strictement nécessaires</strong> au bon fonctionnement (session de connexion à l'espace membre, panier Stripe). Aucun cookie publicitaire, aucun traceur tiers de profilage.</p>
+  <p>Stripe peut déposer ses propres cookies lors du processus de paiement, conformément à sa politique de confidentialité accessible sur <a href="https://stripe.com/fr/privacy" target="_blank">stripe.com</a>.</p>
+
+  <h2>Liens <em>externes.</em></h2>
+  <p>Le site peut contenir des liens vers des sites tiers (Stripe, partenaires, réseaux sociaux). Sanctuarys n'exerce aucun contrôle sur le contenu de ces sites et décline toute responsabilité quant à leurs pratiques en matière de protection des données.</p>
+
+  <h2>Crédits.</h2>
+  <p>Conception, design et développement : Princesse Tchassi Bekou et l'équipe Sanctuarys.</p>
+  <p>Typographies : Italiana, Cormorant Garamond, Inter et JetBrains Mono (Google Fonts).</p>
+  <p>Photographies originales : Sanctuarys. Photographies d'inspiration : Pinterest, utilisées à des fins éditoriales.</p>
+
+  <h2>Litiges et <em>juridiction.</em></h2>
+  <p>Les présentes mentions légales sont régies par le droit français. Tout litige relatif à l'interprétation ou à l'exécution de ces mentions sera de la compétence des tribunaux français du ressort du siège social de l'éditeur, à défaut d'accord amiable préalable.</p>
+
+  <div class="last-updated">Dernière mise à jour ✦ Juin 2026</div>
+</main>
+
+<footer>
+  Sanctuarys · Yoni Social Club · Paris 12<sup>e</sup> · sanctuarys.me · info@sanctuarys.me
+</footer>
+
+</body>
+</html>

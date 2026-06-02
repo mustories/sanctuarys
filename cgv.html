@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditions générales de vente · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Conditions générales de vente du Pass Fondatrice Yoni Social Club Sanctuarys, séances YoniSpa, événements, produits.">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --or: #D4A04C;
+    --rouge-vif: #B22B2B;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.18), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.12), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.04; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  header {
+    padding: 32px 56px;
+    border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2;
+  }
+  header img { height: 44px; }
+  header nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft); text-decoration: none;
+    margin-left: 28px; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  header nav a:hover { color: var(--terracotta-deep); }
+
+  main {
+    max-width: 860px; margin: 0 auto;
+    padding: 70px 56px 100px;
+    position: relative; z-index: 2;
+    counter-reset: article;
+  }
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(46px, 5.5vw, 70px);
+    line-height: 1.05; font-weight: 400;
+    color: var(--marron-deep);
+    letter-spacing: -0.5px; margin-bottom: 18px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: var(--terracotta-deep);
+  }
+  .intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 19px;
+    color: var(--marron); margin-bottom: 50px;
+    line-height: 1.7;
+  }
+  h2 {
+    font-family: 'Italiana', serif;
+    font-size: 24px; font-weight: 400;
+    color: var(--marron-deep);
+    margin-top: 48px; margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  h2::before {
+    counter-increment: article;
+    content: 'Art. ' counter(article) ' · ';
+    color: var(--terracotta-deep);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16.5px; line-height: 1.75;
+    color: var(--marron); margin-bottom: 14px;
+  }
+  p strong, li strong {
+    font-family: 'Italiana', serif;
+    font-weight: 400; color: var(--marron-deep);
+  }
+  ul {
+    margin: 14px 0 18px 22px;
+  }
+  li {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16.5px; line-height: 1.75;
+    color: var(--marron); margin-bottom: 8px;
+    padding-left: 6px;
+  }
+  li::marker { color: var(--terracotta-deep); font-family: 'Italiana', serif; }
+  .highlight {
+    background: rgba(168, 85, 55, 0.06);
+    border-left: 3px solid var(--terracotta);
+    padding: 14px 22px; margin: 18px 0;
+  }
+  .highlight p { margin-bottom: 0; font-style: italic; }
+  .warning {
+    background: rgba(178, 43, 43, 0.06);
+    border-left: 3px solid var(--rouge-vif);
+    padding: 14px 22px; margin: 18px 0;
+  }
+  .warning p {
+    margin-bottom: 0;
+    color: var(--marron-deep);
+  }
+  a { color: var(--terracotta-deep); text-decoration: none; border-bottom: 1px solid currentColor; }
+  a:hover { color: var(--marron-deep); }
+  .last-updated {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft); text-transform: uppercase;
+    text-align: center;
+  }
+  footer {
+    text-align: center;
+    padding: 36px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-soft);
+    border-top: 1px solid var(--line);
+    text-transform: uppercase;
+    position: relative; z-index: 2;
+  }
+
+  @media (max-width: 720px) {
+    header { padding: 20px 22px; flex-direction: column; gap: 12px; align-items: flex-start; }
+    header nav a { margin-left: 0; margin-right: 18px; }
+    main { padding: 40px 22px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/index.html"><img src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <nav>
+    <a href="/index.html">Accueil</a>
+    <a href="/club">Le Club</a>
+    <a href="/mentions-legales">Mentions légales</a>
+    <a href="mailto:info@sanctuarys.me">Nous écrire</a>
+  </nav>
+</header>
+
+<main>
+  <div class="breadcrumb">Sanctuarys · Conditions générales de vente</div>
+  <h1>Conditions générales<br><em>de vente.</em></h1>
+  <p class="intro">Les présentes conditions générales de vente régissent les relations contractuelles entre Sanctuarys, Yoni Social Club, et toute femme adhérente au Club, dans le cadre de l'avant-première Fondatrice et des services proposés à compter de juillet 2026.</p>
+
+  <h2>Préambule et <em>identification.</em></h2>
+  <p>Les présentes conditions générales de vente (ci-après "<strong>CGV</strong>") sont conclues entre :</p>
+  <p><strong>Madame Princesse Tchassi Bekou</strong>, entrepreneur individuel, immatriculée au RNE sous le numéro SIREN 808 654 719, SIRET 808 654 719 00042, dont le siège social est situé au 1 Square Chalgrin, 92600 Asnières-sur-Seine, exerçant sous le nom commercial <strong>Sanctuarys</strong> (ci-après "le Vendeur" ou "Sanctuarys"),</p>
+  <p>et toute personne physique majeure souscrivant à une offre proposée par Sanctuarys via le site sanctuarys.me (ci-après "la Cliente" ou "la Fondatrice").</p>
+  <p>Le fait pour la Cliente de valider une commande implique son acceptation entière et sans réserve des présentes CGV.</p>
+
+  <h2>Objet et description des <em>services.</em></h2>
+  <p>Sanctuarys propose un espace dédié au bien-être féminin combinant <strong>gynécologie naturelle, soins ancestraux, accompagnement énergétique et radiesthésie</strong>. Le Yoni Social Club est une offre d'adhésion donnant accès aux services suivants :</p>
+  <ul>
+    <li><strong>Trois séances YoniSpa</strong> individuelles personnalisées (bain de vapeur vaginal, vajacial, hifu vaginal selon le protocole adapté), à utiliser dans le délai imparti dans nos murs à Paris 12<sup>e</sup></li>
+    <li><strong>Deux événements offerts</strong> par mois (cercles, ateliers, retraites, en ligne ou en présentiel)</li>
+    <li><strong>Les produits Sanctuarys</strong> pour accompagner la cure à domicile, choisis selon les besoins</li>
+    <li><strong>L'accès à l'espace privé en ligne</strong> avec calendrier menstruel, journal post-soin, suivi des séances et compte rendu</li>
+    <li><strong>L'accès en avant-première à l'espace Premium</strong></li>
+    <li><strong>Un lien de parrainage</strong> donnant droit à 180 € de crédit sur les produits ou événements pour chaque femme parrainée acceptée dans le Club</li>
+    <li><strong>Le statut de Fondatrice à vie</strong>, conservant le tarif d'entrée même après l'ouverture publique au tarif réel</li>
+  </ul>
+
+  <h2>Pass Fondatrice et <em>tarif.</em></h2>
+  <p>L'offre <strong>Pass Fondatrice</strong> est commercialisée au tarif unique et forfaitaire de <strong>cent quatre-vingts euros (180 €)</strong>, toutes taxes incluses, payable en une seule fois.</p>
+  <p>Le Pass Fondatrice est limité aux <strong>cent vingt-trois (123) premières inscrites</strong>. Une fois cette limite atteinte, une liste d'attente s'ouvre et le Yoni Social Club passe au tarif public ouvert à toutes.</p>
+  <p>Le tarif Fondatrice est <strong>conservé à vie</strong> : même lorsque le Club ouvre au public à son tarif réel, les Fondatrices conservent leur tarif d'entrée à 180 € pour le renouvellement de leur adhésion annuelle, sous réserve de la continuité de leur engagement.</p>
+  <p>Les prix sont indiqués en euros, toutes taxes comprises. En tant qu'entrepreneur individuel, le Vendeur applique le régime de la franchise en base de TVA conformément à l'article 293 B du Code général des impôts ; les factures pourront mentionner "TVA non applicable, art. 293 B du CGI" le cas échéant.</p>
+
+  <h2>Commande et <em>paiement.</em></h2>
+  <p>La commande s'effectue exclusivement via le formulaire en ligne accessible depuis sanctuarys.me/club. La Cliente fournit son prénom, nom, adresse email, numéro de téléphone, et indique sa situation d'allaitement le cas échéant.</p>
+  <p>Le paiement est traité par <strong>Stripe Payments Europe, Ltd.</strong>, prestataire externe certifié PCI-DSS. Sanctuarys n'a aucun accès aux coordonnées bancaires de la Cliente. Les transactions sont sécurisées par chiffrement SSL.</p>
+  <p>La commande est considérée comme définitive à réception du paiement validé par Stripe. La Cliente reçoit alors :</p>
+  <ul>
+    <li>Un email de confirmation de paiement</li>
+    <li>Un email "Bienvenue Fondatrice" signé par l'équipe Sanctuarys, comportant un lien d'activation de son espace privé</li>
+    <li>Un accès à son espace membre dès l'activation du mot de passe</li>
+  </ul>
+
+  <h2>Conditions d'accès et de <em>sécurité.</em></h2>
+  <div class="warning">
+    <p><strong>Pour des raisons de sécurité physiologique</strong>, Sanctuarys n'accueille pas les <strong>femmes enceintes</strong>. En souscrivant au Pass Fondatrice, la Cliente confirme expressément ne pas être enceinte au moment de son inscription.</p>
+  </div>
+  <p>Les <strong>femmes allaitantes</strong> sont accueillies au sein du Club, à condition d'en faire mention explicite lors de l'inscription et dans le questionnaire d'entrée. Sanctuarys adaptera les protocoles et le choix des plantes pour respecter ce moment de transmission.</p>
+  <p>La Cliente s'engage à communiquer toute information médicale pertinente (antécédents gynécologiques, traitements en cours, allergies, opérations) via le questionnaire de Premier Seuil disponible dans son espace membre. La sincérité et l'exhaustivité de ces informations conditionnent l'adaptation des soins.</p>
+  <p>Sanctuarys se réserve le droit de refuser ou suspendre un soin si l'état de santé de la Cliente présente une contre-indication médicale identifiée, sans que cela ne donne lieu à remboursement.</p>
+
+  <h2>Durée d'utilisation et <em>validité.</em></h2>
+  <p>Les <strong>trois séances YoniSpa</strong> incluses dans le Pass Fondatrice doivent être utilisées dans un délai de <strong>quarante (40) jours calendaires</strong> à compter de la date du paiement validé.</p>
+  <p>Au-delà de ce délai, les séances non utilisées sont considérées comme consommées et ne peuvent faire l'objet d'aucun remboursement ni report, sauf cas de force majeure dûment justifié.</p>
+  <p>Le statut de Fondatrice et l'accès à l'espace privé sont quant à eux <strong>conservés à vie</strong> sous réserve du paiement du renouvellement annuel au tarif Fondatrice.</p>
+
+  <h2>Réservation et annulation des <em>séances.</em></h2>
+  <p>La réservation des séances YoniSpa s'effectue depuis l'espace membre, en sélectionnant un créneau parmi les disponibilités proposées par Sanctuarys.</p>
+  <p>Toute annulation ou modification doit être faite au minimum <strong>quarante-huit (48) heures avant le créneau réservé</strong>. À défaut, la séance est considérée comme consommée et ne peut être reportée.</p>
+  <p>En cas d'absence non justifiée le jour du rendez-vous (no-show), la séance est définitivement décomptée du Pass Fondatrice.</p>
+  <p>Sanctuarys se réserve le droit d'annuler ou de reporter exceptionnellement une séance en cas de force majeure, indisponibilité ou nécessité. La Cliente est informée par email et un nouveau créneau lui est proposé prioritairement.</p>
+
+  <h2>Droit de <em>rétractation.</em></h2>
+  <p>Conformément aux articles L.221-18 et suivants du Code de la consommation, la Cliente dispose d'un délai de <strong>quatorze (14) jours</strong> calendaires à compter de la conclusion du contrat pour exercer son droit de rétractation, <strong>à condition que la première séance n'ait pas encore eu lieu</strong>.</p>
+  <div class="highlight">
+    <p>En réservant une séance dans le délai de 14 jours, la Cliente reconnaît expressément renoncer à son droit de rétractation pour les prestations exécutées, conformément à l'article L.221-28 du Code de la consommation.</p>
+  </div>
+  <p>Pour exercer ce droit, la Cliente notifie Sanctuarys par email à <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a> avec mention "Rétractation Pass Fondatrice". Le remboursement intégral est effectué dans les 14 jours suivant la réception de la demande, par le même moyen de paiement que celui utilisé lors de l'achat.</p>
+  <p>Si une séance a déjà été réalisée, seul le montant correspondant aux prestations non exécutées (au prorata des séances restantes) pourra faire l'objet d'un remboursement.</p>
+
+  <h2>Parrainage et <em>crédit.</em></h2>
+  <p>Chaque Fondatrice dispose d'un code de parrainage unique. Pour chaque nouvelle Fondatrice acceptée et ayant validé son Pass via ce code, la marraine reçoit un crédit de <strong>cent quatre-vingts euros (180 €)</strong> utilisable sur les produits Sanctuarys ou les événements payants du Club.</p>
+  <p>Le crédit est non-cumulable avec d'autres offres promotionnelles, non-transmissible et non-convertible en espèces.</p>
+  <p>Le crédit est validé après la confirmation du paiement par la filleule et l'expiration du délai de rétractation.</p>
+
+  <h2>Données personnelles et <em>confidentialité.</em></h2>
+  <p>Les données collectées dans le cadre de l'adhésion et du questionnaire de Premier Seuil sont traitées conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.</p>
+  <p>Les informations relatives au profil cyclique, aux antécédents gynécologiques et à la vie intime de la Fondatrice sont strictement confidentielles. Elles sont conservées dans une base sécurisée hébergée par Supabase (Union européenne), accessible uniquement à Princesse Tchassi Bekou et, le cas échéant, à l'équipe Sanctuarys habilitée.</p>
+  <p>La Fondatrice dispose des droits d'accès, de rectification, de portabilité, de suppression et d'opposition. Ces droits s'exercent par email à <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a>.</p>
+  <p>Pour plus de détails, consulter nos <a href="/mentions-legales">mentions légales</a>.</p>
+
+  <h2>Propriété <em>intellectuelle.</em></h2>
+  <p>L'ensemble des contenus accessibles via le Club (protocoles, méthodes, méditations guidées, supports écrits, vidéos, lectures radiesthésiques, conseils de plantes) reste la propriété exclusive de Sanctuarys.</p>
+  <p>La Fondatrice bénéficie d'un droit d'usage personnel et privé sur ces contenus pour la durée de son adhésion. Toute reproduction, diffusion, transmission à un tiers ou exploitation commerciale est strictement interdite.</p>
+
+  <h2>Limitation de <em>responsabilité.</em></h2>
+  <p>Sanctuarys agit en qualité de praticienne de bien-être féminin. Les soins, conseils et accompagnements proposés <strong>ne se substituent en aucun cas à une consultation médicale ou gynécologique conventionnelle</strong>. En cas de symptômes inhabituels, douloureux ou persistants, la Fondatrice s'engage à consulter un professionnel de santé.</p>
+  <p>Sanctuarys ne saurait être tenue responsable des effets indésirables liés à la non-déclaration par la Cliente d'antécédents médicaux, allergies, grossesse ou de toute autre information pertinente.</p>
+  <p>La responsabilité de Sanctuarys est limitée au montant total payé par la Cliente au titre du Pass Fondatrice.</p>
+
+  <h2>Force <em>majeure.</em></h2>
+  <p>Sanctuarys ne pourra être tenue responsable d'un défaut d'exécution de ses obligations résultant d'un cas de force majeure tel que défini par l'article 1218 du Code civil (catastrophe naturelle, pandémie, grève, panne d'infrastructure technique tierce, etc.).</p>
+  <p>Dans ce cas, les séances seront reportées et le délai de validité du Pass prolongé d'autant.</p>
+
+  <h2>Médiation et <em>litiges.</em></h2>
+  <p>En cas de différend relatif à l'exécution des présentes CGV, la Cliente est invitée à contacter Sanctuarys par email à <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a> afin de rechercher une solution amiable.</p>
+  <p>Conformément à l'article L.612-1 du Code de la consommation, en cas d'échec de la résolution amiable, la Cliente peut recourir gratuitement au service de médiation de la consommation : <strong>CNPM Médiation Consommation</strong>, 27 avenue de la Libération, 42400 Saint-Chamond, <a href="https://cnpm-mediation-consommation.eu" target="_blank">cnpm-mediation-consommation.eu</a>.</p>
+  <p>À défaut d'accord, tout litige sera de la compétence exclusive des tribunaux français du ressort du siège social du Vendeur.</p>
+
+  <h2>Droit <em>applicable.</em></h2>
+  <p>Les présentes CGV sont soumises au droit français. Toute traduction des présentes CGV n'a qu'une valeur informative ; en cas de contradiction, la version française fait foi.</p>
+
+  <div class="last-updated">Dernière mise à jour ✦ Juin 2026 · Version 1.0</div>
+</main>
+
+<footer>
+  Sanctuarys · Yoni Social Club · Paris 12<sup>e</sup> · sanctuarys.me · info@sanctuarys.me
+</footer>
+
+</body>
+</html>
