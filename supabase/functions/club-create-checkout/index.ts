@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     })
 
     const body = await req.json()
-    const { prenom, nom, email, phone, referral_source, intention } = body
+    const { prenom, nom, email, phone, referral_source, intention, allaitement } = body
 
     if (!email || !prenom || !nom || !phone) {
       return json({ error: 'Prénom, nom, email et téléphone requis' }, 400)
@@ -62,6 +62,7 @@ Deno.serve(async (req) => {
         phone,
         referral_source: referral_source || null,
         intention: intention || null,
+        allaitement: allaitement === true,
         status: 'pending'
       })
       .select()

@@ -106,6 +106,7 @@ Deno.serve(async (req) => {
 
     // Crée ou trouve le user Auth puis le profil membre
     let userId: string | null = null
+    let inviteActionLink: string | null = null
 
     // Tente de trouver un user existant avec cet email
     const { data: existingProfile } = await admin
@@ -126,11 +127,19 @@ Deno.serve(async (req) => {
           phone: phone || undefined
         })
         .eq('id', userId)
+      // Pour un user existant, on génère un magic link pour entrer direct dans l'espace
+      const { data: magicData } = await admin.auth.admin.generateLink({
+        type: 'magiclink',
+        email: email.toLowerCase(),
+        options: { redirectTo: 'https://sanctuarys.me/questionnaire' }
+      })
+      inviteActionLink = magicData?.properties?.action_link || null
     } else {
-      // Invite la nouvelle membre via Supabase Auth
-      const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-        email.toLowerCase(),
-        {
+      // Génère le lien d'invitation SANS envoyer d'email (on enverra via Resend nous-mêmes)
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+        type: 'invite',
+        email: email.toLowerCase(),
+        options: {
           redirectTo: 'https://sanctuarys.me/questionnaire',
           data: {
             prenom,
@@ -139,14 +148,15 @@ Deno.serve(async (req) => {
             role_intended: 'membre'
           }
         }
-      )
+      })
 
-      if (inviteError) {
-        console.error('Invite error:', inviteError)
-        return json({ error: 'Invitation impossible : ' + inviteError.message }, 500)
+      if (linkError) {
+        console.error('GenerateLink error:', linkError)
+        return json({ error: 'Création membre impossible : ' + linkError.message }, 500)
       }
 
-      userId = inviteData.user?.id || null
+      userId = linkData.user?.id || null
+      inviteActionLink = linkData.properties?.action_link || null
 
       if (userId) {
         await admin
@@ -211,10 +221,11 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
   <p>${prenom},</p>
   <p>Ton paiement est validé. Tu fais désormais partie des <strong>123 Fondatrices</strong> du Yoni Social Club. Ton tarif de Fondatrice est gravé dans la mémoire du Temple, à vie.</p>
   <p>Pour activer ton espace privé et nous aider à préparer tes protocoles personnalisés, clique sur le bouton ci-dessous pour choisir ton mot de passe et remplir ton questionnaire d'entrée.</p>
-  <p style="text-align: center;"><a href="https://sanctuarys.me/questionnaire" class="btn">Franchir le seuil →</a></p>
-  <p>Princesse te contactera personnellement dans les jours qui viennent pour planifier ta première séance YoniSpa.</p>
-  <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec toute mon attention,</p>
-  <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">Princesse Tchassi Bekou</p>
+  <p style="text-align: center;"><a href="${inviteActionLink || 'https://sanctuarys.me/questionnaire'}" class="btn">Franchir le seuil ✦</a></p>
+  <p style="font-size: 13px; color: #6B4423; text-align: center; font-style: italic;">Si le bouton ne s'affiche pas, copie ce lien : <a href="${inviteActionLink || 'https://sanctuarys.me/questionnaire'}" style="color: #A85537; word-break: break-all;">${inviteActionLink || 'https://sanctuarys.me/questionnaire'}</a></p>
+  <p>Nous te contacterons personnellement dans les jours qui viennent pour planifier ta première séance YoniSpa.</p>
+  <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec attention,</p>
+  <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">L'équipe Sanctuarys</p>
   <div class="footer">Sanctuarys · sanctuarys.me · info@sanctuarys.me</div>
 </div></body></html>`
 

@@ -1272,7 +1272,7 @@
     <a href="#inscription" class="btn-primary"><span>Réserver ma place ✦</span></a>
     <div class="offre-meta">Après juillet, le Yoni Social Club ouvrira au public au tarif réel.</div>
     <div style="margin-top: 30px; padding: 18px 24px; background: rgba(178, 43, 43, 0.06); border: 1px solid rgba(178, 43, 43, 0.18); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.6; text-align: center; max-width: 640px; margin-left: auto; margin-right: auto;">
-      Pour des raisons de sécurité physiologique, Sanctuarys n'accueille pas les femmes enceintes ou en cours d'allaitement. Si tu es dans ce moment de ta vie, nous t'attendons avec joie dès la fin de ton allaitement.
+      Pour des raisons de sécurité physiologique, Sanctuarys n'accueille pas les femmes enceintes. Si tu allaites, tu es la bienvenue ; merci de nous l'indiquer dans le formulaire afin que nous adaptions tes protocoles et le choix des plantes.
     </div>
   </div>
 </section>
@@ -1353,7 +1353,7 @@
         <span class="faq-mark">+</span>
       </button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        Pour des raisons de <strong>sécurité physiologique</strong>, Sanctuarys n'accueille pas les femmes enceintes ni en cours d'allaitement dans ses protocoles. Le bain de vapeur vaginal et certains soins ne sont pas indiqués pendant ces moments. Si tu es dans ce moment précieux, nous t'attendons avec joie dès la fin de ton allaitement.
+        Si tu es <strong>enceinte</strong>, nous ne pouvons pas t'accueillir tout de suite pour des raisons de sécurité physiologique. Nous t'attendons avec joie dès la naissance. Si tu <strong>allaites</strong>, tu es la bienvenue. Indique-le simplement dans le formulaire et dans ton questionnaire d'entrée, nous adapterons tes protocoles et le choix des plantes pour qu'ils respectent ce moment de transmission.
       </div></div>
     </div>
     <div class="faq-item">
@@ -1405,13 +1405,27 @@
           <label>Ce que tu viens chercher (optionnel)</label>
           <textarea name="intention" rows="3" placeholder="Quelques mots sur ce qui t'amène."></textarea>
         </div>
+        <div class="form-group">
+          <label style="margin-bottom: 14px;">Es-tu actuellement en allaitement ?</label>
+          <div style="display: flex; gap: 24px; margin-top: 6px;">
+            <label style="display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); cursor: pointer; font-style: italic;">
+              <input type="radio" name="allaitement" value="non" required style="accent-color: var(--terracotta); width: 18px; height: 18px; cursor: pointer;">
+              Non
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); cursor: pointer; font-style: italic;">
+              <input type="radio" name="allaitement" value="oui" style="accent-color: var(--terracotta); width: 18px; height: 18px; cursor: pointer;">
+              Oui
+            </label>
+          </div>
+          <div style="margin-top: 8px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); line-height: 1.5;">Si oui, nous adapterons tes protocoles et le choix des plantes pour respecter ce moment.</div>
+        </div>
         <div style="background: rgba(178, 43, 43, 0.06); border: 1px solid rgba(178, 43, 43, 0.18); padding: 14px 18px; margin-bottom: 24px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.55;">
           <strong style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 2px; color: var(--rouge-vif); text-transform: uppercase; display: block; margin-bottom: 6px;">À noter avant d'envoyer</strong>
-          Le Yoni Social Club n'accueille pas les femmes enceintes ni en cours d'allaitement pour des raisons de sécurité physiologique. En envoyant ta demande, tu confirmes que ce n'est pas ta situation actuelle.
+          Le Yoni Social Club n'accueille pas les femmes enceintes pour des raisons de sécurité physiologique. En envoyant ta demande, tu confirmes ne pas être enceinte. Les allaitantes sont les bienvenues, à condition de le mentionner ci-dessus.
         </div>
         <button type="submit" class="form-submit" id="submitBtn"><span id="submitBtnText">Réserver ma place de fondatrice ✦</span></button>
         <div class="form-error" id="formError"></div>
-        <div class="form-note">En envoyant ta demande, tu acceptes que Sanctuarys te contacte par email et téléphone pour t'accueillir dans le Club, et tu confirmes ne pas être enceinte ni allaitante.</div>
+        <div class="form-note">En envoyant ta demande, tu acceptes que Sanctuarys te contacte par email et téléphone pour t'accueillir dans le Club, et tu confirmes ne pas être enceinte.</div>
       </form>
       <div class="form-success" id="formSuccess">
         <strong>Ta demande est reçue ✦</strong>
@@ -1573,7 +1587,8 @@
       email: data.get('email').trim().toLowerCase(),
       phone: data.get('phone').trim(),
       referral_source: data.get('referral_source')?.trim() || null,
-      intention: data.get('intention')?.trim() || null
+      intention: data.get('intention')?.trim() || null,
+      allaitement: data.get('allaitement') === 'oui'
     };
 
     try {
