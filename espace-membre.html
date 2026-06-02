@@ -452,6 +452,82 @@
   }
   .modal h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
 
+  /* ===== Premier seuil form ===== */
+  .ps-section {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ps-section:last-of-type { border-bottom: none; }
+  .ps-section-title {
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--marron-deep);
+    margin-bottom: 6px;
+  }
+  .ps-help {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--marron-soft);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .ps-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .ps-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .ps-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--line);
+    background: var(--blanc);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--marron-deep);
+    font-style: normal;
+    transition: border-color 0.2s;
+  }
+  textarea.ps-input { font-style: italic; line-height: 1.55; resize: vertical; }
+  .ps-input:focus { outline: none; border-color: var(--terracotta); }
+  .ps-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .ps-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    background: var(--blanc);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ps-checkbox:hover { border-color: var(--terracotta); }
+  .ps-checkbox input { accent-color: var(--terracotta); width: 16px; height: 16px; cursor: pointer; }
+  .ps-checkbox span {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--marron-deep);
+  }
+  @media (max-width: 600px) {
+    .ps-grid-2 { grid-template-columns: 1fr; }
+    .ps-checkboxes { grid-template-columns: 1fr; }
+  }
+
   .booking-step { margin-bottom: 22px; }
   .booking-step-label {
     font-family: 'JetBrains Mono', monospace;
@@ -1002,19 +1078,15 @@
 
 <!-- ============== POINT MODAL (questionnaire) ============== -->
 <div class="modal-overlay" id="pointModal">
-  <div class="modal">
+  <div class="modal" style="max-width: 720px;">
     <button class="modal-close" onclick="closePointModal()">×</button>
-    <div class="modal-meta">Point d'entrée</div>
-    <h2>Mon <em>point.</em></h2>
-    <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); margin-bottom: 24px;">Pour chaque domaine, indique où tu en es aujourd'hui. Sois sincère, c'est ton baromètre intime.</p>
+    <div class="modal-meta" id="pointModalMeta">Point d'entrée</div>
+    <h2 id="pointModalTitle">Mon <em>point.</em></h2>
+    <p id="pointModalIntro" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); margin-bottom: 24px;">Quelques minutes pour déposer ton état actuel sur 7 domaines de vie.</p>
 
     <div id="pointForm"></div>
 
-    <div style="margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line);">
-      <div class="booking-step-label">Une chose à ajouter ?</div>
-      <textarea class="journal-textarea" id="pointNotes" placeholder="Mots libres, intentions, demandes particulières..."></textarea>
-      <button class="btn-full" style="margin-top: 16px;" onclick="savePoint()">Déposer mon point ✦</button>
-    </div>
+    <button class="btn-full" id="savePointBtn" style="margin-top: 22px;" onclick="savePoint()">Déposer ✦</button>
   </div>
 </div>
 
@@ -1413,30 +1485,251 @@ async function renderPoint() {
   }
 }
 
-function openPointModal() {
+let IS_PREMIER_SEUIL = false;
+
+const ANTECEDENTS_GYNECO = [
+  { key: 'secheresse', label: 'Sécheresse vaginale' },
+  { key: 'mycoses', label: 'Mycoses récurrentes' },
+  { key: 'endometriose', label: 'Endométriose diagnostiquée' },
+  { key: 'sopk', label: 'Syndrome ovaires polykystiques (SOPK)' },
+  { key: 'douleurs_sexuelles', label: 'Douleurs sexuelles' },
+  { key: 'difficultes_conception', label: 'Difficultés de conception' },
+  { key: 'ist_passees', label: 'IST passées' },
+  { key: 'operation_gyneco', label: 'Opération gynécologique' },
+  { key: 'fibromes', label: 'Fibromes / kystes' }
+];
+
+const PRATIQUES_ACTUELLES = [
+  { key: 'yoga', label: 'Yoga' },
+  { key: 'meditation', label: 'Méditation' },
+  { key: 'jeune', label: 'Jeûne' },
+  { key: 'phytotherapie', label: 'Phytothérapie' },
+  { key: 'medecine_chinoise', label: 'Médecine chinoise' },
+  { key: 'naturopathie', label: 'Naturopathie' },
+  { key: 'kinesiologie', label: 'Kinésiologie' }
+];
+
+const CONTRACEPTIONS = [
+  'Aucune', 'Pilule', 'Stérilet hormonal', 'Stérilet cuivre',
+  'Implant', 'Patch', 'Anneau', 'Préservatif', 'Naturelle (symptothermie)', 'Ménopausée', 'Autre'
+];
+
+const SITUATIONS_COUPLE = [
+  'Célibataire', 'En couple', 'Pacsée', 'Mariée', 'Séparée', 'Divorcée', 'Veuve', 'Préfère ne pas dire'
+];
+
+async function openPointModal() {
   const form = document.getElementById('pointForm');
+  const { data: existing } = await SUPABASE_CLIENT
+    .from('member_check_ins').select('id, type').eq('member_id', MEMBER.id).order('created_at', { ascending: false });
+  const hasPremierSeuil = (existing || []).some(c => c.type === 'premier_seuil');
+  IS_PREMIER_SEUIL = !hasPremierSeuil;
+
+  if (IS_PREMIER_SEUIL) {
+    document.getElementById('pointModalMeta').textContent = 'Premier seuil';
+    document.getElementById('pointModalTitle').innerHTML = 'Mon <em>premier seuil.</em>';
+    document.getElementById('pointModalIntro').innerHTML = 'C\'est ton entrée dans le Temple. Prends ton temps. Ces réponses guident la préparation de tes protocoles personnalisés et le choix de tes plantes. Tout reste confidentiel entre toi et Princesse.';
+    document.getElementById('savePointBtn').textContent = 'Franchir le seuil ✦';
+    form.innerHTML = renderPremierSeuilForm();
+    attachPointHandlers();
+  } else {
+    document.getElementById('pointModalMeta').textContent = 'Point d\'évolution';
+    document.getElementById('pointModalTitle').innerHTML = 'Mon <em>point.</em>';
+    document.getElementById('pointModalIntro').textContent = 'Quelques minutes pour déposer ton état actuel. À chaque point tu verras ton évolution.';
+    document.getElementById('savePointBtn').textContent = 'Déposer mon point ✦';
+    form.innerHTML = renderPointRapideForm();
+    attachPointHandlers();
+  }
+  document.getElementById('pointModal').classList.add('show');
+}
+
+function renderPremierSeuilForm() {
+  const prenom = MEMBER.prenom || '';
+  const nom = MEMBER.nom || '';
   let html = '';
+
+  // ===== Section 1: Qui es-tu =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">I · Qui es-tu</div>
+      <div class="ps-grid-2">
+        <div><label class="ps-label">Prénom</label><input type="text" id="ps_prenom" value="${escapeAttr(prenom)}" class="ps-input"></div>
+        <div><label class="ps-label">Nom</label><input type="text" id="ps_nom" value="${escapeAttr(nom)}" class="ps-input"></div>
+      </div>
+      <div class="ps-grid-2" style="margin-top:14px;">
+        <div><label class="ps-label">Date de naissance</label><input type="date" id="ps_dob" class="ps-input"></div>
+        <div><label class="ps-label">Téléphone</label><input type="tel" id="ps_phone" value="${escapeAttr(MEMBER.phone || '')}" class="ps-input"></div>
+      </div>
+      <div class="ps-grid-2" style="margin-top:14px;">
+        <div><label class="ps-label">Ville</label><input type="text" id="ps_ville" class="ps-input" placeholder="Paris, Marseille..."></div>
+        <div><label class="ps-label">Pays</label><input type="text" id="ps_pays" class="ps-input" placeholder="France, Belgique..." value="France"></div>
+      </div>
+      <div class="ps-grid-2" style="margin-top:14px;">
+        <div><label class="ps-label">Métier / profession</label><input type="text" id="ps_metier" class="ps-input" placeholder="Sage-femme, artiste, entrepreneure..."></div>
+        <div>
+          <label class="ps-label">Situation de couple</label>
+          <select id="ps_situation" class="ps-input">
+            ${SITUATIONS_COUPLE.map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="ps-grid-2" style="margin-top:14px;">
+        <div><label class="ps-label">Enfants (nombre)</label><input type="number" min="0" max="20" id="ps_enfants" class="ps-input" placeholder="0"></div>
+        <div><label class="ps-label">Origine / culture (optionnel)</label><input type="text" id="ps_origine" class="ps-input" placeholder="Métisse, antillaise, africaine..."></div>
+      </div>
+    </div>
+  `;
+
+  // ===== Section 2: Profil cyclique =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">II · Ton profil cyclique</div>
+      <div class="ps-grid-2">
+        <div><label class="ps-label">Date de tes dernières règles</label><input type="date" id="ps_regles_date" class="ps-input"></div>
+        <div><label class="ps-label">Durée moyenne de ton cycle (jours)</label><input type="number" min="15" max="60" id="ps_cycle_duree" class="ps-input" placeholder="28"></div>
+      </div>
+      <div class="ps-grid-2" style="margin-top:14px;">
+        <div>
+          <label class="ps-label">Contraception actuelle</label>
+          <select id="ps_contraception" class="ps-input">
+            ${CONTRACEPTIONS.map(c => `<option value="${c}">${c}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="ps-label">Allaitement</label>
+          <select id="ps_allaitement" class="ps-input">
+            <option value="non">Non</option><option value="oui">Oui</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Niveau de douleurs menstruelles (1 = aucune, 10 = invalidantes)</label>
+        ${renderRating10('ps_douleurs_regles')}
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Syndromes prémenstruels marquants ?</label>
+        <textarea id="ps_spm" rows="2" class="ps-input" placeholder="Sautes d'humeur, ballonnements, fatigue, sensibilité des seins..."></textarea>
+      </div>
+    </div>
+  `;
+
+  // ===== Section 3: Antécédents gynéco =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">III · Tes antécédents gynécologiques</div>
+      <p class="ps-help">Coche ce qui te concerne. Aucun jugement, juste pour adapter les soins.</p>
+      <div class="ps-checkboxes">
+        ${ANTECEDENTS_GYNECO.map(a => `
+          <label class="ps-checkbox">
+            <input type="checkbox" name="ps_ant" value="${a.key}">
+            <span>${a.label}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Autres antécédents ou précisions</label>
+        <textarea id="ps_ant_autres" rows="2" class="ps-input" placeholder="Opérations, diagnostics, traitements passés..."></textarea>
+      </div>
+    </div>
+  `;
+
+  // ===== Section 4: Pratiques actuelles =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">IV · Tes pratiques actuelles</div>
+      <div class="ps-checkboxes">
+        ${PRATIQUES_ACTUELLES.map(p => `
+          <label class="ps-checkbox">
+            <input type="checkbox" name="ps_prat" value="${p.key}">
+            <span>${p.label}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Traitements médicaux en cours</label>
+        <textarea id="ps_traitements" rows="2" class="ps-input" placeholder="Médicaments, compléments, plantes..."></textarea>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Allergies connues</label>
+        <input type="text" id="ps_allergies" class="ps-input" placeholder="Plantes, huiles essentielles, latex...">
+      </div>
+    </div>
+  `;
+
+  // ===== Section 5: 7 domaines =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">V · Tes 7 domaines de vie</div>
+      <p class="ps-help">Pour chaque domaine : note de 1 (difficile) à 10 (aligné), et un mot sur ce qui se joue.</p>
+  `;
   POINT_DOMAINS.forEach(d => {
     html += `
-      <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line-soft);">
-        <div style="font-family:'Italiana',serif;font-size:20px;color:var(--marron-deep);margin-bottom:2px;">${d.label}</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--marron-soft);margin-bottom:10px;">${d.desc}</div>
-        <div style="display:flex;justify-content:space-between;gap:6px;">
-          ${[1,2,3,4,5,6,7,8,9,10].map(n => `
-            <label style="flex:1;cursor:pointer;">
-              <input type="radio" name="${d.key}" value="${n}" style="display:none;" required>
-              <div style="text-align:center;padding:10px 0;border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--marron-deep);transition:all 0.2s;" class="point-rating">${n}</div>
-            </label>
-          `).join('')}
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--marron-soft);">
-          <span>Difficile</span><span>Aligné</span>
-        </div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft);">
+        <div style="font-family:'Italiana',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
+        ${renderRating10(d.key)}
+        <textarea name="${d.key}_detail" rows="2" class="ps-input" style="margin-top:8px;" placeholder="Ce qui se joue pour toi dans ce domaine en ce moment..."></textarea>
       </div>
     `;
   });
-  form.innerHTML = html;
-  // attach rating handlers
+  html += `</div>`;
+
+  // ===== Section 6: Intention =====
+  html += `
+    <div class="ps-section">
+      <div class="ps-section-title">VI · Ton intention</div>
+      <div>
+        <label class="ps-label">Qu'est-ce qui t'amène au Sanctuarys ?</label>
+        <textarea id="ps_intention" rows="3" class="ps-input" placeholder="Tes besoins, ce que tu cherches, ce qui t'a amenée jusqu'ici..."></textarea>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="ps-label">Une chose à transmettre à Princesse ?</label>
+        <textarea id="ps_message" rows="2" class="ps-input" placeholder="Message libre, demandes particulières, sensibilités..."></textarea>
+      </div>
+    </div>
+  `;
+
+  return html;
+}
+
+function renderPointRapideForm() {
+  let html = `<p class="ps-help" style="margin-bottom:18px;">Pour chaque domaine, indique où tu en es aujourd'hui. À chaque nouveau point, tu verras ton évolution.</p>`;
+  POINT_DOMAINS.forEach(d => {
+    html += `
+      <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line-soft);">
+        <div style="font-family:'Italiana',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
+        ${renderRating10(d.key)}
+      </div>
+    `;
+  });
+  html += `
+    <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line);">
+      <label class="ps-label">Une chose à ajouter ?</label>
+      <textarea id="ps_notes_libre" rows="3" class="ps-input" placeholder="Mots libres, intentions, demandes..."></textarea>
+    </div>
+  `;
+  return html;
+}
+
+function renderRating10(name) {
+  return `
+    <div style="display:flex;justify-content:space-between;gap:5px;">
+      ${[1,2,3,4,5,6,7,8,9,10].map(n => `
+        <label style="flex:1;cursor:pointer;">
+          <input type="radio" name="${name}" value="${n}" style="display:none;">
+          <div style="text-align:center;padding:9px 0;border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--marron-deep);transition:all 0.2s;" class="point-rating">${n}</div>
+        </label>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--marron-soft);">
+      <span>Difficile</span><span>Aligné</span>
+    </div>
+  `;
+}
+
+function attachPointHandlers() {
+  const form = document.getElementById('pointForm');
   form.querySelectorAll('input[type=radio]').forEach(r => {
     r.addEventListener('change', e => {
       const name = e.target.name;
@@ -1454,7 +1747,6 @@ function openPointModal() {
       });
     });
   });
-  document.getElementById('pointModal').classList.add('show');
 }
 
 function closePointModal() {
@@ -1464,33 +1756,100 @@ function closePointModal() {
 async function savePoint() {
   const form = document.getElementById('pointForm');
   const data = {};
-  let allFilled = true;
-  POINT_DOMAINS.forEach(d => {
-    const checked = form.querySelector(`input[name="${d.key}"]:checked`);
-    if (checked) data[d.key] = parseInt(checked.value);
-    else allFilled = false;
-  });
-  if (!allFilled) {
-    showToast('Remplis tous les domaines', 'error');
-    return;
-  }
-  const notes = document.getElementById('pointNotes').value.trim();
-  const { data: existing } = await SUPABASE_CLIENT
-    .from('member_check_ins').select('id').eq('member_id', MEMBER.id).limit(1);
-  const type = (existing && existing.length === 0) ? 'premier_seuil' : 'point_evolution';
+  let notes = null;
 
+  if (IS_PREMIER_SEUIL) {
+    // Identité
+    data.identite = {
+      prenom: document.getElementById('ps_prenom').value.trim(),
+      nom: document.getElementById('ps_nom').value.trim(),
+      date_naissance: document.getElementById('ps_dob').value || null,
+      telephone: document.getElementById('ps_phone').value.trim(),
+      ville: document.getElementById('ps_ville').value.trim(),
+      pays: document.getElementById('ps_pays').value.trim(),
+      metier: document.getElementById('ps_metier').value.trim(),
+      situation_couple: document.getElementById('ps_situation').value,
+      enfants: parseInt(document.getElementById('ps_enfants').value) || 0,
+      origine: document.getElementById('ps_origine').value.trim()
+    };
+    // Cycle
+    data.cycle = {
+      dernieres_regles: document.getElementById('ps_regles_date').value || null,
+      duree_cycle: parseInt(document.getElementById('ps_cycle_duree').value) || null,
+      contraception: document.getElementById('ps_contraception').value,
+      allaitement: document.getElementById('ps_allaitement').value === 'oui',
+      douleurs_regles: parseInt(form.querySelector('input[name="ps_douleurs_regles"]:checked')?.value) || null,
+      spm: document.getElementById('ps_spm').value.trim()
+    };
+    // Antécédents
+    data.antecedents = {
+      coches: Array.from(form.querySelectorAll('input[name="ps_ant"]:checked')).map(c => c.value),
+      autres: document.getElementById('ps_ant_autres').value.trim()
+    };
+    // Pratiques
+    data.pratiques = {
+      coches: Array.from(form.querySelectorAll('input[name="ps_prat"]:checked')).map(c => c.value),
+      traitements: document.getElementById('ps_traitements').value.trim(),
+      allergies: document.getElementById('ps_allergies').value.trim()
+    };
+    // 7 domaines (rating + détail)
+    data.domaines = {};
+    let allRated = true;
+    POINT_DOMAINS.forEach(d => {
+      const rated = form.querySelector(`input[name="${d.key}"]:checked`);
+      const detailEl = form.querySelector(`textarea[name="${d.key}_detail"]`);
+      if (rated) {
+        data.domaines[d.key] = { note: parseInt(rated.value), detail: detailEl?.value.trim() || '' };
+      } else {
+        allRated = false;
+      }
+    });
+    if (!allRated) {
+      showToast('Note chacun des 7 domaines', 'error');
+      return;
+    }
+    // Intention
+    data.intention = document.getElementById('ps_intention').value.trim();
+    notes = document.getElementById('ps_message').value.trim() || null;
+
+    // Met à jour le profil avec les infos d'identité
+    if (data.identite.prenom || data.identite.nom || data.identite.telephone) {
+      await SUPABASE_CLIENT.from('profiles').update({
+        prenom: data.identite.prenom || undefined,
+        nom: data.identite.nom || undefined,
+        phone: data.identite.telephone || undefined
+      }).eq('id', MEMBER.id);
+    }
+  } else {
+    // Point rapide
+    let allRated = true;
+    POINT_DOMAINS.forEach(d => {
+      const rated = form.querySelector(`input[name="${d.key}"]:checked`);
+      if (rated) data[d.key] = parseInt(rated.value);
+      else allRated = false;
+    });
+    if (!allRated) {
+      showToast('Note chacun des 7 domaines', 'error');
+      return;
+    }
+    notes = document.getElementById('ps_notes_libre').value.trim() || null;
+  }
+
+  const type = IS_PREMIER_SEUIL ? 'premier_seuil' : 'point_evolution';
   const { error } = await SUPABASE_CLIENT
     .from('member_check_ins')
-    .insert({ member_id: MEMBER.id, type, data, notes: notes || null });
+    .insert({ member_id: MEMBER.id, type, data, notes });
+
   if (error) {
     showToast('Erreur : ' + error.message, 'error');
     return;
   }
-  document.getElementById('pointNotes').value = '';
   closePointModal();
-  showToast('Point déposé ✦');
+  showToast(IS_PREMIER_SEUIL ? 'Premier seuil franchi ✦' : 'Point déposé ✦');
   await renderPoint();
 }
+
+function escapeAttr(s) { return (s == null ? '' : String(s)).replace(/"/g, '&quot;'); }
 
 // ===== BOOKING =====
 function openBookingModal() {
