@@ -5,3 +5,5 @@ node_modules/
 .vercel
 *.log
 supabase/.temp/
+mockup-*.html
+email-templates/
