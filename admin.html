@@ -1304,12 +1304,12 @@
       <div class="panel-header">
         <div class="breadcrumb">00 / Dashboard</div>
         <div>
-          <h1 class="page-title">Bonjour <em>Princesse.</em></h1>
-          <p class="page-subtitle">Ton tableau de pilotage Sanctuarys. Tes élèves t'attendent, leurs journaux te parlent. Prends le temps qu'il faut.</p>
+          <h1 class="page-title">Le Temple,<br><em>en mouvement.</em></h1>
+          <p class="page-subtitle" id="dashboardSubtitle">Ton pilotage Sanctuarys, en un coup d'œil. Le Yoni Social Club et l'école dans la même vue.</p>
         </div>
         <div class="panel-meta">
-          <div class="meta-row"><strong>Aujourd'hui</strong>Lundi 25 mai 2026</div>
-          <div class="meta-row"><strong>Formation</strong>V-Care · Promo Lune</div>
+          <div class="meta-row"><strong>Aujourd'hui</strong><span id="dashboardDate"></span></div>
+          <div class="meta-row"><strong>Avant-première</strong>Juillet 2026 · <span id="dashboardProgress">— %</span></div>
         </div>
       </div>
 
@@ -1324,67 +1324,178 @@
         </div>
       </div>
 
-      <!-- STATS -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Élèves actives</div>
-          <div class="stat-value"><em>3</em></div>
-          <div class="stat-detail">Promotion Lune 2026</div>
+      <!-- ============ YONI SOCIAL CLUB STATS ============ -->
+      <div style="margin-top: 30px;">
+        <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;">
+          <h2 style="font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep); font-weight: 400;">Yoni Social <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">Club.</em></h2>
+          <span style="flex: 1; height: 1px; background: var(--line);"></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--marron-soft); text-transform: uppercase;">Avant-première juillet</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Journaux à lire</div>
-          <div class="stat-value"><em>1</em></div>
-          <div class="stat-detail">Reçu ce matin</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Messages</div>
-          <div class="stat-value"><em>1</em></div>
-          <div class="stat-detail">Sans réponse</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Coaching cette semaine</div>
-          <div class="stat-value"><em>0</em></div>
-          <div class="stat-detail">Aucune session</div>
+        <div class="stats-grid">
+          <div class="stat-card" style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.06), rgba(212, 160, 76, 0.06)); border-color: var(--terracotta);">
+            <div class="stat-label">Fondatrices entrées</div>
+            <div class="stat-value"><em id="dashFondatricesPaid">—</em><span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--marron-soft);"> / 123</span></div>
+            <div class="stat-detail"><span id="dashFondatricesPending">—</span> demandes en attente</div>
+          </div>
+          <div class="stat-card" style="background: rgba(184, 137, 90, 0.06); border-color: var(--or);">
+            <div class="stat-label">Revenu Fondatrices</div>
+            <div class="stat-value"><em id="dashRevenue">— €</em></div>
+            <div class="stat-detail">/ <span id="dashRevenuePotential">22 140€</span> potentiel</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Séances cette semaine</div>
+            <div class="stat-value"><em id="dashSeancesWeek">—</em></div>
+            <div class="stat-detail" id="dashSeancesDetail">À venir et en cours</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Allaitantes accueillies</div>
+            <div class="stat-value"><em id="dashAllaitantes">—</em></div>
+            <div class="stat-detail">Protocoles adaptés</div>
+          </div>
         </div>
       </div>
 
-      <!-- ACTIONS DU JOUR -->
-      <div class="actions-section">
-        <h2>Ce qui t'attend <em>aujourd'hui</em></h2>
-
-        <div class="action-item" onclick="openEleveDetail('angelique')">
-          <div class="action-info">
-            <div class="action-avatar">A</div>
-            <div>
-              <h4>Angélique · Jour 1/14 du module 02</h4>
-              <div class="action-meta">Premier jour autonome · Espace activé ce matin</div>
-            </div>
-          </div>
-          <div class="action-cta">Lire son journal →</div>
+      <!-- ============ ECOLE STATS ============ -->
+      <div style="margin-top: 30px;">
+        <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;">
+          <h2 style="font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep); font-weight: 400;">L'<em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">école.</em></h2>
+          <span style="flex: 1; height: 1px; background: var(--line);"></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--marron-soft); text-transform: uppercase;">Formation V-Care</span>
         </div>
-
-        <div class="action-item" onclick="openPanel('messages')">
-          <div class="action-info">
-            <div class="action-avatar" style="background: linear-gradient(135deg, var(--or), var(--terracotta));">L</div>
-            <div>
-              <h4>Lëa attend ta réponse</h4>
-              <div class="action-meta">Message reçu · Hier, 21:14</div>
-            </div>
+        <div class="stats-grid" id="ecoleStatsGrid">
+          <div class="stat-card" id="ecoleStatEleves">
+            <div class="stat-label">Élèves actives</div>
+            <div class="stat-value"><em>3</em></div>
+            <div class="stat-detail">Promotion Lune 2026</div>
           </div>
-          <div class="action-cta">Répondre →</div>
-        </div>
-
-        <div class="action-item" onclick="openModal()">
-          <div class="action-info">
-            <div class="action-avatar" style="background: linear-gradient(135deg, var(--or-pale), var(--or));">+</div>
-            <div>
-              <h4>Créer un nouvel espace élève</h4>
-              <div class="action-meta">Une nouvelle facilitatrice rejoint Sanctuarys</div>
-            </div>
+          <div class="stat-card" id="ecoleStatJournaux">
+            <div class="stat-label">Journaux à lire</div>
+            <div class="stat-value"><em>1</em></div>
+            <div class="stat-detail">Reçu ce matin</div>
           </div>
-          <div class="action-cta">Créer →</div>
+          <div class="stat-card" id="ecoleStatMessages">
+            <div class="stat-label">Messages</div>
+            <div class="stat-value"><em>1</em></div>
+            <div class="stat-detail">Sans réponse</div>
+          </div>
+          <div class="stat-card" id="ecoleStatCoaching">
+            <div class="stat-label">Coaching cette semaine</div>
+            <div class="stat-value"><em>0</em></div>
+            <div class="stat-detail">Aucune session</div>
+          </div>
         </div>
       </div>
+
+      <!-- ============ GRID : RECENT FONDATRICES + SEANCES + EVENTS ============ -->
+      <div style="margin-top: 30px; display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px;" class="overview-double-grid">
+
+        <!-- Fondatrices récentes -->
+        <div style="background: var(--blanc); border: 1px solid var(--line); padding: 28px 30px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line-soft);">
+            <div>
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 4px;">Yoni Social Club</div>
+              <h2 style="font-family: 'Italiana', serif; font-size: 26px; color: var(--marron-deep); font-weight: 400;">Fondatrices <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">récentes.</em></h2>
+            </div>
+            <a href="#" onclick="openPanel('fondatrices'); return false;" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--terracotta-deep); text-transform: uppercase; text-decoration: none;">Voir toutes →</a>
+          </div>
+          <div id="dashRecentFondatrices">
+            <div style="padding: 30px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif;">Chargement...</div>
+          </div>
+        </div>
+
+        <!-- Séances à venir + Events -->
+        <div>
+          <div style="background: var(--blanc); border: 1px solid var(--line); padding: 26px 28px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px;">
+              <div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 4px;">Agenda</div>
+                <h2 style="font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); font-weight: 400;">Séances <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">à venir.</em></h2>
+              </div>
+              <a href="#" onclick="openPanel('agenda'); return false;" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--terracotta-deep); text-transform: uppercase; text-decoration: none;">Tout →</a>
+            </div>
+            <div id="dashUpcomingSeances">
+              <div style="padding: 18px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 14px;">Chargement...</div>
+            </div>
+          </div>
+
+          <div style="background: var(--blanc); border: 1px solid var(--line); padding: 26px 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px;">
+              <div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 4px;">Cercles</div>
+                <h2 style="font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); font-weight: 400;">Prochains <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">événements.</em></h2>
+              </div>
+            </div>
+            <div id="dashUpcomingEvents">
+              <div style="padding: 18px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 14px;">Chargement...</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============ ACTIVITE + VUE RADIESTHESIQUE ============ -->
+      <div style="margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 22px;" class="overview-double-grid">
+
+        <div style="background: var(--blanc); border: 1px solid var(--line); padding: 28px 30px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 4px;">Mouvement</div>
+          <h2 style="font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); font-weight: 400; margin-bottom: 6px;">Activité <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">récente.</em></h2>
+          <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); margin-bottom: 18px;">Les derniers signaux du Temple.</p>
+          <div id="dashActivityTimeline">
+            <div style="padding: 18px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 14px;">Chargement...</div>
+          </div>
+        </div>
+
+        <div style="background: var(--blanc); border: 1px solid var(--line); padding: 28px 30px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 4px;">Lecture vibratoire</div>
+          <h2 style="font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); font-weight: 400; margin-bottom: 6px;">Vue <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">radiesthésique.</em></h2>
+          <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); margin-bottom: 22px;">État vibratoire du Club, mis à jour à chaque point d'entrée.</p>
+          <div id="dashRadiesthesie">
+            <div style="padding: 18px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 14px;">Calcul en cours...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============ QUICK ACTIONS ============ -->
+      <div style="margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line);">
+        <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;">
+          <h2 style="font-family: 'Italiana', serif; font-size: 24px; color: var(--marron-deep); font-weight: 400;">Veiller <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">sur le Temple.</em></h2>
+          <span style="flex: 1; height: 1px; background: var(--line);"></span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;" class="quick-actions-grid">
+          <button onclick="openPanel('agenda')" style="background: var(--blanc); border: 1px solid var(--line); padding: 22px 24px; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; gap: 4px;" onmouseover="this.style.borderColor='var(--terracotta)';this.style.background='rgba(168, 85, 55, 0.04)'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--blanc)'">
+            <div style="font-family: 'Italiana', serif; font-size: 24px; color: var(--terracotta-deep); line-height: 1;">+</div>
+            <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep); margin-top: 6px;">Programmer une séance</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); line-height: 1.4;">Planifier un soin pour une Fondatrice</div>
+          </button>
+          <button onclick="openPanel('soins')" style="background: var(--blanc); border: 1px solid var(--line); padding: 22px 24px; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; gap: 4px;" onmouseover="this.style.borderColor='var(--terracotta)';this.style.background='rgba(168, 85, 55, 0.04)'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--blanc)'">
+            <div style="font-family: 'Italiana', serif; font-size: 24px; color: var(--terracotta-deep); line-height: 1;">✦</div>
+            <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep); margin-top: 6px;">Ajouter un soin</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); line-height: 1.4;">Enrichir ton catalogue</div>
+          </button>
+          <button onclick="openPanel('horaires')" style="background: var(--blanc); border: 1px solid var(--line); padding: 22px 24px; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; gap: 4px;" onmouseover="this.style.borderColor='var(--terracotta)';this.style.background='rgba(168, 85, 55, 0.04)'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--blanc)'">
+            <div style="font-family: 'Italiana', serif; font-size: 24px; color: var(--terracotta-deep); line-height: 1;">⊙</div>
+            <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep); margin-top: 6px;">Mes horaires</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); line-height: 1.4;">Plages d'ouverture par jour</div>
+          </button>
+          <button onclick="openPanel('fondatrices')" style="background: var(--blanc); border: 1px solid var(--line); padding: 22px 24px; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; gap: 4px;" onmouseover="this.style.borderColor='var(--terracotta)';this.style.background='rgba(168, 85, 55, 0.04)'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--blanc)'">
+            <div style="font-family: 'Italiana', serif; font-size: 24px; color: var(--terracotta-deep); line-height: 1;">◇</div>
+            <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep); margin-top: 6px;">Voir les Fondatrices</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); line-height: 1.4;">Demandes + contactées</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive grid -->
+      <style>
+        @media (max-width: 1100px) {
+          .overview-double-grid { grid-template-columns: 1fr !important; }
+          .quick-actions-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 600px) {
+          .quick-actions-grid { grid-template-columns: 1fr !important; }
+        }
+      </style>
     </div>
 
     <!-- ELEVES -->
@@ -1624,6 +1735,7 @@
           <button class="btn-outline" id="fondatriceMarkContactedBtn" type="button" style="padding: 12px 22px; font-size: 10px;">Marquer comme contactée</button>
           <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
+          <button class="btn-outline" id="fondatriceDeleteBtn" type="button" style="padding: 12px 22px; font-size: 10px; margin-left: auto; color: var(--rouge-vif); border-color: var(--rouge-vif);">Supprimer</button>
         </div>
       </div>
     </div>
@@ -2507,6 +2619,25 @@
     }
   });
 
+  document.getElementById('fondatriceDeleteBtn').addEventListener('click', async () => {
+    if (!CURRENT_FONDATRICE) return;
+    const nom = (CURRENT_FONDATRICE.prenom || '') + ' ' + (CURRENT_FONDATRICE.nom || '');
+    if (!confirm(`Supprimer définitivement la fiche de ${nom.trim()} ?\n\nCette action est irréversible. Si la Fondatrice a payé, son membership n'est pas annulé pour autant côté Stripe.`)) return;
+    try {
+      const supa = await Sanctuarys.init();
+      const { error } = await supa
+        .from('club_signups')
+        .delete()
+        .eq('id', CURRENT_FONDATRICE.id);
+      if (error) throw error;
+      showToast('Fiche supprimée ✦');
+      closeFondatriceModal();
+      await loadFondatricesPanel();
+    } catch (err) {
+      alert('Erreur : ' + (err.message || 'suppression impossible. Vérifie ta RLS policy delete.'));
+    }
+  });
+
   document.getElementById('searchFondatrice').addEventListener('input', renderFondatricesPanel);
   document.getElementById('fondatricesFilter').addEventListener('change', renderFondatricesPanel);
 
@@ -2517,7 +2648,187 @@
     loadFondatricesPanel();
     loadSoinsCount();
     loadAgendaCount();
+    loadDashboardOverview();
   });
+
+  // ============ DASHBOARD OVERVIEW (vue d'ensemble enrichie) ============
+  async function loadDashboardOverview() {
+    const supa = await Sanctuarys.init();
+    // Date
+    const today = new Date();
+    document.getElementById('dashboardDate').textContent = today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    // 1. STATS YONI SOCIAL CLUB
+    const { data: signups } = await supa.from('club_signups').select('status, allaitement, created_at, prenom, nom, email, intention, contacted_at').order('created_at', { ascending: false });
+    const all = signups || [];
+    const paid = all.filter(f => f.status === 'accepted' || f.status === 'contacted');
+    const pending = all.filter(f => f.status === 'pending');
+    const allaitantes = all.filter(f => f.allaitement === true && (f.status === 'accepted' || f.status === 'contacted'));
+    const paidCount = paid.length;
+    const pct = Math.round((paidCount / 123) * 100);
+
+    document.getElementById('dashFondatricesPaid').textContent = paidCount;
+    document.getElementById('dashFondatricesPending').textContent = pending.length;
+    document.getElementById('dashRevenue').textContent = (paidCount * 180).toLocaleString('fr-FR') + ' €';
+    document.getElementById('dashAllaitantes').textContent = allaitantes.length;
+    document.getElementById('dashboardProgress').textContent = pct + '% des 123 places';
+
+    // 2. Stats séances cette semaine
+    const weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
+    const { data: bookings } = await supa
+      .from('session_bookings')
+      .select('id, status, start_at, treatment_types(name)')
+      .gte('start_at', today.toISOString())
+      .lte('start_at', weekEnd.toISOString())
+      .in('status', ['confirmed', 'completed']);
+    const seancesSem = (bookings || []).length;
+    document.getElementById('dashSeancesWeek').textContent = seancesSem;
+    if (seancesSem === 0) document.getElementById('dashSeancesDetail').textContent = 'Aucune séance planifiée';
+
+    // 3. Fondatrices récentes (top 5)
+    const recentFondHtml = paid.concat(pending).slice(0, 5).map(f => {
+      const date = new Date(f.created_at);
+      const initial = (f.prenom || '·')[0].toUpperCase();
+      const statusBadge = f.status === 'accepted'
+        ? '<span style="font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; padding: 3px 9px; background: rgba(107, 140, 74, 0.15); color: var(--vert-succes); border: 1px solid var(--vert-succes); text-transform: uppercase;">Payée ✦</span>'
+        : f.status === 'contacted'
+        ? '<span style="font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; padding: 3px 9px; background: rgba(184, 137, 90, 0.15); color: var(--or); border: 1px solid var(--or); text-transform: uppercase;">Contactée</span>'
+        : '<span style="font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; padding: 3px 9px; background: rgba(212, 160, 76, 0.15); color: var(--or-pale); border: 1px solid var(--or-pale); text-transform: uppercase;">En attente</span>';
+      const allaitanteBadge = f.allaitement === true
+        ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(212, 160, 76, 0.20); border: 1px solid var(--or-pale); color: var(--marron-deep); font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; vertical-align: middle;">Allaitante</span>'
+        : '';
+      const ago = relativeTime(date);
+      return `
+        <div style="display: grid; grid-template-columns: 42px 1fr auto; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-soft); align-items: center;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--terracotta-pale), var(--or-pale)); display: flex; align-items: center; justify-content: center; color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 16px; border: 1px solid var(--or);">${initial}</div>
+          <div>
+            <div style="font-family: 'Italiana', serif; font-size: 16px; color: var(--marron-deep);">${escapeHTML(f.prenom || '')} ${escapeHTML(f.nom || '')}${allaitanteBadge}</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); margin-top: 2px;">${escapeHTML(f.email || '')}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+            ${statusBadge}
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; color: var(--marron-soft); text-transform: uppercase;">${ago}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('dashRecentFondatrices').innerHTML = recentFondHtml || '<div style="padding: 20px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 14px;">Aucune Fondatrice pour l\'instant.</div>';
+
+    // 4. Séances à venir (top 3)
+    const { data: nextBookings } = await supa
+      .from('session_bookings')
+      .select('start_at, end_at, status, treatment_types(name, color_hex), profiles:member_id(prenom, nom)')
+      .gte('start_at', today.toISOString())
+      .eq('status', 'confirmed')
+      .order('start_at')
+      .limit(3);
+    const seancesHtml = (nextBookings || []).map(b => {
+      const d = new Date(b.start_at);
+      const p = b.profiles || {};
+      const tt = b.treatment_types || {};
+      return `
+        <div style="display: grid; grid-template-columns: 50px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft);">
+          <div style="text-align: center;">
+            <div style="font-family: 'Italiana', serif; font-size: 22px; color: var(--terracotta-deep); line-height: 1;">${d.getDate()}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-top: 2px;">${d.toLocaleDateString('fr-FR', { month: 'short' })}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--marron); margin-top: 4px;">${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>
+          <div>
+            <div style="font-family: 'Italiana', serif; font-size: 15px; color: var(--marron-deep);">${escapeHTML(p.prenom || '')} ${escapeHTML((p.nom || '')[0] || '')}.</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron); margin-top: 2px;">${escapeHTML(tt.name || 'Soin')}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('dashUpcomingSeances').innerHTML = seancesHtml || '<div style="padding: 14px 0; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 14px;">Aucune séance planifiée cette semaine.</div>';
+
+    // 5. Prochains événements
+    const { data: events } = await supa
+      .from('club_events')
+      .select('title, location, start_at')
+      .gte('start_at', today.toISOString())
+      .order('start_at')
+      .limit(2);
+    const eventsHtml = (events || []).map(e => {
+      const d = new Date(e.start_at);
+      return `
+        <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); align-items: flex-start;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--blanc); background: var(--terracotta); padding: 4px 9px; text-transform: uppercase; flex-shrink: 0;">${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+          <div>
+            <div style="font-family: 'Italiana', serif; font-size: 15px; color: var(--marron-deep); line-height: 1.2;">${escapeHTML(e.title)}</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); margin-top: 2px;">${escapeHTML(e.location || 'En ligne')} · ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('dashUpcomingEvents').innerHTML = eventsHtml || '<div style="padding: 14px 0; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 14px;">Aucun événement programmé.</div>';
+
+    // 6. Activité récente (timeline)
+    const activities = [];
+    paid.slice(0, 3).forEach(f => {
+      activities.push({ type: 'paiement', who: f.prenom, when: new Date(f.created_at), color: 'terracotta', text: `<strong>${escapeHTML(f.prenom || '')} ${escapeHTML(f.nom || '')}</strong> a validé son Pass Fondatrice (180€)` });
+    });
+    (bookings || []).slice(0, 2).forEach(b => {
+      const p = b.profiles || {};
+      activities.push({ type: 'reservation', who: p.prenom, when: new Date(b.created_at || b.start_at), color: 'or', text: `<strong>${escapeHTML(p.prenom || 'Une fondatrice')}</strong> a réservé une séance` });
+    });
+    pending.slice(0, 2).forEach(f => {
+      activities.push({ type: 'demande', who: f.prenom, when: new Date(f.created_at), color: 'rose', text: `<strong>${escapeHTML(f.prenom || '')} ${escapeHTML(f.nom || '')}</strong> a envoyé une demande d'entrée` });
+    });
+    activities.sort((a, b) => b.when - a.when);
+    const timelineHtml = activities.slice(0, 5).map((a, idx, arr) => {
+      const colorMap = { terracotta: 'var(--terracotta)', or: 'var(--or)', rose: 'var(--rose)' };
+      return `
+        <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px;">
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: ${colorMap[a.color]}; margin-top: 6px; flex-shrink: 0; position: relative;">
+            ${idx < arr.length - 1 ? '<div style="position: absolute; width: 1px; background: var(--line); top: 14px; bottom: -22px; left: 50%;"></div>' : ''}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--marron-deep); line-height: 1.45;">${a.text}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-top: 2px;">${relativeTime(a.when)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('dashActivityTimeline').innerHTML = timelineHtml || '<div style="padding: 14px 0; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 14px;">Aucune activité récente.</div>';
+
+    // 7. Vue radiesthésique (basée sur réalité)
+    const coherence = Math.min(100, Math.round(pct + 15));
+    const energie = Math.min(100, 70 + Math.round(allaitantes.length * 5));
+    const elan = Math.min(100, 60 + Math.round(paidCount * 1.5));
+    document.getElementById('dashRadiesthesie').innerHTML = `
+      <div style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;">
+          <span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron);">Cohérence du cercle</span>
+          <span style="font-family: 'Italiana', serif; font-size: 18px; color: var(--terracotta-deep);">${coherence}%</span>
+        </div>
+        <div style="height: 4px; background: var(--line-soft);"><div style="height: 100%; background: var(--terracotta); width: ${coherence}%;"></div></div>
+      </div>
+      <div style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;">
+          <span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron);">Énergie féminine</span>
+          <span style="font-family: 'Italiana', serif; font-size: 18px; color: var(--or-pale);">${energie}%</span>
+        </div>
+        <div style="height: 4px; background: var(--line-soft);"><div style="height: 100%; background: var(--or-pale); width: ${energie}%;"></div></div>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;">
+          <span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron);">Élan de la fenêtre Fondatrices</span>
+          <span style="font-family: 'Italiana', serif; font-size: 18px; color: var(--vert-succes);">${elan}%</span>
+        </div>
+        <div style="height: 4px; background: var(--line-soft);"><div style="height: 100%; background: var(--vert-succes); width: ${elan}%;"></div></div>
+      </div>
+    `;
+  }
+
+  function relativeTime(date) {
+    const diff = (Date.now() - date.getTime()) / 1000;
+    if (diff < 60) return 'à l\'instant';
+    if (diff < 3600) return 'il y a ' + Math.floor(diff / 60) + ' min';
+    if (diff < 86400) return 'il y a ' + Math.floor(diff / 3600) + 'h';
+    if (diff < 604800) return 'il y a ' + Math.floor(diff / 86400) + 'j';
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
 
   // ============ YONI SOCIAL CLUB : SOINS (catalogue) ============
   let ALL_SOINS = [];
@@ -3395,8 +3706,10 @@
     if (!supa) return;
     // Élèves actives
     const activeCount = STUDENTS.filter(s => s.status === 'active').length;
-    document.querySelector('#panel-overview .stat-card:nth-child(1) .stat-value em').textContent = activeCount;
-    document.querySelector('.nav-item[data-panel="eleves"] .count').textContent = activeCount;
+    const elevesEm = document.querySelector('#ecoleStatEleves .stat-value em');
+    if (elevesEm) elevesEm.textContent = activeCount;
+    const elevesNav = document.querySelector('.nav-item[data-panel="eleves"] .count');
+    if (elevesNav) elevesNav.textContent = activeCount;
 
     // Journaux à lire (submitted=true, dans les dernières 24h)
     const yesterday = new Date(Date.now() - 86400000).toISOString();
@@ -3405,8 +3718,10 @@
       .select('*', { count: 'exact', head: true })
       .eq('submitted', true)
       .gte('created_at', yesterday);
-    document.querySelector('#panel-overview .stat-card:nth-child(2) .stat-value em').textContent = journalsCount || 0;
-    document.querySelector('.nav-item[data-panel="journals"] .count').textContent = journalsCount || 0;
+    const journauxEm = document.querySelector('#ecoleStatJournaux .stat-value em');
+    if (journauxEm) journauxEm.textContent = journalsCount || 0;
+    const journauxNav = document.querySelector('.nav-item[data-panel="journals"] .count');
+    if (journauxNav) journauxNav.textContent = journalsCount || 0;
 
     // Messages sans réponse (from élève to admin, non-read)
     const { count: msgCount } = await supa
@@ -3414,8 +3729,10 @@
       .select('*', { count: 'exact', head: true })
       .eq('to_id', ADMIN_PROFILE.id)
       .eq('read', false);
-    document.querySelector('#panel-overview .stat-card:nth-child(3) .stat-value em').textContent = msgCount || 0;
-    document.querySelector('.nav-item[data-panel="messages"] .count').textContent = msgCount || 0;
+    const msgEm = document.querySelector('#ecoleStatMessages .stat-value em');
+    if (msgEm) msgEm.textContent = msgCount || 0;
+    const msgNav = document.querySelector('.nav-item[data-panel="messages"] .count');
+    if (msgNav) msgNav.textContent = msgCount || 0;
   }
 
   function renderActionsToday() {
