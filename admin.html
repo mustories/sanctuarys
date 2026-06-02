@@ -1727,8 +1727,17 @@
         </div>
 
         <div id="fondatriceIntentionBlock" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); display: none;">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 14px;">Son intention</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 14px;">Son intention (formulaire d'inscription)</div>
           <p id="fondatriceIntention" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; line-height: 1.75; color: var(--marron-deep);"></p>
+        </div>
+
+        <!-- ===== PREMIER SEUIL + POINTS ===== -->
+        <div id="fondatriceQuestionnaireBlock" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase;">Son Premier Seuil & Points d'évolution</div>
+            <div id="fondatriceQuestionnaireCount" style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase;"></div>
+          </div>
+          <div id="fondatriceQuestionnaireBody"></div>
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
@@ -2561,7 +2570,7 @@
     });
   }
 
-  function openFondatriceModal(f) {
+  async function openFondatriceModal(f) {
     CURRENT_FONDATRICE = f;
     const modal = document.getElementById('modalFondatrice');
     document.getElementById('fondatriceName').textContent = (f.prenom || 'Fondatrice') + (f.nom ? ' ' + f.nom : '');
@@ -2589,6 +2598,9 @@
     document.getElementById('fondatriceMailtoBtn').href = 'mailto:' + (f.email || '');
     document.getElementById('fondatricePhoneBtn').href = 'tel:' + (f.phone || '');
 
+    // Charge le Premier Seuil + Points d'évolution
+    loadFondatriceQuestionnaire(f);
+
     modal.classList.add('show');
   }
 
@@ -2597,6 +2609,246 @@
     CURRENT_FONDATRICE = null;
   }
   window.closeFondatriceModal = closeFondatriceModal;
+
+  // ============ QUESTIONNAIRE FONDATRICE (Premier Seuil + Points) ============
+  const POINT_DOMAINS_LABELS = {
+    corps_cycle: 'Corps & cycle',
+    sexualite: 'Sexualité',
+    energie: 'Énergie globale',
+    emotionnel: 'Émotionnel',
+    relations: 'Relations',
+    vocation: 'Travail & vocation',
+    spirituel: 'Spirituel'
+  };
+  const ANT_LABELS = {
+    secheresse: 'Sécheresse vaginale',
+    mycoses: 'Mycoses récurrentes',
+    endometriose: 'Endométriose',
+    sopk: 'SOPK',
+    douleurs_sexuelles: 'Douleurs sexuelles',
+    difficultes_conception: 'Difficultés conception',
+    ist_passees: 'IST passées',
+    operation_gyneco: 'Op. gynécologique',
+    fibromes: 'Fibromes / kystes'
+  };
+  const PRAT_LABELS = {
+    yoga: 'Yoga', meditation: 'Méditation', jeune: 'Jeûne',
+    phytotherapie: 'Phytothérapie', medecine_chinoise: 'Médecine chinoise',
+    naturopathie: 'Naturopathie', kinesiologie: 'Kinésiologie'
+  };
+
+  async function loadFondatriceQuestionnaire(f) {
+    const block = document.getElementById('fondatriceQuestionnaireBlock');
+    const body = document.getElementById('fondatriceQuestionnaireBody');
+    const countEl = document.getElementById('fondatriceQuestionnaireCount');
+
+    body.innerHTML = '<p style="font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--marron-soft);">Chargement...</p>';
+    block.style.display = 'block';
+
+    const supa = await Sanctuarys.init();
+
+    // Trouve le member_id : soit via le signup, soit via email dans auth.users
+    let memberId = f.member_id;
+    if (!memberId && f.email) {
+      const { data: prof } = await supa.from('profiles').select('id').eq('email', f.email.toLowerCase()).maybeSingle();
+      memberId = prof?.id;
+    }
+
+    if (!memberId) {
+      body.innerHTML = '<p style="font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--marron-soft);">Cette Fondatrice n\'a pas encore activé son compte. Le questionnaire apparaîtra ici dès qu\'elle aura cliqué sur son mail d\'invitation et rempli son Premier Seuil.</p>';
+      countEl.textContent = 'Compte non activé';
+      return;
+    }
+
+    const { data: checkins } = await supa
+      .from('member_check_ins')
+      .select('*')
+      .eq('member_id', memberId)
+      .order('created_at', { ascending: false });
+
+    if (!checkins || checkins.length === 0) {
+      body.innerHTML = '<p style="font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--marron-soft);">Elle n\'a pas encore rempli son Premier Seuil. Tu le verras ici dès qu\'elle entrera dans son espace et remplira le questionnaire d\'entrée.</p>';
+      countEl.textContent = 'Aucun point';
+      return;
+    }
+
+    const premierSeuil = checkins.find(c => c.type === 'premier_seuil');
+    const points = checkins.filter(c => c.type === 'point_evolution');
+    countEl.textContent = `${checkins.length} point${checkins.length > 1 ? 's' : ''} déposé${checkins.length > 1 ? 's' : ''}`;
+
+    let html = '';
+
+    if (premierSeuil) {
+      html += renderPremierSeuilForAdmin(premierSeuil);
+    }
+
+    if (points.length > 0) {
+      html += `<div style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 14px;">Points d'évolution (${points.length})</div>`;
+      points.forEach(p => {
+        html += renderPointEvolution(p);
+      });
+      html += '</div>';
+    }
+
+    body.innerHTML = html;
+  }
+
+  function renderPremierSeuilForAdmin(seuil) {
+    const d = seuil.data || {};
+    const date = new Date(seuil.created_at);
+    let html = `
+      <div style="background: var(--blanc-deep); padding: 22px 26px; border-left: 3px solid var(--terracotta);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px;">
+          <div style="font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep);">Premier <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">Seuil</em></div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase;">${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+        </div>
+    `;
+
+    // Identité
+    if (d.identite) {
+      const i = d.identite;
+      html += `
+        <div style="margin-bottom: 18px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">Identité</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; line-height: 1.7; color: var(--marron-deep);">
+            ${i.metier ? `<strong style="font-family: 'Italiana', serif; font-weight: normal;">${escapeHTML(i.metier)}</strong> · ` : ''}
+            ${i.date_naissance ? `Née le ${new Date(i.date_naissance).toLocaleDateString('fr-FR')} · ` : ''}
+            ${i.ville ? `${escapeHTML(i.ville)}${i.pays ? ', ' + escapeHTML(i.pays) : ''} · ` : ''}
+            ${i.situation_couple ? `${escapeHTML(i.situation_couple)} · ` : ''}
+            ${typeof i.enfants === 'number' ? `${i.enfants} enfant${i.enfants > 1 ? 's' : ''}` : ''}
+            ${i.origine ? ` · ${escapeHTML(i.origine)}` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Cycle
+    if (d.cycle) {
+      const c = d.cycle;
+      html += `
+        <div style="margin-bottom: 18px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">Profil cyclique</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; line-height: 1.7; color: var(--marron-deep);">
+            ${c.dernieres_regles ? `Dernières règles : <strong style="font-family: 'Italiana', serif; font-weight: normal;">${new Date(c.dernieres_regles).toLocaleDateString('fr-FR')}</strong>` : ''}
+            ${c.duree_cycle ? ` · Cycle de <strong style="font-family: 'Italiana', serif; font-weight: normal;">${c.duree_cycle}j</strong>` : ''}
+            ${c.contraception ? ` · Contraception : ${escapeHTML(c.contraception)}` : ''}
+            ${c.allaitement === true ? ' · <span style="color: var(--or); font-weight: bold;">Allaitante</span>' : ''}
+            ${c.douleurs_regles ? ` · Douleurs règles : <strong style="font-family: 'Italiana', serif; font-weight: normal;">${c.douleurs_regles}/10</strong>` : ''}
+          </div>
+          ${c.spm ? `<div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); margin-top: 6px;">SPM : ${escapeHTML(c.spm)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Antécédents
+    if (d.antecedents) {
+      const a = d.antecedents;
+      const coches = (a.coches || []).map(k => ANT_LABELS[k] || k);
+      html += `
+        <div style="margin-bottom: 18px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">Antécédents gynécologiques</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; line-height: 1.7; color: var(--marron-deep);">
+            ${coches.length ? coches.map(c => `<span style="display: inline-block; padding: 3px 9px; background: rgba(178, 43, 43, 0.10); border: 1px solid rgba(178, 43, 43, 0.35); color: var(--rouge-vif); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin: 2px 4px 2px 0;">${escapeHTML(c)}</span>`).join('') : '<span style="font-style: italic; color: var(--marron-soft);">Aucun antécédent coché</span>'}
+          </div>
+          ${a.autres ? `<div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); margin-top: 8px;">${escapeHTML(a.autres)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    // Pratiques
+    if (d.pratiques) {
+      const p = d.pratiques;
+      const coches = (p.coches || []).map(k => PRAT_LABELS[k] || k);
+      html += `
+        <div style="margin-bottom: 18px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">Pratiques actuelles</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; line-height: 1.7; color: var(--marron-deep);">
+            ${coches.length ? coches.map(c => `<span style="display: inline-block; padding: 3px 9px; background: rgba(107, 140, 74, 0.10); border: 1px solid rgba(107, 140, 74, 0.35); color: var(--vert-succes); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin: 2px 4px 2px 0;">${escapeHTML(c)}</span>`).join('') : '<span style="font-style: italic; color: var(--marron-soft);">Aucune pratique cochée</span>'}
+          </div>
+          ${p.traitements ? `<div style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--marron); margin-top: 8px;"><strong style="font-family: 'Italiana', serif; font-weight: normal;">Traitements :</strong> <em>${escapeHTML(p.traitements)}</em></div>` : ''}
+          ${p.allergies ? `<div style="font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--rouge-vif); margin-top: 4px;"><strong style="font-family: 'Italiana', serif; font-weight: normal;">⚠ Allergies :</strong> <em>${escapeHTML(p.allergies)}</em></div>` : ''}
+        </div>
+      `;
+    }
+
+    // 7 Domaines de vie
+    if (d.domaines) {
+      html += `
+        <div style="margin-bottom: 18px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 10px;">7 domaines de vie</div>
+          <div style="display: grid; gap: 10px;">
+      `;
+      Object.entries(d.domaines).forEach(([key, val]) => {
+        const label = POINT_DOMAINS_LABELS[key] || key;
+        const note = typeof val === 'object' ? val.note : val;
+        const detail = typeof val === 'object' ? val.detail : '';
+        html += `
+          <div style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <span style="font-family: 'Italiana', serif; font-size: 15px; color: var(--marron-deep);">${label}</span>
+              <span style="font-family: 'Italiana', serif; font-size: 18px; color: var(--terracotta-deep);">${note || '·'}/10</span>
+            </div>
+            ${detail ? `<div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); margin-top: 4px;">${escapeHTML(detail)}</div>` : ''}
+          </div>
+        `;
+      });
+      html += `</div></div>`;
+    }
+
+    // Intention
+    if (d.intention) {
+      html += `
+        <div style="margin-bottom: 14px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">Son intention</div>
+          <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; line-height: 1.65; color: var(--marron-deep);">${escapeHTML(d.intention)}</p>
+        </div>
+      `;
+    }
+
+    // Message pour Princesse
+    if (seuil.notes) {
+      html += `
+        <div style="margin-top: 14px; padding: 12px 16px; background: rgba(212, 160, 76, 0.10); border-left: 3px solid var(--or);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--or); text-transform: uppercase; margin-bottom: 6px;">Message pour toi</div>
+          <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; line-height: 1.65; color: var(--marron-deep);">${escapeHTML(seuil.notes)}</p>
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+    return html;
+  }
+
+  function renderPointEvolution(point) {
+    const date = new Date(point.created_at);
+    const d = point.data || {};
+    let html = `
+      <div style="margin-bottom: 12px; padding: 14px 18px; background: var(--blanc); border: 1px solid var(--line);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+          <span style="font-family: 'Italiana', serif; font-size: 16px; color: var(--marron-deep);">${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase;">${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+    `;
+    Object.entries(d).forEach(([key, note]) => {
+      if (typeof note !== 'number') return;
+      const label = POINT_DOMAINS_LABELS[key] || key;
+      const color = note >= 7 ? 'var(--vert-succes)' : (note >= 4 ? 'var(--or)' : 'var(--rouge-vif)');
+      html += `
+        <div style="text-align: center; padding: 6px 4px; border: 1px solid var(--line);">
+          <div style="font-family: 'Italiana', serif; font-size: 18px; color: ${color};">${note}/10</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 11px; color: var(--marron-soft); margin-top: 2px;">${label}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    if (point.notes) {
+      html += `<div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft);">"${escapeHTML(point.notes)}"</div>`;
+    }
+    html += `</div>`;
+    return html;
+  }
 
   document.getElementById('modalFondatrice').addEventListener('click', e => {
     if (e.target.id === 'modalFondatrice') closeFondatriceModal();
