@@ -1568,9 +1568,7 @@
   });
 
   // Formulaire : passage direct à Stripe Checkout
-  const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t';
-
+  // Note: SUPABASE_URL et SUPABASE_ANON_KEY sont déjà déclarés dans js/sanctuarys.js
   document.getElementById('memberSignupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
