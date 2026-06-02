@@ -1261,6 +1261,20 @@
       Fondatrices
       <span class="count" id="fondatricesCount">0</span>
     </a>
+    <a class="nav-item" data-panel="soins">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 C 8 8, 8 14, 12 21 C 16 14, 16 8, 12 3 Z"/><path d="M9 11 L 15 11"/></svg>
+      Soins
+      <span class="count" id="soinsCount">0</span>
+    </a>
+    <a class="nav-item" data-panel="horaires">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7 L 12 12 L 15 14"/></svg>
+      Horaires d'ouverture
+    </a>
+    <a class="nav-item" data-panel="agenda">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="1"/><path d="M3 10 L 21 10 M 8 2 L 8 6 M 16 2 L 16 6"/></svg>
+      Agenda
+      <span class="count" id="agendaCount">0</span>
+    </a>
 
     <div class="nav-section-label admin-only">Équipe</div>
     <a class="nav-item admin-only" data-panel="formatrices">
@@ -1611,6 +1625,164 @@
           <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
         </div>
+      </div>
+    </div>
+
+    <!-- SOINS (Catalogue) -->
+    <div class="panel" id="panel-soins">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Yoni Social Club · Soins</div>
+        <div>
+          <h1 class="page-title">Mon <em>catalogue.</em></h1>
+          <p class="page-subtitle">Tous les soins que les Fondatrices peuvent réserver depuis leur espace privé. Modifie les durées, prix et descriptions.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Total</strong><span id="soinsTotal">0</span> soins actifs</div>
+        </div>
+      </div>
+
+      <div class="eleves-toolbar">
+        <button class="btn-primary" onclick="openSoinModal()"><span>+</span><span>Nouveau soin</span></button>
+      </div>
+
+      <div class="eleves-list" id="soinsList">
+        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement du catalogue...</div>
+      </div>
+    </div>
+
+    <!-- MODAL SOIN -->
+    <div class="modal-overlay" id="modalSoin">
+      <div class="modal" style="max-width: 580px; padding: 50px 56px;">
+        <button class="modal-close" onclick="closeSoinModal()">×</button>
+        <div class="entry-modal-meta">Catalogue Sanctuarys</div>
+        <h2 class="entry-modal-title" id="soinModalTitle"><em>Nouveau soin.</em></h2>
+
+        <div style="margin-top: 28px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Nom du soin</label>
+          <input type="text" id="soinName" placeholder="Ex: Vajacial complet" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);">
+        </div>
+
+        <div style="margin-top: 18px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Description</label>
+          <textarea id="soinDescription" rows="3" placeholder="Ce que la Fondatrice peut attendre de ce soin..." style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px;">
+          <div>
+            <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Durée (min)</label>
+            <input type="number" id="soinDuration" min="15" step="5" value="60" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px;">
+          </div>
+          <div>
+            <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Prix (€)</label>
+            <input type="number" id="soinPrice" min="0" step="10" value="120" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px;">
+          </div>
+        </div>
+
+        <div style="margin-top: 18px; display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="soinIncluded" checked style="width: 18px; height: 18px; accent-color: var(--terracotta);">
+          <label for="soinIncluded" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep);">Inclus dans le Pass Fondatrice (3 séances)</label>
+        </div>
+
+        <div style="margin-top: 18px; display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="soinActive" checked style="width: 18px; height: 18px; accent-color: var(--terracotta);">
+          <label for="soinActive" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep);">Soin actif (réservable)</label>
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-primary" id="soinSaveBtn" type="button" style="padding: 14px 26px;">Enregistrer ✦</button>
+          <button class="btn-outline" id="soinDeleteBtn" type="button" style="padding: 14px 22px; display: none;">Supprimer</button>
+          <button class="btn-outline" type="button" onclick="closeSoinModal()" style="padding: 14px 22px;">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORAIRES D'OUVERTURE -->
+    <div class="panel" id="panel-horaires">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Yoni Social Club · Horaires</div>
+        <div>
+          <h1 class="page-title">Mes <em>horaires.</em></h1>
+          <p class="page-subtitle">Définis tes plages d'ouverture par jour. Les Fondatrices ne pourront réserver que sur les créneaux que tu as ouverts.</p>
+        </div>
+      </div>
+
+      <div id="horairesGrid" style="display: grid; gap: 12px; margin-top: 20px;">
+        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement...</div>
+      </div>
+
+      <div style="margin-top: 36px; padding-top: 26px; border-top: 1px solid var(--line);">
+        <h2 style="font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep); font-weight: 400; margin-bottom: 6px;">Jours <em>exceptionnels.</em></h2>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-soft); margin-bottom: 18px;">Ferme ou ouvre exceptionnellement un jour précis (vacances, jours fériés).</p>
+        <button class="btn-outline" onclick="openOverrideModal()" style="padding: 12px 22px; font-size: 10px;">+ Ajouter une exception</button>
+        <div id="overridesList" style="margin-top: 18px;"></div>
+      </div>
+    </div>
+
+    <!-- MODAL OVERRIDE -->
+    <div class="modal-overlay" id="modalOverride">
+      <div class="modal" style="max-width: 520px; padding: 50px 56px;">
+        <button class="modal-close" onclick="closeOverrideModal()">×</button>
+        <div class="entry-modal-meta">Jour exceptionnel</div>
+        <h2 class="entry-modal-title"><em>Ajouter</em> un override.</h2>
+
+        <div style="margin-top: 28px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Date</label>
+          <input type="date" id="overrideDate" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px;">
+        </div>
+        <div style="margin-top: 18px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Type</label>
+          <select id="overrideType" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px;">
+            <option value="closed">Fermé toute la journée</option>
+            <option value="special">Horaires spéciaux</option>
+          </select>
+        </div>
+        <div id="overrideSpecialFields" style="display: none; margin-top: 18px; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div>
+            <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Ouverture</label>
+            <input type="time" id="overrideOpen" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc);">
+          </div>
+          <div>
+            <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Fermeture</label>
+            <input type="time" id="overrideClose" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc);">
+          </div>
+        </div>
+        <div style="margin-top: 18px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 8px;">Raison (privée)</label>
+          <input type="text" id="overrideReason" placeholder="Ex: Vacances, formation, jour férié" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px;">
+        </div>
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px;">
+          <button class="btn-primary" type="button" onclick="saveOverride()" style="padding: 14px 26px;">Enregistrer ✦</button>
+          <button class="btn-outline" type="button" onclick="closeOverrideModal()" style="padding: 14px 22px;">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="panel" id="panel-agenda">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Yoni Social Club · Agenda</div>
+        <div>
+          <h1 class="page-title">Mon <em>agenda.</em></h1>
+          <p class="page-subtitle">Toutes les séances réservées par les Fondatrices, classées chronologiquement. Clique sur une réservation pour la marquer terminée ou annuler.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>À venir</strong><span id="agendaUpcomingCount">0</span> séances</div>
+        </div>
+      </div>
+
+      <div class="eleves-toolbar">
+        <input type="text" class="search-box" placeholder="Rechercher par Fondatrice..." id="searchAgenda">
+        <select id="agendaFilter" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--marron); text-transform: uppercase;">
+          <option value="upcoming">À venir</option>
+          <option value="today">Aujourd'hui</option>
+          <option value="week">Cette semaine</option>
+          <option value="past">Passées</option>
+          <option value="all">Toutes</option>
+        </select>
+      </div>
+
+      <div class="eleves-list" id="agendaList">
+        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement de l'agenda...</div>
       </div>
     </div>
 
@@ -2176,6 +2348,9 @@
     if (id === 'messages') loadConversations();
     if (id === 'journals') loadJournalsPanel();
     if (id === 'fondatrices') loadFondatricesPanel();
+    if (id === 'soins') loadSoinsPanel();
+    if (id === 'horaires') loadHorairesPanel();
+    if (id === 'agenda') loadAgendaPanel();
   }
   navItems.forEach(item => {
     item.addEventListener('click', e => { e.preventDefault(); openPanel(item.dataset.panel); });
@@ -2340,7 +2515,392 @@
     const session = await Sanctuarys.getSession();
     if (!session) return;
     loadFondatricesPanel();
+    loadSoinsCount();
+    loadAgendaCount();
   });
+
+  // ============ YONI SOCIAL CLUB : SOINS (catalogue) ============
+  let ALL_SOINS = [];
+  let CURRENT_SOIN = null;
+
+  async function loadSoinsCount() {
+    const supa = await Sanctuarys.init();
+    const { data } = await supa.from('treatment_types').select('id, active');
+    const active = (data || []).filter(s => s.active).length;
+    const el = document.getElementById('soinsCount');
+    if (el) el.textContent = active;
+  }
+
+  async function loadSoinsPanel() {
+    if (!ADMIN_PROFILE) return;
+    const supa = await Sanctuarys.init();
+    const { data: soins } = await supa
+      .from('treatment_types')
+      .select('*')
+      .order('active', { ascending: false })
+      .order('name');
+    ALL_SOINS = soins || [];
+    renderSoinsPanel();
+  }
+
+  function renderSoinsPanel() {
+    const list = document.getElementById('soinsList');
+    const active = ALL_SOINS.filter(s => s.active).length;
+    document.getElementById('soinsTotal').textContent = active;
+    document.getElementById('soinsCount').textContent = active;
+    list.innerHTML = '';
+
+    if (ALL_SOINS.length === 0) {
+      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 17px;">Aucun soin dans ton catalogue.<br>Clique <strong>+ Nouveau soin</strong> pour commencer.</div>';
+      return;
+    }
+
+    ALL_SOINS.forEach(s => {
+      const row = document.createElement('div');
+      row.className = 'eleve-row';
+      row.style.cursor = 'pointer';
+      row.style.opacity = s.active ? '1' : '0.45';
+      row.innerHTML = `
+        <div class="eleve-name">
+          <div class="eleve-avatar" style="background: ${s.color_hex || '#C8704D'}; color: #FAF5EC;">${(s.name||'·')[0].toUpperCase()}</div>
+          <div>
+            <div class="name">${escapeHTML(s.name)}${s.included_in_fondatrice_pass ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(212, 160, 76, 0.20); border: 1px solid var(--or); color: var(--marron-deep); font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; vertical-align: middle; font-weight: bold;">Inclus Pass</span>' : ''}</div>
+            <div class="email">${escapeHTML((s.description || '').substring(0, 100))}${(s.description||'').length > 100 ? '...' : ''}</div>
+          </div>
+        </div>
+        <div class="eleve-progress">
+          <p style="color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 18px;">${s.duration_minutes} min</p>
+        </div>
+        <div class="eleve-module" style="font-family: 'Italiana', serif; font-size: 22px; color: var(--terracotta-deep);">${s.price_eur}€</div>
+        <div class="eleve-status ${s.active ? 'active' : ''}">${s.active ? 'Actif' : 'Inactif'}</div>
+        <div class="eleve-actions"><button class="icon-btn" title="Modifier">→</button></div>
+      `;
+      row.addEventListener('click', () => openSoinModal(s));
+      list.appendChild(row);
+    });
+  }
+
+  function openSoinModal(soin = null) {
+    CURRENT_SOIN = soin;
+    const titleEl = document.querySelector('#modalSoin .entry-modal-title em');
+    if (soin) {
+      titleEl.textContent = soin.name;
+      document.getElementById('soinName').value = soin.name || '';
+      document.getElementById('soinDescription').value = soin.description || '';
+      document.getElementById('soinDuration').value = soin.duration_minutes || 60;
+      document.getElementById('soinPrice').value = soin.price_eur || 0;
+      document.getElementById('soinIncluded').checked = !!soin.included_in_fondatrice_pass;
+      document.getElementById('soinActive').checked = !!soin.active;
+      document.getElementById('soinDeleteBtn').style.display = 'inline-block';
+    } else {
+      titleEl.textContent = 'Nouveau soin.';
+      document.getElementById('soinName').value = '';
+      document.getElementById('soinDescription').value = '';
+      document.getElementById('soinDuration').value = 60;
+      document.getElementById('soinPrice').value = 120;
+      document.getElementById('soinIncluded').checked = true;
+      document.getElementById('soinActive').checked = true;
+      document.getElementById('soinDeleteBtn').style.display = 'none';
+    }
+    document.getElementById('modalSoin').classList.add('show');
+  }
+  window.openSoinModal = openSoinModal;
+
+  function closeSoinModal() { document.getElementById('modalSoin').classList.remove('show'); }
+  window.closeSoinModal = closeSoinModal;
+
+  document.getElementById('modalSoin').addEventListener('click', e => {
+    if (e.target.id === 'modalSoin') closeSoinModal();
+  });
+
+  document.getElementById('soinSaveBtn').addEventListener('click', async () => {
+    const name = document.getElementById('soinName').value.trim();
+    if (!name) { alert('Le nom est requis'); return; }
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const payload = {
+      name,
+      slug,
+      description: document.getElementById('soinDescription').value.trim() || null,
+      duration_minutes: parseInt(document.getElementById('soinDuration').value),
+      price_eur: parseFloat(document.getElementById('soinPrice').value),
+      included_in_fondatrice_pass: document.getElementById('soinIncluded').checked,
+      active: document.getElementById('soinActive').checked
+    };
+    const supa = await Sanctuarys.init();
+    let res;
+    if (CURRENT_SOIN) {
+      res = await supa.from('treatment_types').update(payload).eq('id', CURRENT_SOIN.id);
+    } else {
+      res = await supa.from('treatment_types').insert(payload);
+    }
+    if (res.error) {
+      alert('Erreur : ' + res.error.message);
+      return;
+    }
+    closeSoinModal();
+    await loadSoinsPanel();
+  });
+
+  document.getElementById('soinDeleteBtn').addEventListener('click', async () => {
+    if (!CURRENT_SOIN) return;
+    if (!confirm(`Supprimer définitivement "${CURRENT_SOIN.name}" du catalogue ?`)) return;
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.from('treatment_types').delete().eq('id', CURRENT_SOIN.id);
+    if (error) { alert('Erreur : ' + error.message); return; }
+    closeSoinModal();
+    await loadSoinsPanel();
+  });
+
+  // ============ YONI SOCIAL CLUB : HORAIRES ============
+  const JOURS_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+  async function loadHorairesPanel() {
+    if (!ADMIN_PROFILE) return;
+    const supa = await Sanctuarys.init();
+    const { data: hours } = await supa.from('opening_hours').select('*').order('day_of_week');
+    const { data: overrides } = await supa.from('availability_overrides').select('*').order('date');
+
+    renderHorairesGrid(hours || []);
+    renderOverridesList(overrides || []);
+  }
+
+  function renderHorairesGrid(hours) {
+    const grid = document.getElementById('horairesGrid');
+    grid.innerHTML = '';
+    // Ordre lundi à dimanche (1-6 puis 0)
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    order.forEach(dow => {
+      const h = hours.find(x => x.day_of_week === dow);
+      const row = document.createElement('div');
+      row.style.cssText = 'display: grid; grid-template-columns: 140px 1fr 1fr 80px 80px; gap: 14px; align-items: center; padding: 16px 20px; background: var(--blanc-card); border: 1px solid var(--line);';
+      row.innerHTML = `
+        <div style="font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep);">${JOURS_FR[dow]}</div>
+        <div>
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; display: block; margin-bottom: 4px;">Ouverture</label>
+          <input type="time" class="hr-open" data-dow="${dow}" value="${h?.open_time?.substring(0,5) || ''}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: var(--blanc);">
+        </div>
+        <div>
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; display: block; margin-bottom: 4px;">Fermeture</label>
+          <input type="time" class="hr-close" data-dow="${dow}" value="${h?.close_time?.substring(0,5) || ''}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: var(--blanc);">
+        </div>
+        <button class="btn-outline hr-save" data-dow="${dow}" style="padding: 10px 16px; font-size: 9px;">${h ? 'MAJ' : 'Ouvrir'}</button>
+        <button class="btn-outline hr-close-day" data-dow="${dow}" data-id="${h?.id || ''}" style="padding: 10px 16px; font-size: 9px; ${!h ? 'opacity: 0.4; pointer-events: none;' : ''}">Fermer</button>
+      `;
+      grid.appendChild(row);
+    });
+
+    grid.querySelectorAll('.hr-save').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const dow = parseInt(btn.dataset.dow);
+        const openTime = grid.querySelector(`.hr-open[data-dow="${dow}"]`).value;
+        const closeTime = grid.querySelector(`.hr-close[data-dow="${dow}"]`).value;
+        if (!openTime || !closeTime) { alert('Renseigne les deux horaires'); return; }
+        const supa = await Sanctuarys.init();
+        // upsert: supprime puis insert
+        await supa.from('opening_hours').delete().eq('day_of_week', dow);
+        const { error } = await supa.from('opening_hours').insert({
+          day_of_week: dow, open_time: openTime, close_time: closeTime, active: true
+        });
+        if (error) { alert('Erreur : ' + error.message); return; }
+        await loadHorairesPanel();
+      });
+    });
+    grid.querySelectorAll('.hr-close-day').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        if (!id) return;
+        if (!confirm('Fermer ce jour de la semaine ?')) return;
+        const supa = await Sanctuarys.init();
+        await supa.from('opening_hours').delete().eq('id', id);
+        await loadHorairesPanel();
+      });
+    });
+  }
+
+  function renderOverridesList(overrides) {
+    const list = document.getElementById('overridesList');
+    if (!overrides || overrides.length === 0) {
+      list.innerHTML = '<p style="font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--marron-soft);">Aucune exception programmée.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    overrides.forEach(o => {
+      const d = new Date(o.date);
+      const row = document.createElement('div');
+      row.style.cssText = 'display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; padding: 12px 18px; background: var(--blanc-card); border-left: 3px solid ' + (o.type === 'closed' ? 'var(--rouge-vif)' : 'var(--or)') + '; margin-bottom: 8px;';
+      row.innerHTML = `
+        <div>
+          <div style="font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep);">${d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); margin-top: 2px;">${o.type === 'closed' ? 'Fermé' : `Spécial ${o.open_time?.substring(0,5)} - ${o.close_time?.substring(0,5)}`}${o.reason ? ' · ' + escapeHTML(o.reason) : ''}</div>
+        </div>
+        <button class="btn-outline override-del" data-id="${o.id}" style="padding: 8px 14px; font-size: 9px;">Supprimer</button>
+      `;
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.override-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Supprimer cette exception ?')) return;
+        const supa = await Sanctuarys.init();
+        await supa.from('availability_overrides').delete().eq('id', btn.dataset.id);
+        await loadHorairesPanel();
+      });
+    });
+  }
+
+  function openOverrideModal() {
+    document.getElementById('overrideDate').value = '';
+    document.getElementById('overrideType').value = 'closed';
+    document.getElementById('overrideOpen').value = '';
+    document.getElementById('overrideClose').value = '';
+    document.getElementById('overrideReason').value = '';
+    document.getElementById('overrideSpecialFields').style.display = 'none';
+    document.getElementById('modalOverride').classList.add('show');
+  }
+  window.openOverrideModal = openOverrideModal;
+  function closeOverrideModal() { document.getElementById('modalOverride').classList.remove('show'); }
+  window.closeOverrideModal = closeOverrideModal;
+  document.getElementById('modalOverride').addEventListener('click', e => {
+    if (e.target.id === 'modalOverride') closeOverrideModal();
+  });
+  document.getElementById('overrideType').addEventListener('change', e => {
+    document.getElementById('overrideSpecialFields').style.display = e.target.value === 'special' ? 'grid' : 'none';
+  });
+  async function saveOverride() {
+    const date = document.getElementById('overrideDate').value;
+    const type = document.getElementById('overrideType').value;
+    if (!date) { alert('Date requise'); return; }
+    const payload = {
+      date,
+      type,
+      open_time: type === 'special' ? document.getElementById('overrideOpen').value : null,
+      close_time: type === 'special' ? document.getElementById('overrideClose').value : null,
+      reason: document.getElementById('overrideReason').value.trim() || null
+    };
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.from('availability_overrides').upsert(payload, { onConflict: 'date' });
+    if (error) { alert('Erreur : ' + error.message); return; }
+    closeOverrideModal();
+    await loadHorairesPanel();
+  }
+  window.saveOverride = saveOverride;
+
+  // ============ YONI SOCIAL CLUB : AGENDA ============
+  let ALL_BOOKINGS = [];
+
+  async function loadAgendaCount() {
+    const supa = await Sanctuarys.init();
+    const { data, count } = await supa
+      .from('session_bookings')
+      .select('id', { count: 'exact', head: true })
+      .gte('start_at', new Date().toISOString())
+      .eq('status', 'confirmed');
+    const el = document.getElementById('agendaCount');
+    if (el) el.textContent = count || 0;
+  }
+
+  async function loadAgendaPanel() {
+    if (!ADMIN_PROFILE) return;
+    const supa = await Sanctuarys.init();
+    const { data } = await supa
+      .from('session_bookings')
+      .select('*, treatment_types(name, color_hex), profiles:member_id(prenom, nom, phone, email)')
+      .order('start_at', { ascending: true });
+    ALL_BOOKINGS = data || [];
+    renderAgendaPanel();
+  }
+
+  function renderAgendaPanel() {
+    const list = document.getElementById('agendaList');
+    const filter = document.getElementById('agendaFilter').value;
+    const search = (document.getElementById('searchAgenda').value || '').toLowerCase().trim();
+    list.innerHTML = '';
+
+    const now = new Date();
+    let filtered = ALL_BOOKINGS.filter(b => {
+      const start = new Date(b.start_at);
+      if (filter === 'upcoming') return start >= now && b.status === 'confirmed';
+      if (filter === 'today') {
+        return start.toDateString() === now.toDateString();
+      }
+      if (filter === 'week') {
+        const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
+        return start >= now && start <= weekEnd;
+      }
+      if (filter === 'past') return start < now;
+      return true;
+    });
+
+    if (search) {
+      filtered = filtered.filter(b => {
+        const p = b.profiles;
+        const full = ((p?.prenom || '') + ' ' + (p?.nom || '') + ' ' + (p?.email || '')).toLowerCase();
+        return full.includes(search);
+      });
+    }
+
+    document.getElementById('agendaUpcomingCount').textContent = ALL_BOOKINGS.filter(b => new Date(b.start_at) >= now && b.status === 'confirmed').length;
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 17px;">Aucune réservation pour ce filtre.</div>';
+      return;
+    }
+
+    filtered.forEach(b => {
+      const start = new Date(b.start_at);
+      const end = b.end_at ? new Date(b.end_at) : null;
+      const p = b.profiles || {};
+      const tt = b.treatment_types || {};
+      const initial = (p.prenom || '·')[0].toUpperCase();
+      const statusClass = b.status === 'confirmed' ? 'active' : (b.status === 'completed' ? '' : 'inactive');
+      const statusLabel = ({ confirmed: 'Confirmée', completed: 'Terminée', cancelled: 'Annulée', no_show: 'No-show' }[b.status]) || b.status;
+
+      const row = document.createElement('div');
+      row.className = 'eleve-row';
+      row.style.cursor = 'pointer';
+      row.innerHTML = `
+        <div class="eleve-name">
+          <div class="eleve-avatar" style="background: ${tt.color_hex || '#C8704D'}; color: #FAF5EC;">${initial}</div>
+          <div>
+            <div class="name">${escapeHTML(p.prenom || '')} ${escapeHTML(p.nom || '')}</div>
+            <div class="email">${escapeHTML(tt.name || 'Soin')}${p.phone ? ' · ' + escapeHTML(p.phone) : ''}</div>
+          </div>
+        </div>
+        <div class="eleve-progress">
+          <p style="color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 17px;">${start.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+          <p style="color: var(--marron-soft); font-size: 12px; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">${start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}${end ? ' – ' + end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+        </div>
+        <div class="eleve-module"></div>
+        <div class="eleve-status ${statusClass}">${statusLabel}</div>
+        <div class="eleve-actions">
+          ${b.status === 'confirmed' ? `<button class="icon-btn agenda-done" data-id="${b.id}" title="Marquer terminée">✓</button><button class="icon-btn agenda-cancel" data-id="${b.id}" title="Annuler">×</button>` : '<button class="icon-btn" title="Voir">→</button>'}
+        </div>
+      `;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('.agenda-done').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const supa = await Sanctuarys.init();
+        await supa.from('session_bookings').update({ status: 'completed' }).eq('id', btn.dataset.id);
+        await loadAgendaPanel();
+        await loadAgendaCount();
+      });
+    });
+    list.querySelectorAll('.agenda-cancel').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('Annuler cette séance ? La place sera rendue à la Fondatrice.')) return;
+        const supa = await Sanctuarys.init();
+        await supa.from('session_bookings').update({ status: 'cancelled' }).eq('id', btn.dataset.id);
+        await loadAgendaPanel();
+        await loadAgendaCount();
+      });
+    });
+  }
+
+  document.getElementById('searchAgenda').addEventListener('input', renderAgendaPanel);
+  document.getElementById('agendaFilter').addEventListener('change', renderAgendaPanel);
 
   // ============ JOURNAUX DU JOUR : VRAIES ENTRÉES ============
   let ALL_JOURNAL_ENTRIES = [];
