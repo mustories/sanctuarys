@@ -1754,9 +1754,47 @@
         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
           <button class="btn-primary" id="fondatriceRelanceBtn" type="button" style="padding: 12px 22px; font-size: 10px; display: none;">Relancer le paiement ✦</button>
           <button class="btn-outline" id="fondatriceMarkContactedBtn" type="button" style="padding: 12px 22px; font-size: 10px;">Marquer comme contactée</button>
-          <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
+          <button id="fondatriceMailtoBtn" type="button" class="btn-outline" style="padding: 12px 22px; font-size: 10px;">Écrire un email ✦</button>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
           <button class="btn-outline" id="fondatriceDeleteBtn" type="button" style="padding: 12px 22px; font-size: 10px; margin-left: auto; color: var(--rouge-vif); border-color: var(--rouge-vif);">Supprimer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== COMPOSE MAIL MODAL (utilisable depuis Fondatrices et autres) ====== -->
+    <div class="modal-overlay" id="composeMailModal">
+      <div class="modal" style="max-width: 700px; padding: 50px 56px;">
+        <button class="modal-close" onclick="closeComposeMail()">×</button>
+        <div class="entry-modal-meta">Écrire un email · via Sanctuarys</div>
+        <h2 class="entry-modal-title">Composer <em>un message.</em></h2>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-soft); margin-bottom: 24px; line-height: 1.6;">L'email partira de <strong style="font-family: 'Italiana', serif; font-weight: normal; color: var(--marron-deep); font-style: normal;">info@sanctuarys.me</strong> via Resend, signé "L'équipe Sanctuarys".</p>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 6px;">À</label>
+          <input type="email" id="composeTo" placeholder="email@destinataire.fr" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 6px;">Sujet</label>
+          <input type="text" id="composeSubject" placeholder="Sujet du mail" style="width: 100%; padding: 14px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);">
+        </div>
+
+        <div style="margin-bottom: 16px; background: rgba(212, 160, 76, 0.08); border: 1px solid var(--or); padding: 14px 18px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--or); text-transform: uppercase; display: block; margin-bottom: 6px;">✦ Aide Ishtar (optionnel)</label>
+          <div style="display: flex; gap: 10px; align-items: stretch;">
+            <input type="text" id="composeIntention" placeholder="Décris en 1 phrase ce que tu veux dire, Ishtar te rédige le mail..." style="flex: 1; padding: 11px 14px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep);">
+            <button id="composeAIBtn" type="button" onclick="composeAIDraft()" class="btn-outline" style="padding: 11px 18px; font-size: 10px; white-space: nowrap;">Ishtar rédige ✦</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; display: block; margin-bottom: 6px;">Message</label>
+          <textarea id="composeContent" rows="10" placeholder="Ton message... (la signature 'L'équipe Sanctuarys' sera ajoutée automatiquement)" style="width: 100%; padding: 16px 18px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--marron-deep); line-height: 1.7; resize: vertical;"></textarea>
+        </div>
+
+        <div style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-primary" id="composeSendBtn" type="button" onclick="composeSend()" style="padding: 14px 28px;">Envoyer ✦</button>
+          <button class="btn-outline" type="button" onclick="closeComposeMail()" style="padding: 14px 22px;">Annuler</button>
         </div>
       </div>
     </div>
@@ -2566,6 +2604,114 @@
     if (id === 'inbox') loadInbox();
   }
 
+  // ============ COMPOSE MAIL (modal universel) ============
+  let COMPOSE_CONTEXT = '';
+  let COMPOSE_RECIPIENT_NAME = '';
+
+  function openComposeMail(opts) {
+    opts = opts || {};
+    document.getElementById('composeTo').value = opts.to || '';
+    document.getElementById('composeSubject').value = opts.subject || '';
+    document.getElementById('composeContent').value = opts.content || '';
+    document.getElementById('composeIntention').value = '';
+    COMPOSE_CONTEXT = opts.context || '';
+    COMPOSE_RECIPIENT_NAME = opts.recipientName || '';
+    document.getElementById('composeMailModal').classList.add('show');
+    setTimeout(() => {
+      const focusOn = opts.to ? 'composeSubject' : 'composeTo';
+      document.getElementById(focusOn)?.focus();
+    }, 100);
+  }
+  window.openComposeMail = openComposeMail;
+
+  function closeComposeMail() {
+    document.getElementById('composeMailModal').classList.remove('show');
+  }
+  window.closeComposeMail = closeComposeMail;
+
+  document.getElementById('composeMailModal').addEventListener('click', e => {
+    if (e.target.id === 'composeMailModal') closeComposeMail();
+  });
+
+  async function composeAIDraft() {
+    const intention = document.getElementById('composeIntention').value.trim();
+    if (!intention) {
+      showToast('Décris ton intention en 1 phrase d\'abord', 'error');
+      return;
+    }
+    const btn = document.getElementById('composeAIBtn');
+    btn.disabled = true;
+    btn.textContent = 'Ishtar rédige...';
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const recipientContext = (COMPOSE_RECIPIENT_NAME ? 'Destinataire : ' + COMPOSE_RECIPIENT_NAME + '. ' : '') + COMPOSE_CONTEXT;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/send-email-from-admin', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'draft', intention, recipient_context: recipientContext })
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Échec rédaction');
+      document.getElementById('composeContent').value = result.draft;
+      // Pré-remplit aussi le sujet si vide
+      const subjectField = document.getElementById('composeSubject');
+      if (!subjectField.value.trim() && result.suggested_subject) {
+        subjectField.value = result.suggested_subject;
+      }
+      showToast('Brouillon prêt ✦');
+    } catch (err) {
+      showToast('Erreur Ishtar : ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Ishtar rédige ✦';
+    }
+  }
+  window.composeAIDraft = composeAIDraft;
+
+  async function composeSend() {
+    const to = document.getElementById('composeTo').value.trim();
+    const subject = document.getElementById('composeSubject').value.trim();
+    const content = document.getElementById('composeContent').value.trim();
+    if (!to || !subject || !content) {
+      showToast('Destinataire, sujet et message requis', 'error');
+      return;
+    }
+    if (!confirm('Envoyer ce mail à ' + to + ' ?\n\nSujet : ' + subject)) return;
+    const btn = document.getElementById('composeSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/send-email-from-admin', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'send', to, subject, content })
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Échec envoi');
+      showToast('Email envoyé à ' + to + ' ✦');
+      closeComposeMail();
+    } catch (err) {
+      showToast('Erreur envoi : ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer ✦';
+    }
+  }
+  window.composeSend = composeSend;
+
   // ============ INBOX OUTLOOK ============
   const MS_CLIENT_ID = '304d2332-9c2e-46af-8e71-f9d2c79190d5';
   const MS_TENANT_ID = 'f4d1203a-2cb2-4997-a3e0-43116ab069c6';
@@ -3000,7 +3146,14 @@
 
     document.getElementById('fondatriceAllaitementRow').style.display = f.allaitement === true ? 'grid' : 'none';
 
-    document.getElementById('fondatriceMailtoBtn').href = 'mailto:' + (f.email || '');
+    document.getElementById('fondatriceMailtoBtn').onclick = () => openComposeMail({
+      to: f.email,
+      recipientName: ((f.prenom || '') + ' ' + (f.nom || '')).trim(),
+      context: 'Cette Fondatrice s\'appelle ' + (f.prenom || '') + ' ' + (f.nom || '') + '.' +
+        (f.allaitement ? ' Elle est ALLAITANTE.' : '') +
+        (f.intention ? ' Son intention exprimée à l\'inscription : "' + f.intention + '"' : '') +
+        ' Statut actuel : ' + (f.status === 'accepted' || f.status === 'contacted' ? 'Fondatrice payée et active' : 'Inscription en attente de paiement') + '.'
+    });
     document.getElementById('fondatricePhoneBtn').href = 'tel:' + (f.phone || '');
 
     // Bouton "Relancer le paiement" : visible uniquement si statut pending
