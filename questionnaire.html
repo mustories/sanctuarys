@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redirection vers ton espace · Sanctuarys</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital@0;1&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.25), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.18), transparent 50%),
+      #FAF5EC;
+    color: #2A1810;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .card {
+    max-width: 540px;
+    text-align: center;
+    background: #FAF5EC;
+    padding: 56px 40px;
+    border: 1px solid rgba(106, 68, 35, 0.18);
+    position: relative;
+  }
+  .card::before {
+    content: '✦';
+    position: absolute;
+    top: -18px; left: 50%;
+    transform: translateX(-50%);
+    background: #FAF5EC;
+    padding: 0 18px;
+    font-size: 24px;
+    color: #A85537;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #A85537;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: 48px;
+    line-height: 1;
+    color: #2A1810;
+    font-weight: 400;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: #A85537;
+  }
+  p {
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #4A3020;
+    margin-bottom: 18px;
+  }
+  .spinner {
+    display: inline-block;
+    width: 30px; height: 30px;
+    border: 2px solid #C8704D;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 14px auto 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 16px 32px;
+    background: #C8704D;
+    color: #FAF5EC;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="meta">Sanctuarys · Yoni Social Club</div>
+  <h1>Bienvenue,<br><em>Fondatrice.</em></h1>
+  <p>Nous t'amenons vers ton Temple intérieur. Un instant ✦</p>
+  <div class="spinner"></div>
+  <p style="margin-top: 28px; font-size: 14px; color: #6B4423;">Si la redirection ne se fait pas automatiquement,<br><a href="/espace-membre" class="btn" style="margin-top: 14px;">Entrer manuellement ✦</a></p>
+</div>
+
+<script>
+// Conserve TOUS les paramètres et fragments d'URL (hash) lors de la redirection
+// Important : Supabase Auth utilise des hash pour passer le token (#access_token=...)
+const search = window.location.search || '';
+const hash = window.location.hash || '';
+const target = '/espace-membre' + search + hash;
+
+// Petit délai pour que la cliente voie le message éditorial
+setTimeout(() => {
+  window.location.replace(target);
+}, 800);
+</script>
+
+</body>
+</html>
