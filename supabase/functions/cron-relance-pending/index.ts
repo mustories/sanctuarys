@@ -33,17 +33,16 @@ Deno.serve(async (req) => {
     // Trouve les Fondatrices à relancer :
     // 1. status = pending
     // 2. créée il y a plus de 48h
-    // 3. dernière relance il y a plus de 4 jours (ou jamais relancée)
-    // 4. moins de 3 relances déjà envoyées
+    // 3. JAMAIS relancée (relance_count = 0)
+    // → Une seule relance dans la vie d'un signup, pas de spam
     const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
-    const cutoff4j = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
 
     const { data: candidates, error } = await admin
       .from('club_signups')
       .select('id, prenom, nom, email, created_at, relance_count, last_relance_at')
       .eq('status', 'pending')
       .lt('created_at', cutoff48h)
-      .lt('relance_count', 3)
+      .eq('relance_count', 0)
       .order('created_at')
 
     if (error) {
@@ -52,17 +51,10 @@ Deno.serve(async (req) => {
     }
 
     if (!candidates || candidates.length === 0) {
-      return json({ success: true, relances_sent: 0, message: 'Aucune Fondatrice à relancer aujourd\'hui' })
+      return json({ success: true, relances_sent: 0, message: 'Aucune nouvelle Fondatrice à relancer aujourd\'hui' })
     }
 
-    const filtered = candidates.filter(c => {
-      if (!c.last_relance_at) return true
-      return c.last_relance_at < cutoff4j
-    })
-
-    if (filtered.length === 0) {
-      return json({ success: true, relances_sent: 0, message: 'Toutes les pending ont été relancées récemment' })
-    }
+    const filtered = candidates
 
     // Appelle club-relance-paiement pour chacune
     const results = []
