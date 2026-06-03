@@ -1741,6 +1741,7 @@
         </div>
 
         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-primary" id="fondatriceRelanceBtn" type="button" style="padding: 12px 22px; font-size: 10px; display: none;">Relancer le paiement ✦</button>
           <button class="btn-outline" id="fondatriceMarkContactedBtn" type="button" style="padding: 12px 22px; font-size: 10px;">Marquer comme contactée</button>
           <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
@@ -2598,6 +2599,9 @@
     document.getElementById('fondatriceMailtoBtn').href = 'mailto:' + (f.email || '');
     document.getElementById('fondatricePhoneBtn').href = 'tel:' + (f.phone || '');
 
+    // Bouton "Relancer le paiement" : visible uniquement si statut pending
+    document.getElementById('fondatriceRelanceBtn').style.display = (f.status === 'pending') ? 'inline-block' : 'none';
+
     // Charge le Premier Seuil + Points d'évolution
     loadFondatriceQuestionnaire(f);
 
@@ -2868,6 +2872,39 @@
       await loadFondatricesPanel();
     } catch (err) {
       alert('Erreur : ' + (err.message || 'mise à jour impossible'));
+    }
+  });
+
+  document.getElementById('fondatriceRelanceBtn').addEventListener('click', async () => {
+    if (!CURRENT_FONDATRICE) return;
+    const nom = (CURRENT_FONDATRICE.prenom || '') + ' ' + (CURRENT_FONDATRICE.nom || '');
+    if (!confirm(`Envoyer un email de relance avec un nouveau lien de paiement à ${nom.trim()} ?\n\nElle recevra le mail "Le seuil t'attend ✦" via Resend avec un nouveau lien Stripe Checkout valide.`)) return;
+    const btn = document.getElementById('fondatriceRelanceBtn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const response = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/club-relance-paiement', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ signup_id: CURRENT_FONDATRICE.id })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Erreur inconnue');
+      showToast('Email de relance envoyé ✦');
+      closeFondatriceModal();
+      await loadFondatricesPanel();
+    } catch (err) {
+      alert('Erreur : ' + (err.message || 'relance impossible'));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Relancer le paiement ✦';
     }
   });
 
