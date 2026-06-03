@@ -4305,9 +4305,10 @@
       if (rows[3]) rows[3].querySelector('.value').textContent = Sanctuarys.formatRelative(CURRENT_STUDENT.updated_at);
     }
 
-    // Journal entries
+    // Journal entries + Notes + Bilan Ishtar
     await renderStudentJournal(id);
     await renderStudentNotes(id);
+    await renderExistingBilan(id);
   }
 
   function moduleNameOf(num) {
