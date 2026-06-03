@@ -101,7 +101,9 @@ Deno.serve(async (req) => {
       .from('club_signups')
       .update({
         stripe_session_id: session.id,
-        contacted_at: new Date().toISOString()
+        contacted_at: new Date().toISOString(),
+        relance_count: (signup.relance_count || 0) + 1,
+        last_relance_at: new Date().toISOString()
       })
       .eq('id', signup.id)
 
