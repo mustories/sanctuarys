@@ -1575,7 +1575,7 @@ function renderPremierSeuilForm() {
       </div>
       <div class="ps-grid-2" style="margin-top:14px;">
         <div><label class="ps-label">Enfants (nombre)</label><input type="number" min="0" max="20" id="ps_enfants" class="ps-input" placeholder="0"></div>
-        <div><label class="ps-label">Origine / culture (optionnel)</label><input type="text" id="ps_origine" class="ps-input" placeholder="Métisse, antillaise, africaine..."></div>
+        <div></div>
       </div>
     </div>
   `;
@@ -1769,8 +1769,7 @@ async function savePoint() {
       pays: document.getElementById('ps_pays').value.trim(),
       metier: document.getElementById('ps_metier').value.trim(),
       situation_couple: document.getElementById('ps_situation').value,
-      enfants: parseInt(document.getElementById('ps_enfants').value) || 0,
-      origine: document.getElementById('ps_origine').value.trim()
+      enfants: parseInt(document.getElementById('ps_enfants').value) || 0
     };
     // Cycle
     data.cycle = {

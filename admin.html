@@ -3278,7 +3278,6 @@
             ${i.ville ? `${escapeHTML(i.ville)}${i.pays ? ', ' + escapeHTML(i.pays) : ''} · ` : ''}
             ${i.situation_couple ? `${escapeHTML(i.situation_couple)} · ` : ''}
             ${typeof i.enfants === 'number' ? `${i.enfants} enfant${i.enfants > 1 ? 's' : ''}` : ''}
-            ${i.origine ? ` · ${escapeHTML(i.origine)}` : ''}
           </div>
         </div>
       `;
