@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
       const { data: magicData } = await admin.auth.admin.generateLink({
         type: 'magiclink',
         email: email.toLowerCase(),
-        options: { redirectTo: 'https://sanctuarys.me/questionnaire' }
+        options: { redirectTo: 'https://sanctuarys.me/espace-membre' }
       })
       inviteActionLink = magicData?.properties?.action_link || null
     } else {
@@ -140,7 +140,7 @@ Deno.serve(async (req) => {
         type: 'invite',
         email: email.toLowerCase(),
         options: {
-          redirectTo: 'https://sanctuarys.me/questionnaire',
+          redirectTo: 'https://sanctuarys.me/espace-membre',
           data: {
             prenom,
             nom,
@@ -221,8 +221,8 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
   <p>${prenom},</p>
   <p>Ton paiement est validé. Tu fais désormais partie des <strong>123 Fondatrices</strong> du Yoni Social Club. Ton tarif de Fondatrice est gravé dans la mémoire du Temple, à vie.</p>
   <p>Pour activer ton espace privé et nous aider à préparer tes protocoles personnalisés, clique sur le bouton ci-dessous pour choisir ton mot de passe et remplir ton questionnaire d'entrée.</p>
-  <p style="text-align: center;"><a href="${inviteActionLink || 'https://sanctuarys.me/questionnaire'}" class="btn">Franchir le seuil ✦</a></p>
-  <p style="font-size: 13px; color: #6B4423; text-align: center; font-style: italic;">Si le bouton ne s'affiche pas, copie ce lien : <a href="${inviteActionLink || 'https://sanctuarys.me/questionnaire'}" style="color: #A85537; word-break: break-all;">${inviteActionLink || 'https://sanctuarys.me/questionnaire'}</a></p>
+  <p style="text-align: center;"><a href="${inviteActionLink || 'https://sanctuarys.me/espace-membre'}" class="btn">Franchir le seuil ✦</a></p>
+  <p style="font-size: 13px; color: #6B4423; text-align: center; font-style: italic;">Si le bouton ne s'affiche pas, copie ce lien : <a href="${inviteActionLink || 'https://sanctuarys.me/espace-membre'}" style="color: #A85537; word-break: break-all;">${inviteActionLink || 'https://sanctuarys.me/espace-membre'}</a></p>
   <p>Nous te contacterons personnellement dans les jours qui viennent pour planifier ta première séance YoniSpa.</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec attention,</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">L'équipe Sanctuarys</p>

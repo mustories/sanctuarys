@@ -1277,6 +1277,12 @@
       Mes formations
     </a>
 
+    <div class="nav-section-label">Assistance</div>
+    <a class="nav-item" data-panel="ishtar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9 9c0-1.5 1.5-2 3-2s3 .5 3 2-3 2-3 4M12 17h.01"/></svg>
+      Ishtar ✦
+    </a>
+
     <div class="nav-section-label">Communication</div>
     <a class="nav-item" data-panel="messages">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5 a 8.38 8.38 0 0 1 -.9 3.8 8.5 8.5 0 0 1 -7.6 4.7 8.38 8.38 0 0 1 -3.8 -.9 L 3 21 l 1.9 -5.7 a 8.38 8.38 0 0 1 -.9 -3.8 8.5 8.5 0 0 1 4.7 -7.6 8.38 8.38 0 0 1 3.8 -.9 8.5 8.5 0 0 1 8.5 8.5 z"/></svg>
@@ -1746,6 +1752,49 @@
           <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
           <button class="btn-outline" id="fondatriceDeleteBtn" type="button" style="padding: 12px 22px; font-size: 10px; margin-left: auto; color: var(--rouge-vif); border-color: var(--rouge-vif);">Supprimer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISHTAR ASSISTANTE MANAGER -->
+    <div class="panel" id="panel-ishtar">
+      <div class="panel-header">
+        <div class="breadcrumb">∞ / Assistance · Ishtar</div>
+        <div>
+          <h1 class="page-title">Ishtar <em>✦</em></h1>
+          <p class="page-subtitle">Ton assistante manager IA, consciente de tout le Club. Pose-lui n'importe quelle question sur tes Fondatrices, ton agenda, tes revenus, ou demande-lui de rédiger un message à une Fondatrice.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 280px; gap: 24px;">
+        <div style="background: var(--blanc-card); border: 1px solid var(--line); padding: 0; display: flex; flex-direction: column; min-height: 600px;">
+          <div id="ishtarMessages" style="flex: 1; overflow-y: auto; padding: 28px 30px; display: flex; flex-direction: column; gap: 18px;">
+            <div style="text-align: center; padding: 30px 20px; color: var(--marron-soft); font-family: 'Cormorant Garamond', serif; font-style: italic;">
+              <div style="font-family: 'Italiana', serif; font-size: 36px; color: var(--terracotta-deep); margin-bottom: 12px;">✦</div>
+              <p style="font-size: 16px; line-height: 1.6;">Bonjour Princesse,</p>
+              <p style="font-size: 14px; line-height: 1.6; margin-top: 8px;">Je suis Ishtar. Je connais tes 123 places, tes Fondatrices, tes séances, tes revenus, tes événements et chaque Premier Seuil déposé. Demande-moi tout ce dont tu as besoin pour piloter le Temple.</p>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--line); padding: 18px 22px; display: flex; gap: 10px; align-items: flex-end;">
+            <textarea id="ishtarInput" rows="2" placeholder="Pose ta question à Ishtar..." style="flex: 1; padding: 12px 14px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); resize: vertical; min-height: 50px;"></textarea>
+            <button id="ishtarSendBtn" onclick="sendToIshtar()" style="background: var(--terracotta); color: var(--blanc); border: none; padding: 14px 20px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer;">Envoyer ✦</button>
+          </div>
+        </div>
+
+        <div style="background: var(--blanc-deep); border: 1px solid var(--line); padding: 22px 24px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 14px;">Questions à essayer</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Quelles Fondatrices n'ont jamais réservé de séance ?</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Combien j'ai encaissé cette semaine ?</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Qui sont mes 5 dernières Fondatrices ?</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Quel protocole suggères-tu pour les allaitantes ?</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Quelles sont mes séances de demain ?</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Rédige un mail de bienvenue pour Cassandra</button>
+            <button class="ishtar-prompt" onclick="ishtarPrompt(this.textContent)" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 12px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-deep); text-align: left; cursor: pointer; line-height: 1.45;">Quelles places me reste-t-il avant la barre des 100 ?</button>
+          </div>
+          <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);">
+            <button onclick="clearIshtarChat()" style="background: transparent; border: 1px solid var(--line); padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase; cursor: pointer; width: 100%;">Effacer la conversation</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2473,7 +2522,116 @@
     if (id === 'soins') loadSoinsPanel();
     if (id === 'horaires') loadHorairesPanel();
     if (id === 'agenda') loadAgendaPanel();
+    if (id === 'ishtar') focusIshtar();
   }
+
+  // ============ ISHTAR ASSISTANTE MANAGER ============
+  let ISHTAR_HISTORY = [];
+
+  function focusIshtar() {
+    setTimeout(() => document.getElementById('ishtarInput')?.focus(), 200);
+  }
+
+  function ishtarPrompt(text) {
+    const input = document.getElementById('ishtarInput');
+    input.value = text;
+    input.focus();
+  }
+  window.ishtarPrompt = ishtarPrompt;
+
+  function clearIshtarChat() {
+    if (!confirm('Effacer toute la conversation avec Ishtar ?')) return;
+    ISHTAR_HISTORY = [];
+    document.getElementById('ishtarMessages').innerHTML = `
+      <div style="text-align: center; padding: 30px 20px; color: var(--marron-soft); font-family: 'Cormorant Garamond', serif; font-style: italic;">
+        <div style="font-family: 'Italiana', serif; font-size: 36px; color: var(--terracotta-deep); margin-bottom: 12px;">✦</div>
+        <p style="font-size: 16px; line-height: 1.6;">Conversation effacée.</p>
+        <p style="font-size: 14px; line-height: 1.6; margin-top: 8px;">Pose-moi une nouvelle question quand tu veux.</p>
+      </div>
+    `;
+  }
+  window.clearIshtarChat = clearIshtarChat;
+
+  async function sendToIshtar() {
+    const input = document.getElementById('ishtarInput');
+    const message = input.value.trim();
+    if (!message) return;
+    const messagesEl = document.getElementById('ishtarMessages');
+    const sendBtn = document.getElementById('ishtarSendBtn');
+
+    // Clear le placeholder initial s'il est encore là
+    if (messagesEl.querySelector('div[style*="text-align: center"]') && ISHTAR_HISTORY.length === 0) {
+      messagesEl.innerHTML = '';
+    }
+
+    // Affiche le message de Princesse
+    const userMsg = document.createElement('div');
+    userMsg.style.cssText = 'align-self: flex-end; max-width: 80%; background: var(--terracotta); color: var(--blanc); padding: 12px 16px; font-family: \'Cormorant Garamond\', serif; font-size: 15px; line-height: 1.55;';
+    userMsg.textContent = message;
+    messagesEl.appendChild(userMsg);
+
+    // Loader
+    const loader = document.createElement('div');
+    loader.style.cssText = 'align-self: flex-start; max-width: 80%; padding: 14px 18px; background: var(--blanc-deep); border-left: 3px solid var(--or); font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--marron-soft);';
+    loader.textContent = 'Ishtar consulte les registres du Temple ✦';
+    messagesEl.appendChild(loader);
+
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    input.value = '';
+    sendBtn.disabled = true;
+
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const response = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/ishtar-assistant', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message, history: ISHTAR_HISTORY })
+      });
+      const result = await response.json();
+      loader.remove();
+
+      if (!response.ok) throw new Error(result.error || 'Erreur inconnue');
+
+      const aiResponse = result.response || 'Pas de réponse.';
+
+      // Affiche la réponse d'Ishtar
+      const aiMsg = document.createElement('div');
+      aiMsg.style.cssText = 'align-self: flex-start; max-width: 90%; padding: 16px 20px; background: var(--blanc-deep); border-left: 3px solid var(--terracotta); font-family: \'Cormorant Garamond\', serif; font-size: 15px; line-height: 1.7; color: var(--marron-deep); white-space: pre-wrap;';
+      aiMsg.textContent = aiResponse;
+      messagesEl.appendChild(aiMsg);
+
+      // Met à jour l'historique
+      ISHTAR_HISTORY.push({ role: 'user', content: message });
+      ISHTAR_HISTORY.push({ role: 'assistant', content: aiResponse });
+      if (ISHTAR_HISTORY.length > 20) ISHTAR_HISTORY = ISHTAR_HISTORY.slice(-20);
+
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    } catch (err) {
+      loader.remove();
+      const errMsg = document.createElement('div');
+      errMsg.style.cssText = 'align-self: flex-start; max-width: 80%; padding: 12px 16px; background: rgba(178, 43, 43, 0.10); border-left: 3px solid var(--rouge-vif); font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 14px; color: var(--rouge-vif);';
+      errMsg.textContent = 'Erreur : ' + (err.message || 'Ishtar n\'a pas pu répondre');
+      messagesEl.appendChild(errMsg);
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+  window.sendToIshtar = sendToIshtar;
+
+  // Enter pour envoyer (Shift+Enter pour newline)
+  document.addEventListener('keydown', e => {
+    if (e.target.id === 'ishtarInput' && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendToIshtar();
+    }
+  });
   navItems.forEach(item => {
     item.addEventListener('click', e => { e.preventDefault(); openPanel(item.dataset.panel); });
   });
