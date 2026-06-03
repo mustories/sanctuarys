@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Connexion Outlook · Sanctuarys</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #FAF5EC;
+    color: #2A1810;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .card {
+    max-width: 520px;
+    width: 100%;
+    background: #FFFCF5;
+    border: 1px solid rgba(106, 68, 35, 0.18);
+    padding: 48px 44px;
+    text-align: center;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #A85537;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: 44px;
+    line-height: 1.05;
+    color: #2A1810;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  h1 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: #A85537; }
+  p {
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #4A3020;
+    margin-bottom: 18px;
+  }
+  .status {
+    margin-top: 28px;
+    padding: 22px;
+    background: #F2EBDD;
+    border-left: 3px solid #C8704D;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #4A3020;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+  .status.success { border-left-color: #6B8C4A; }
+  .status.error { border-left-color: #B22B2B; }
+  .btn {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 16px 32px;
+    background: #C8704D;
+    color: #FAF5EC;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .spinner {
+    display: inline-block;
+    width: 26px; height: 26px;
+    border: 2px solid #C8704D;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-top: 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="meta">✦ Sanctuarys · Connexion Outlook</div>
+  <h1>Connexion à<br><em>Outlook.</em></h1>
+  <p id="message">Connexion en cours avec Microsoft 365...</p>
+  <div class="spinner" id="spinner"></div>
+  <div class="status" id="status" style="display: none;"></div>
+  <a href="/admin" class="btn" id="backBtn" style="display: none;">Retour au dashboard ✦</a>
+</div>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+const SUPABASE_FUNCTIONS = 'https://hcmcforwphmqrauqltqp.supabase.co/functions/v1';
+
+async function processCallback() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  const error = urlParams.get('error');
+  const errorDescription = urlParams.get('error_description');
+
+  const statusEl = document.getElementById('status');
+  const spinnerEl = document.getElementById('spinner');
+  const messageEl = document.getElementById('message');
+  const backBtn = document.getElementById('backBtn');
+
+  if (error) {
+    spinnerEl.style.display = 'none';
+    statusEl.className = 'status error';
+    statusEl.textContent = 'Microsoft a refusé : ' + (errorDescription || error);
+    statusEl.style.display = 'block';
+    messageEl.textContent = 'La connexion a échoué.';
+    backBtn.style.display = 'inline-block';
+    return;
+  }
+
+  if (!code) {
+    spinnerEl.style.display = 'none';
+    statusEl.className = 'status error';
+    statusEl.textContent = 'Aucun code reçu. La page a été appelée directement sans autorisation Microsoft.';
+    statusEl.style.display = 'block';
+    backBtn.style.display = 'inline-block';
+    return;
+  }
+
+  try {
+    const supa = await Sanctuarys.init();
+    const session = await supa.auth.getSession();
+    const token = session.data.session?.access_token;
+    const userId = session.data.session?.user?.id;
+
+    if (!token) {
+      throw new Error('Tu dois être connectée à l\'admin avant de connecter Outlook.');
+    }
+
+    const response = await fetch(`${SUPABASE_FUNCTIONS}/outlook-oauth-callback`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ code, connected_by: userId })
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Échec de connexion');
+
+    spinnerEl.style.display = 'none';
+    statusEl.className = 'status success';
+    statusEl.innerHTML = '<strong style="font-family: \'Italiana\', serif; font-weight: normal; font-size: 16px; color: #2A1810;">✦ Connecté</strong><br><br>Email : ' + result.email + '<br>Nom : ' + (result.display_name || '—') + '<br>Expire : ' + new Date(result.expires_at).toLocaleString('fr-FR');
+    statusEl.style.display = 'block';
+    messageEl.textContent = 'Ton Outlook est désormais relié au Temple. Tu vas être redirigée dans 3 secondes...';
+    backBtn.style.display = 'inline-block';
+
+    setTimeout(() => { window.location.href = '/admin?panel=inbox'; }, 3000);
+  } catch (err) {
+    spinnerEl.style.display = 'none';
+    statusEl.className = 'status error';
+    statusEl.textContent = err.message || 'Erreur inconnue';
+    statusEl.style.display = 'block';
+    messageEl.textContent = 'La connexion a échoué.';
+    backBtn.style.display = 'inline-block';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', processCallback);
+</script>
+</body>
+</html>

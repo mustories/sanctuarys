@@ -1284,6 +1284,11 @@
     </a>
 
     <div class="nav-section-label">Communication</div>
+    <a class="nav-item" data-panel="inbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+      Inbox Outlook
+      <span class="count" id="inboxUnreadCount">0</span>
+    </a>
     <a class="nav-item" data-panel="messages">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5 a 8.38 8.38 0 0 1 -.9 3.8 8.5 8.5 0 0 1 -7.6 4.7 8.38 8.38 0 0 1 -3.8 -.9 L 3 21 l 1.9 -5.7 a 8.38 8.38 0 0 1 -.9 -3.8 8.5 8.5 0 0 1 4.7 -7.6 8.38 8.38 0 0 1 3.8 -.9 8.5 8.5 0 0 1 8.5 8.5 z"/></svg>
       Messages
@@ -1752,6 +1757,41 @@
           <a id="fondatriceMailtoBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Écrire un email</a>
           <a id="fondatricePhoneBtn" class="btn-outline" style="padding: 12px 22px; font-size: 10px; text-decoration: none;">Appeler</a>
           <button class="btn-outline" id="fondatriceDeleteBtn" type="button" style="padding: 12px 22px; font-size: 10px; margin-left: auto; color: var(--rouge-vif); border-color: var(--rouge-vif);">Supprimer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INBOX OUTLOOK -->
+    <div class="panel" id="panel-inbox">
+      <div class="panel-header">
+        <div class="breadcrumb">📬 / Communication · Inbox</div>
+        <div>
+          <h1 class="page-title">Inbox <em>Outlook.</em></h1>
+          <p class="page-subtitle">Tous les emails reçus sur info@sanctuarys.me. Ishtar peut t'aider à rédiger une réponse.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Non lus</strong><span id="inboxUnreadMeta">0</span></div>
+          <button class="btn-outline" onclick="syncOutlookNow()" style="padding: 10px 16px; font-size: 10px; margin-top: 10px;">Synchroniser ✦</button>
+        </div>
+      </div>
+
+      <div id="inboxNotConnected" style="display: none; background: var(--blanc-card); border: 1px solid var(--line); padding: 30px 36px; text-align: center; margin-bottom: 24px;">
+        <div style="font-family: 'Italiana', serif; font-size: 30px; color: var(--marron-deep); margin-bottom: 8px;">Connecte ton <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">Outlook.</em></div>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); margin-bottom: 22px;">Donne-moi accès à info@sanctuarys.me pour que je puisse lire tes mails et t'aider à répondre.</p>
+        <button class="btn-primary" onclick="connectOutlook()" style="padding: 14px 28px;">Connecter Outlook ✦</button>
+      </div>
+
+      <div id="inboxConnected" style="display: none;">
+        <div style="display: grid; grid-template-columns: 380px 1fr; gap: 24px;">
+          <div style="background: var(--blanc-card); border: 1px solid var(--line); max-height: 700px; overflow-y: auto;">
+            <div id="inboxMessagesList"></div>
+          </div>
+          <div style="background: var(--blanc-card); border: 1px solid var(--line); padding: 32px 36px; min-height: 700px;" id="inboxDetailPane">
+            <div style="text-align: center; padding: 80px 20px; color: var(--marron-soft); font-family: 'Cormorant Garamond', serif; font-style: italic;">
+              <div style="font-family: 'Italiana', serif; font-size: 42px; color: var(--terracotta-pale); margin-bottom: 16px;">✦</div>
+              <p style="font-size: 16px;">Choisis un message à gauche pour le lire.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2523,6 +2563,212 @@
     if (id === 'horaires') loadHorairesPanel();
     if (id === 'agenda') loadAgendaPanel();
     if (id === 'ishtar') focusIshtar();
+    if (id === 'inbox') loadInbox();
+  }
+
+  // ============ INBOX OUTLOOK ============
+  const MS_CLIENT_ID = '304d2332-9c2e-46af-8e71-f9d2c79190d5';
+  const MS_TENANT_ID = 'f4d1203a-2cb2-4997-a3e0-43116ab069c6';
+  const MS_REDIRECT = 'https://sanctuarys.me/admin/outlook-callback';
+  let INBOX_MESSAGES = [];
+  let INBOX_SELECTED = null;
+
+  function connectOutlook() {
+    const scope = encodeURIComponent('offline_access Mail.ReadWrite Mail.Send User.Read');
+    const redirect = encodeURIComponent(MS_REDIRECT);
+    const url = `https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/authorize?client_id=${MS_CLIENT_ID}&response_type=code&redirect_uri=${redirect}&response_mode=query&scope=${scope}&prompt=consent`;
+    window.location.href = url;
+  }
+  window.connectOutlook = connectOutlook;
+
+  async function loadInbox() {
+    const supa = await Sanctuarys.init();
+    const { data: creds } = await supa.from('outlook_credentials').select('id, email, active').eq('active', true).limit(1);
+    const connected = creds && creds.length > 0;
+    document.getElementById('inboxNotConnected').style.display = connected ? 'none' : 'block';
+    document.getElementById('inboxConnected').style.display = connected ? 'block' : 'none';
+    if (!connected) return;
+    await loadInboxMessages();
+  }
+
+  async function loadInboxMessages() {
+    const supa = await Sanctuarys.init();
+    const { data } = await supa
+      .from('outlook_messages')
+      .select('*')
+      .order('received_at', { ascending: false })
+      .limit(100);
+    INBOX_MESSAGES = data || [];
+    renderInboxList();
+    const unread = INBOX_MESSAGES.filter(m => !m.is_read).length;
+    document.getElementById('inboxUnreadCount').textContent = unread;
+    document.getElementById('inboxUnreadMeta').textContent = unread;
+  }
+
+  function renderInboxList() {
+    const list = document.getElementById('inboxMessagesList');
+    if (INBOX_MESSAGES.length === 0) {
+      list.innerHTML = '<div style="padding: 40px 22px; text-align: center; font-family: \'Cormorant Garamond\', serif; font-style: italic; color: var(--marron-soft); font-size: 14px;">Aucun message synchronisé. Clique "Synchroniser ✦".</div>';
+      return;
+    }
+    list.innerHTML = '';
+    INBOX_MESSAGES.forEach(m => {
+      const d = new Date(m.received_at);
+      const today = new Date();
+      const isToday = d.toDateString() === today.toDateString();
+      const timeLabel = isToday ? d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+      const initial = ((m.from_name || m.from_email || '?')[0] || '?').toUpperCase();
+      const row = document.createElement('div');
+      row.style.cssText = `padding: 14px 18px; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: background 0.2s; ${m.is_read ? 'opacity: 0.65;' : 'background: rgba(168, 85, 55, 0.04);'} ${INBOX_SELECTED?.id === m.id ? 'background: rgba(168, 85, 55, 0.10); border-left: 3px solid var(--terracotta);' : ''}`;
+      row.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--terracotta-pale), var(--or-pale)); display: flex; align-items: center; justify-content: center; color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 14px; flex-shrink: 0;">${initial}</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+              <span style="font-family: 'Italiana', serif; font-size: 14px; color: var(--marron-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(m.from_name || m.from_email)}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--marron-soft); flex-shrink: 0;">${timeLabel}</span>
+            </div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--marron-deep); margin-top: 2px; ${!m.is_read ? 'font-weight: 500;' : ''} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(m.subject || '(sans sujet)')}</div>
+            <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); margin-top: 2px; line-height: 1.4; max-height: 32px; overflow: hidden;">${escapeHTML((m.body_preview || '').substring(0, 80))}</div>
+            ${m.replied_at ? '<div style="margin-top: 4px; font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; color: var(--vert-succes); text-transform: uppercase;">↳ répondu</div>' : ''}
+          </div>
+        </div>
+      `;
+      row.addEventListener('click', () => openInboxMessage(m));
+      list.appendChild(row);
+    });
+  }
+
+  async function openInboxMessage(m) {
+    INBOX_SELECTED = m;
+    renderInboxList();
+    const pane = document.getElementById('inboxDetailPane');
+    const d = new Date(m.received_at);
+    pane.innerHTML = `
+      <div style="padding-bottom: 18px; border-bottom: 1px solid var(--line); margin-bottom: 22px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">${d.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+        <h2 style="font-family: 'Italiana', serif; font-size: 28px; font-weight: 400; color: var(--marron-deep); line-height: 1.2;">${escapeHTML(m.subject || '(sans sujet)')}</h2>
+        <div style="margin-top: 10px; font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--marron);">
+          <strong style="font-family: 'Italiana', serif; font-weight: normal;">${escapeHTML(m.from_name || '')}</strong> &lt;<a href="mailto:${escapeHTML(m.from_email)}" style="color: var(--terracotta-deep);">${escapeHTML(m.from_email)}</a>&gt;
+        </div>
+      </div>
+      <div style="font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.75; color: var(--marron-deep); max-height: 380px; overflow-y: auto;">
+        ${m.body_html || ('<p style="white-space: pre-wrap;">' + escapeHTML(m.body_text || m.body_preview || '') + '</p>')}
+      </div>
+      <div style="margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 12px;">Répondre</div>
+        <textarea id="replyContent" placeholder="Ta réponse..." rows="6" style="width: 100%; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.7; resize: vertical;"></textarea>
+        <div style="margin-top: 12px;">
+          <input id="replyIntention" placeholder="Ou décris en 1 phrase ce que tu veux dire et clique 'Ishtar rédige' ✦" style="width: 100%; padding: 11px 14px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px;">
+        </div>
+        <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-outline" onclick="ishtarDraftReply()" style="padding: 12px 22px; font-size: 10px;">Ishtar rédige ✦</button>
+          <button class="btn-primary" onclick="sendInboxReply()" style="padding: 12px 22px;">Envoyer la réponse</button>
+        </div>
+      </div>
+    `;
+    // Marque comme lu en local + serveur si pas déjà
+    if (!m.is_read) {
+      const supa = await Sanctuarys.init();
+      await supa.from('outlook_messages').update({ is_read: true }).eq('id', m.id);
+      m.is_read = true;
+      await loadInboxMessages();
+    }
+  }
+
+  async function syncOutlookNow() {
+    showToast('Synchronisation Outlook ✦');
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/outlook-sync', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Sync failed');
+      const total = (result.results || []).reduce((a, b) => a + (b.stored || 0), 0);
+      showToast(`${total} message${total !== 1 ? 's' : ''} synchronisé${total !== 1 ? 's' : ''} ✦`);
+      await loadInboxMessages();
+    } catch (err) {
+      showToast('Erreur sync : ' + err.message, 'error');
+    }
+  }
+  window.syncOutlookNow = syncOutlookNow;
+
+  async function ishtarDraftReply() {
+    if (!INBOX_SELECTED) return;
+    const intention = document.getElementById('replyIntention').value.trim();
+    if (!intention) {
+      showToast('Décris ton intention en 1 phrase d\'abord', 'error');
+      return;
+    }
+    showToast('Ishtar rédige ✦');
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/outlook-send-reply', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'draft', outlook_message_id: INBOX_SELECTED.outlook_id, intention })
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Échec rédaction');
+      document.getElementById('replyContent').value = result.draft;
+      showToast('Brouillon prêt ✦');
+    } catch (err) {
+      showToast('Erreur Ishtar : ' + err.message, 'error');
+    }
+  }
+  window.ishtarDraftReply = ishtarDraftReply;
+
+  async function sendInboxReply() {
+    if (!INBOX_SELECTED) return;
+    const content = document.getElementById('replyContent').value.trim();
+    if (!content) {
+      showToast('Le contenu est vide', 'error');
+      return;
+    }
+    if (!confirm('Envoyer la réponse à ' + INBOX_SELECTED.from_email + ' ?')) return;
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/outlook-send-reply', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'send', outlook_message_id: INBOX_SELECTED.outlook_id, content })
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Échec envoi');
+      showToast('Réponse envoyée ✦');
+      await loadInboxMessages();
+      const updated = INBOX_MESSAGES.find(m => m.id === INBOX_SELECTED.id);
+      if (updated) await openInboxMessage(updated);
+    } catch (err) {
+      showToast('Erreur envoi : ' + err.message, 'error');
+    }
+  }
+  window.sendInboxReply = sendInboxReply;
+
+  // Si URL ?panel=inbox, ouvre le panel inbox au chargement
+  if (new URLSearchParams(window.location.search).get('panel') === 'inbox') {
+    setTimeout(() => openPanel('inbox'), 500);
   }
 
   // ============ ISHTAR ASSISTANTE MANAGER ============
