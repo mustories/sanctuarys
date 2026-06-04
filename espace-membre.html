@@ -1249,6 +1249,31 @@ async function renderCycle() {
   }
 
   const start = new Date(cycleLogs[0].cycle_start);
+
+  // Apprentissage : calcule la longueur moyenne du cycle a partir de l'historique
+  const sortedLogs = [...cycleLogs].sort((a, b) => new Date(a.cycle_start) - new Date(b.cycle_start));
+  const gaps = [];
+  for (let i = 1; i < sortedLogs.length; i++) {
+    const prev = new Date(sortedLogs[i - 1].cycle_start);
+    const curr = new Date(sortedLogs[i].cycle_start);
+    const gap = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+    if (gap >= 18 && gap <= 60) gaps.push(gap);
+  }
+  let avgLength = 28;
+  let stdDev = 3;
+  let confidenceLevel = 'estimee'; // estimee | apprise
+  if (gaps.length >= 1) {
+    avgLength = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+    if (gaps.length >= 2) {
+      const mean = avgLength;
+      const variance = gaps.reduce((sum, g) => sum + (g - mean) ** 2, 0) / gaps.length;
+      stdDev = Math.max(2, Math.round(Math.sqrt(variance)));
+      confidenceLevel = 'apprise';
+    }
+  } else if (cycleLogs[0].cycle_length) {
+    avgLength = cycleLogs[0].cycle_length;
+  }
+
   const today = new Date();
   const day = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
   let phase = '', phaseClass = '';
@@ -1257,34 +1282,124 @@ async function renderCycle() {
   else if (day <= 16) { phase = 'phase d\'ovulation'; phaseClass = 'ovulation'; }
   else { phase = 'phase lutéale'; phaseClass = 'luteale'; }
 
+  // Prediction : date la plus probable + fourchette
+  const nextPeriod = new Date(start);
+  nextPeriod.setDate(start.getDate() + avgLength);
+  const nextEarliest = new Date(start);
+  nextEarliest.setDate(start.getDate() + avgLength - stdDev);
+  const nextLatest = new Date(start);
+  nextLatest.setDate(start.getDate() + avgLength + stdDev);
+  const daysUntilNext = Math.ceil((nextPeriod - today) / (1000 * 60 * 60 * 24));
+
   document.getElementById('cycleStatus').textContent = `J ${day} · ${phase}`;
   const phaseBadge = document.getElementById('cyclePhaseBadge');
   phaseBadge.textContent = phase;
   phaseBadge.style.display = 'inline-block';
 
+  const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  const confidenceTag = confidenceLevel === 'apprise'
+    ? `<span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--vert-succes); text-transform: uppercase; margin-left: 6px;">✦ Apprise sur ${cycleLogs.length} cycles</span>`
+    : `<span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-left: 6px;">Estimée à 28j</span>`;
+
+  let nextLabel;
+  if (daysUntilNext > stdDev) {
+    nextLabel = `Prochaines règles probables vers le <strong>${fmt(nextPeriod)}</strong><br><span style="font-size: 12px; color: var(--marron-soft);">Fenêtre attendue : du ${fmt(nextEarliest)} au ${fmt(nextLatest)}</span>`;
+  } else if (daysUntilNext >= -stdDev && daysUntilNext <= stdDev) {
+    nextLabel = `<strong>Tes règles sont attendues dans cette fenêtre</strong><br><span style="font-size: 12px; color: var(--marron-soft);">Du ${fmt(nextEarliest)} au ${fmt(nextLatest)}</span>`;
+  } else {
+    nextLabel = `Tes règles étaient prévues il y a ${Math.abs(daysUntilNext)} jours<br><span style="font-size: 12px; color: var(--marron-soft);">Si elles ne sont pas venues, marque la date de leur retour quand elles arrivent.</span>`;
+  }
+
   container.innerHTML = `
     <div class="cycle-current">
       <div class="cycle-day">J ${day}</div>
       <div class="cycle-phase">Tu es dans la ${phase}</div>
-      <div class="cycle-next">Cycle commencé le ${start.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</div>
+      <div class="cycle-next">
+        Cycle commencé le ${fmt(start)}<br>
+        <span style="color: var(--terracotta-deep); font-style: italic; font-size: 13px; display: inline-block; margin-top: 6px;">${nextLabel}</span>
+      </div>
+      <div style="margin-top: 14px; padding: 12px 16px; background: rgba(212, 160, 76, 0.08); border-left: 3px solid var(--or); text-align: left; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); line-height: 1.55;">
+        Durée moyenne de ton cycle : <strong style="font-style: normal; color: var(--marron-deep);">${avgLength} jours</strong>${confidenceTag}
+      </div>
     </div>
-    <button class="panel-btn" style="width: 100%; margin-top: 10px;" onclick="markCycleStart()">Marquer un nouveau cycle ✦</button>
+    <button class="panel-btn primary" style="width: 100%; margin-top: 16px;" onclick="openCycleModal()">Marquer un nouveau cycle ✦</button>
+    <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); text-align: center; margin-top: 10px;">Marque chaque mois la date où tes règles arrivent, le calcul s'affine tout seul.</p>
   `;
 }
 
-async function markCycleStart() {
-  const dateStr = prompt('Quel jour as-tu commencé tes règles ? (format AAAA-MM-JJ, ex 2026-06-01)', new Date().toISOString().split('T')[0]);
-  if (!dateStr) return;
-  const { error } = await SUPABASE_CLIENT
-    .from('cycle_logs')
-    .insert({ member_id: MEMBER.id, cycle_start: dateStr });
+function openCycleModal(prefillStart) {
+  const today = new Date().toISOString().split('T')[0];
+  const defaultStart = prefillStart || today;
+
+  const modal = document.createElement('div');
+  modal.id = 'cycleModal';
+  modal.style.cssText = 'position: fixed; inset: 0; background: rgba(42, 24, 16, 0.55); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px;';
+  modal.innerHTML = `
+    <div style="background: var(--blanc); max-width: 460px; width: 100%; padding: 36px 32px; border: 1px solid var(--line); position: relative;">
+      <button onclick="closeCycleModal()" style="position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--marron-soft);">×</button>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 10px;">✦ Mon cycle</div>
+      <h2 style="font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep); line-height: 1.1; margin-bottom: 8px; font-weight: normal;">Marquer un <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">cycle.</em></h2>
+      <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron); line-height: 1.6; margin-bottom: 22px;">Marque le <strong>premier jour</strong> où tes règles sont arrivées. Plus tu les marques mois après mois, plus la prédiction s'affine.</p>
+
+      <div style="margin-bottom: 22px;">
+        <label style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--marron-deep); text-transform: uppercase; margin-bottom: 8px;">Premier jour de ce cycle</label>
+        <input type="date" id="cycleStartInput" value="${defaultStart}" max="${today}" style="width: 100%; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);">
+      </div>
+
+      <div id="cycleNextPreview" style="background: rgba(212, 160, 76, 0.10); border-left: 3px solid var(--or); padding: 14px 18px; margin-bottom: 22px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.6;"></div>
+
+      <button id="saveCycleBtn" onclick="saveCycle()" style="width: 100%; padding: 14px; background: var(--terracotta); color: var(--blanc); border: none; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer;">Enregistrer ce cycle ✦</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  function updatePreview() {
+    const startStr = document.getElementById('cycleStartInput').value;
+    if (!startStr) {
+      document.getElementById('cycleNextPreview').textContent = 'Choisis une date pour voir la prédiction.';
+      return;
+    }
+    const s = new Date(startStr);
+    const next = new Date(s);
+    next.setDate(s.getDate() + 28);
+    document.getElementById('cycleNextPreview').innerHTML = `✦ Sur la base d'un cycle moyen de 28 jours, tes prochaines règles seraient probables vers le <strong>${next.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</strong>. La prédiction s'affinera à chaque cycle marqué.`;
+  }
+  document.getElementById('cycleStartInput').addEventListener('input', updatePreview);
+  updatePreview();
+}
+window.openCycleModal = openCycleModal;
+
+function closeCycleModal() {
+  const m = document.getElementById('cycleModal');
+  if (m) m.remove();
+}
+window.closeCycleModal = closeCycleModal;
+
+async function saveCycle() {
+  const startStr = document.getElementById('cycleStartInput').value;
+  const btn = document.getElementById('saveCycleBtn');
+  if (!startStr) {
+    showToast('Choisis le premier jour de tes règles', 'error');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement...';
+  const { error } = await SUPABASE_CLIENT.from('cycle_logs').insert({ member_id: MEMBER.id, cycle_start: startStr });
   if (error) {
-    showToast('Erreur : ' + error.message, 'error');
+    showToast('Erreur enregistrement : ' + error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Enregistrer ce cycle ✦';
   } else {
     showToast('Cycle enregistré ✦');
+    closeCycleModal();
     await renderCycle();
   }
 }
+window.saveCycle = saveCycle;
+
+// Compat ancien bouton si encore appele
+async function markCycleStart() { openCycleModal(); }
+window.markCycleStart = markCycleStart;
 
 // ===== SÉANCES =====
 async function renderSeances() {
