@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nouveau mot de passe · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<meta name="theme-color" content="#C8704D">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --or: #D4A04C;
+    --vert-succes: #6B8C4A;
+    --rouge-vif: #B22B2B;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.22), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.15), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.05; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .card {
+    max-width: 500px;
+    width: 100%;
+    background: var(--blanc);
+    padding: 58px 50px;
+    border: 1px solid var(--line);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .card::before {
+    content: '✦';
+    position: absolute;
+    top: -22px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--blanc);
+    padding: 0 18px;
+    font-size: 28px;
+    color: var(--terracotta-deep);
+  }
+  .logo { width: 120px; margin: 0 auto 28px; display: block; }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 5px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: 44px;
+    line-height: 1.05;
+    color: var(--marron-deep);
+    font-weight: 400;
+    margin-bottom: 18px;
+    letter-spacing: -0.5px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  p.intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--marron);
+    margin-bottom: 30px;
+  }
+  form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+  label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2.5px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 4px; display: block;
+  }
+  input[type=password] {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    background: var(--blanc-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--marron-deep);
+    transition: border-color 0.2s;
+  }
+  input[type=password]:focus { outline: none; border-color: var(--terracotta); }
+  .pw-hint {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--marron-soft);
+    margin-top: 4px;
+  }
+  button[type=submit] {
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: none;
+    padding: 16px 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button[type=submit]:hover:not(:disabled) { background: var(--terracotta-deep); }
+  button[type=submit]:disabled { opacity: 0.5; cursor: not-allowed; }
+  .status {
+    margin-top: 18px;
+    padding: 14px 18px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: left;
+    display: none;
+  }
+  .status.success { display: block; background: rgba(107, 140, 74, 0.10); border-left: 3px solid var(--vert-succes); }
+  .status.error { display: block; background: rgba(178, 43, 43, 0.08); border-left: 3px solid var(--rouge-vif); }
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--terracotta);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-link {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 14px 26px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <img class="logo" src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+  <div class="meta">Récupération d'accès</div>
+  <h1>Nouveau<br><em>mot de passe.</em></h1>
+  <p class="intro" id="intro">Choisis ton nouveau mot de passe. Il doit faire au moins 8 caractères.</p>
+
+  <form id="newPwForm">
+    <div>
+      <label>Nouveau mot de passe</label>
+      <input type="password" id="newPw" required minlength="8" placeholder="••••••••" autocomplete="new-password">
+      <div class="pw-hint">Minimum 8 caractères</div>
+    </div>
+    <div>
+      <label>Confirmation</label>
+      <input type="password" id="confirmPw" required minlength="8" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <button type="submit" id="submitBtn">Enregistrer mon mot de passe ✦</button>
+  </form>
+
+  <div class="status" id="statusMsg"></div>
+
+  <div id="successView" style="display: none; margin-top: 24px;">
+    <a href="/espace-membre" class="btn-link">Entrer dans le Temple ✦</a>
+  </div>
+</div>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+const FORM = document.getElementById('newPwForm');
+const BTN = document.getElementById('submitBtn');
+const STATUS = document.getElementById('statusMsg');
+const INTRO = document.getElementById('intro');
+const SUCCESS_VIEW = document.getElementById('successView');
+
+let HAS_VALID_SESSION = false;
+
+// Vérifie qu'on arrive bien depuis un lien de reset (token dans URL)
+(async () => {
+  try {
+    const supa = await Sanctuarys.init();
+    // Le SDK Supabase auto-récupère le token depuis le hash (#access_token=...)
+    await new Promise(r => setTimeout(r, 500));
+    const { data } = await supa.auth.getSession();
+    if (data?.session) {
+      HAS_VALID_SESSION = true;
+    } else {
+      // Pas de session = lien expiré ou ouverture directe sans email
+      INTRO.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep);">Lien expiré ou invalide</strong><br><br>Cette page ne peut être ouverte qu\'après avoir cliqué sur le lien de récupération reçu par email. Demande-en un nouveau depuis le <a href="/portail-club" style="color: var(--terracotta-deep);">portail Fondatrice</a>.';
+      FORM.style.display = 'none';
+    }
+  } catch (err) {
+    INTRO.textContent = 'Erreur d\'initialisation : ' + err.message;
+    FORM.style.display = 'none';
+  }
+})();
+
+FORM.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!HAS_VALID_SESSION) {
+    STATUS.className = 'status error';
+    STATUS.textContent = 'Session expirée. Demande un nouveau lien.';
+    return;
+  }
+  const pw1 = document.getElementById('newPw').value;
+  const pw2 = document.getElementById('confirmPw').value;
+
+  if (pw1.length < 8) {
+    STATUS.className = 'status error';
+    STATUS.textContent = 'Ton mot de passe doit faire au moins 8 caractères.';
+    return;
+  }
+  if (pw1 !== pw2) {
+    STATUS.className = 'status error';
+    STATUS.textContent = 'Les deux mots de passe ne correspondent pas.';
+    return;
+  }
+
+  BTN.disabled = true;
+  BTN.innerHTML = '<span class="spinner"></span>Enregistrement...';
+  STATUS.className = 'status';
+
+  try {
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.auth.updateUser({ password: pw1 });
+
+    if (error) {
+      STATUS.className = 'status error';
+      STATUS.textContent = 'Erreur : ' + error.message;
+      BTN.disabled = false;
+      BTN.textContent = 'Enregistrer mon mot de passe ✦';
+      return;
+    }
+
+    STATUS.className = 'status success';
+    STATUS.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep); display: block; margin-bottom: 6px;">✦ Mot de passe enregistré</strong>Tu peux maintenant entrer dans ton espace privé en t\'identifiant avec ton email et ce nouveau mot de passe.';
+    FORM.style.display = 'none';
+    SUCCESS_VIEW.style.display = 'block';
+  } catch (err) {
+    STATUS.className = 'status error';
+    STATUS.textContent = 'Erreur technique : ' + (err.message || 'inconnue');
+    BTN.disabled = false;
+    BTN.textContent = 'Enregistrer mon mot de passe ✦';
+  }
+});
+</script>
+
+</body>
+</html>

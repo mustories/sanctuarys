@@ -887,6 +887,7 @@
   </nav>
   <div class="header-right">
     <div class="avatar" id="memberAvatar">·</div>
+    <button class="logout-btn" onclick="openAccountModal()">Mon compte</button>
     <button class="logout-btn" onclick="logout()">Sortir</button>
   </div>
 </header>
@@ -1087,6 +1088,36 @@
     <div id="pointForm"></div>
 
     <button class="btn-full" id="savePointBtn" style="margin-top: 22px;" onclick="savePoint()">Déposer ✦</button>
+  </div>
+</div>
+
+<!-- ============== ACCOUNT MODAL ============== -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal" style="max-width: 540px;">
+    <button class="modal-close" onclick="closeAccountModal()">×</button>
+    <div class="modal-meta">Mon compte ✦</div>
+    <h2>Mes <em>informations.</em></h2>
+
+    <div style="margin-top: 22px;">
+      <label class="ps-label">Email de connexion</label>
+      <input type="email" id="acctEmail" class="ps-input" readonly style="background: var(--blanc-deep);">
+      <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); margin-top: 4px;">Pour changer ton email, écris à info@sanctuarys.me.</div>
+    </div>
+
+    <div style="margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line);">
+      <div style="font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep); margin-bottom: 14px;">Changer mon <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">mot de passe.</em></div>
+      <div style="margin-bottom: 12px;">
+        <label class="ps-label">Nouveau mot de passe</label>
+        <input type="password" id="acctNewPw" class="ps-input" minlength="8" placeholder="••••••••">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label class="ps-label">Confirmation</label>
+        <input type="password" id="acctConfirmPw" class="ps-input" minlength="8" placeholder="••••••••">
+      </div>
+      <button class="btn-full" onclick="changePassword()" id="changePwBtn">Mettre à jour mon mot de passe ✦</button>
+    </div>
+
+    <div id="acctStatus" style="margin-top: 18px; padding: 14px 18px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; line-height: 1.6; display: none;"></div>
   </div>
 </div>
 
@@ -1980,6 +2011,79 @@ function escapeHtml(s) {
   if (s == null) return '';
   return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[c]));
 }
+
+// ===== ACCOUNT (compte / mot de passe) =====
+function openAccountModal() {
+  document.getElementById('acctEmail').value = MEMBER?.email || '';
+  document.getElementById('acctNewPw').value = '';
+  document.getElementById('acctConfirmPw').value = '';
+  document.getElementById('acctStatus').style.display = 'none';
+  document.getElementById('accountModal').classList.add('show');
+}
+window.openAccountModal = openAccountModal;
+
+function closeAccountModal() {
+  document.getElementById('accountModal').classList.remove('show');
+}
+window.closeAccountModal = closeAccountModal;
+
+async function changePassword() {
+  const pw1 = document.getElementById('acctNewPw').value;
+  const pw2 = document.getElementById('acctConfirmPw').value;
+  const status = document.getElementById('acctStatus');
+  const btn = document.getElementById('changePwBtn');
+
+  status.style.display = 'none';
+
+  if (pw1.length < 8) {
+    status.style.display = 'block';
+    status.style.background = 'rgba(178, 43, 43, 0.08)';
+    status.style.borderLeft = '3px solid var(--rouge-vif)';
+    status.style.color = 'var(--marron-deep)';
+    status.textContent = 'Le mot de passe doit faire au moins 8 caractères.';
+    return;
+  }
+  if (pw1 !== pw2) {
+    status.style.display = 'block';
+    status.style.background = 'rgba(178, 43, 43, 0.08)';
+    status.style.borderLeft = '3px solid var(--rouge-vif)';
+    status.style.color = 'var(--marron-deep)';
+    status.textContent = 'Les deux mots de passe ne correspondent pas.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Mise à jour en cours...';
+
+  try {
+    const { error } = await SUPABASE_CLIENT.auth.updateUser({ password: pw1 });
+    if (error) throw error;
+
+    status.style.display = 'block';
+    status.style.background = 'rgba(107, 140, 74, 0.10)';
+    status.style.borderLeft = '3px solid var(--vert-doux)';
+    status.style.color = 'var(--marron-deep)';
+    status.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep); display: block; margin-bottom: 4px;">✦ Mot de passe mis à jour</strong>Tu pourras te reconnecter avec ce nouveau mot de passe à ton prochain accès.';
+    document.getElementById('acctNewPw').value = '';
+    document.getElementById('acctConfirmPw').value = '';
+    showToast('Mot de passe enregistré ✦');
+  } catch (err) {
+    status.style.display = 'block';
+    status.style.background = 'rgba(178, 43, 43, 0.08)';
+    status.style.borderLeft = '3px solid var(--rouge-vif)';
+    status.style.color = 'var(--marron-deep)';
+    status.textContent = 'Erreur : ' + (err.message || 'mise à jour impossible');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Mettre à jour mon mot de passe ✦';
+  }
+}
+window.changePassword = changePassword;
+
+// Ferme le modal en cliquant en dehors
+document.getElementById('accountModal')?.addEventListener('click', e => {
+  if (e.target.id === 'accountModal') closeAccountModal();
+});
 
 async function logout() {
   await SUPABASE_CLIENT.auth.signOut();

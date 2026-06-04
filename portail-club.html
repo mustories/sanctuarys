@@ -46,10 +46,10 @@
     background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   .card {
-    max-width: 540px;
+    max-width: 520px;
     width: 100%;
     background: var(--blanc);
-    padding: 60px 50px;
+    padding: 58px 50px;
     border: 1px solid var(--line);
     text-align: center;
     position: relative;
@@ -65,26 +65,21 @@
     font-size: 28px;
     color: var(--terracotta-deep);
   }
-  .logo {
-    width: 130px;
-    margin: 0 auto 30px;
-    display: block;
-  }
+  .logo { width: 130px; margin: 0 auto 28px; display: block; }
   .meta {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 5px;
+    font-size: 10px; letter-spacing: 5px;
     color: var(--terracotta-deep);
     text-transform: uppercase;
     margin-bottom: 20px;
   }
   h1 {
     font-family: 'Italiana', serif;
-    font-size: 54px;
+    font-size: 50px;
     line-height: 1.05;
     color: var(--marron-deep);
     font-weight: 400;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     letter-spacing: -0.5px;
   }
   h1 em {
@@ -95,38 +90,37 @@
   p.intro {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 17px;
-    line-height: 1.75;
+    font-size: 16px;
+    line-height: 1.7;
     color: var(--marron);
-    margin-bottom: 36px;
+    margin-bottom: 32px;
   }
-  form { display: flex; flex-direction: column; gap: 14px; }
+  form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
   label {
-    text-align: left;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2.5px;
+    font-size: 9px; letter-spacing: 2.5px;
     color: var(--marron-soft);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 4px; display: block;
   }
-  input[type=email] {
+  input[type=email], input[type=password] {
     width: 100%;
-    padding: 16px 18px;
+    padding: 14px 16px;
     border: 1px solid var(--line);
     background: var(--blanc-deep);
     font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--marron-deep);
-    text-align: center;
     transition: border-color 0.2s;
   }
-  input[type=email]:focus { outline: none; border-color: var(--terracotta); }
+  input[type=email]:focus, input[type=password]:focus {
+    outline: none; border-color: var(--terracotta);
+  }
   button[type=submit] {
     background: var(--terracotta);
     color: var(--blanc);
     border: none;
-    padding: 18px 32px;
+    padding: 16px 28px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     letter-spacing: 4px;
@@ -136,9 +130,22 @@
   }
   button[type=submit]:hover:not(:disabled) { background: var(--terracotta-deep); }
   button[type=submit]:disabled { opacity: 0.5; cursor: not-allowed; }
+  .forgot-row {
+    margin-top: 14px;
+    text-align: right;
+  }
+  .forgot-row a {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--terracotta-deep);
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 1px solid currentColor;
+  }
   .alt-row {
-    margin-top: 30px;
-    padding-top: 26px;
+    margin-top: 28px;
+    padding-top: 24px;
     border-top: 1px solid var(--line);
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
@@ -152,17 +159,18 @@
     border-bottom: 1px solid currentColor;
   }
   .status {
-    margin-top: 22px;
-    padding: 16px 22px;
+    margin-top: 18px;
+    padding: 14px 18px;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.6;
     text-align: left;
     display: none;
   }
   .status.success { display: block; background: rgba(107, 140, 74, 0.10); border-left: 3px solid var(--vert-succes); color: var(--marron-deep); }
   .status.error { display: block; background: rgba(178, 43, 43, 0.08); border-left: 3px solid var(--rouge-vif); color: var(--marron-deep); }
+  .status.info { display: block; background: rgba(212, 160, 76, 0.10); border-left: 3px solid var(--or); color: var(--marron-deep); }
   .spinner {
     display: inline-block;
     width: 14px; height: 14px;
@@ -175,38 +183,76 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .back-link {
-    margin-top: 30px;
+    margin-top: 24px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
+    font-size: 10px; letter-spacing: 3px;
     color: var(--marron-soft);
     text-transform: uppercase;
     text-decoration: none;
     display: inline-block;
   }
   .back-link:hover { color: var(--terracotta-deep); }
+  .toggle-view {
+    display: none;
+  }
+  .toggle-view.active {
+    display: block;
+  }
 </style>
 </head>
 <body>
 
 <div class="card">
   <img class="logo" src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys">
-  <div class="meta">Yoni Social Club</div>
-  <h1>Portail<br><em>Fondatrice.</em></h1>
-  <p class="intro">Tu es Fondatrice du Club. Entre ton email, nous t'envoyons un lien magique pour ouvrir ton espace privé. Pas de mot de passe à retenir.</p>
 
-  <form id="loginForm">
-    <div>
-      <label>Ton email Fondatrice</label>
-      <input type="email" id="emailInput" required placeholder="ton@email.com" autocomplete="email">
+  <!-- VUE 1 : LOGIN -->
+  <div class="toggle-view active" id="viewLogin">
+    <div class="meta">Yoni Social Club</div>
+    <h1>Portail<br><em>Fondatrice.</em></h1>
+    <p class="intro">Entre tes identifiants pour ouvrir ton espace privé.</p>
+
+    <form id="loginForm">
+      <div>
+        <label>Email</label>
+        <input type="email" id="loginEmail" required placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <div>
+        <label>Mot de passe</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" id="loginBtn">Entrer dans le Temple ✦</button>
+    </form>
+
+    <div class="forgot-row">
+      <a onclick="showView('reset')">Mot de passe oublié ?</a>
     </div>
-    <button type="submit" id="submitBtn">Recevoir mon lien d'accès ✦</button>
-  </form>
 
-  <div class="status" id="statusMsg"></div>
+    <div class="status" id="loginStatus"></div>
 
-  <div class="alt-row">
-    Tu n'es pas encore Fondatrice ?<br><a href="/club">Découvrir le Pass Fondatrice</a>
+    <div class="alt-row">
+      Tu n'es pas encore Fondatrice ?<br><a href="/club">Découvrir le Pass Fondatrice</a>
+    </div>
+  </div>
+
+  <!-- VUE 2 : RESET PASSWORD -->
+  <div class="toggle-view" id="viewReset">
+    <div class="meta">Récupérer l'accès</div>
+    <h1>Nouveau<br><em>mot de passe.</em></h1>
+    <p class="intro">Entre ton email Fondatrice, nous t'envoyons un lien pour choisir un nouveau mot de passe.</p>
+
+    <form id="resetForm">
+      <div>
+        <label>Ton email Fondatrice</label>
+        <input type="email" id="resetEmail" required placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <button type="submit" id="resetBtn">Recevoir le lien de récupération ✦</button>
+    </form>
+
+    <div class="status" id="resetStatus"></div>
+
+    <div class="forgot-row" style="text-align: center; margin-top: 22px;">
+      <a onclick="showView('login')">← Retour à la connexion</a>
+    </div>
   </div>
 
   <a href="/index.html" class="back-link">← Retour à l'accueil</a>
@@ -214,12 +260,14 @@
 
 <script src="/js/sanctuarys.js"></script>
 <script>
-const FORM = document.getElementById('loginForm');
-const BTN = document.getElementById('submitBtn');
-const STATUS = document.getElementById('statusMsg');
-const EMAIL_INPUT = document.getElementById('emailInput');
+function showView(view) {
+  document.querySelectorAll('.toggle-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
+  document.querySelectorAll('.status').forEach(s => { s.className = 'status'; s.textContent = ''; });
+}
+window.showView = showView;
 
-// Si déjà connectée, redirection vers /espace-membre
+// Si déjà connectée, redirection
 (async () => {
   try {
     const supa = await Sanctuarys.init();
@@ -230,50 +278,99 @@ const EMAIL_INPUT = document.getElementById('emailInput');
   } catch (err) { /* ignore */ }
 })();
 
-FORM.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = EMAIL_INPUT.value.trim().toLowerCase();
-  if (!email) return;
+// ===== LOGIN =====
+const LOGIN_FORM = document.getElementById('loginForm');
+const LOGIN_BTN = document.getElementById('loginBtn');
+const LOGIN_STATUS = document.getElementById('loginStatus');
 
-  BTN.disabled = true;
-  BTN.innerHTML = '<span class="spinner"></span>Envoi...';
-  STATUS.className = 'status';
-  STATUS.textContent = '';
+LOGIN_FORM.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) return;
+
+  LOGIN_BTN.disabled = true;
+  LOGIN_BTN.innerHTML = '<span class="spinner"></span>Connexion...';
+  LOGIN_STATUS.className = 'status';
+  LOGIN_STATUS.textContent = '';
 
   try {
     const supa = await Sanctuarys.init();
-    const { error } = await supa.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: 'https://sanctuarys.me/espace-membre',
-        shouldCreateUser: false
-      }
-    });
+    const { data, error } = await supa.auth.signInWithPassword({ email, password });
 
     if (error) {
-      // shouldCreateUser=false renvoie une erreur si l'email n'existe pas
-      if (error.message?.toLowerCase().includes('not found') || error.message?.toLowerCase().includes('signups not allowed')) {
-        STATUS.className = 'status error';
-        STATUS.innerHTML = 'Cet email n\'est pas reconnu comme Fondatrice. Vérifie l\'orthographe ou découvre <a href="/club">comment devenir Fondatrice</a>.';
+      const msg = error.message?.toLowerCase() || '';
+      if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
+        LOGIN_STATUS.className = 'status error';
+        LOGIN_STATUS.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep);">Email ou mot de passe incorrect</strong><br>Si c\'est ta première connexion ou si tu as oublié ton mot de passe, clique sur <a onclick="showView(\'reset\')" style="color: var(--terracotta-deep); cursor: pointer; border-bottom: 1px solid currentColor;">"Mot de passe oublié"</a>.';
+      } else if (msg.includes('email not confirmed')) {
+        LOGIN_STATUS.className = 'status info';
+        LOGIN_STATUS.innerHTML = 'Ton compte existe mais ton email n\'a pas été confirmé. <a onclick="showView(\'reset\')" style="color: var(--terracotta-deep); cursor: pointer; border-bottom: 1px solid currentColor;">Demande un lien de récupération</a> pour activer ton accès.';
       } else {
-        STATUS.className = 'status error';
-        STATUS.textContent = 'Une erreur est survenue : ' + error.message;
+        LOGIN_STATUS.className = 'status error';
+        LOGIN_STATUS.textContent = 'Erreur : ' + error.message;
       }
-      BTN.disabled = false;
-      BTN.textContent = 'Recevoir mon lien d\'accès ✦';
+      LOGIN_BTN.disabled = false;
+      LOGIN_BTN.textContent = 'Entrer dans le Temple ✦';
       return;
     }
 
-    STATUS.className = 'status success';
-    STATUS.innerHTML = '<strong style="font-family: \'Italiana\', serif; font-weight: normal; font-style: normal; color: var(--marron-deep); font-size: 16px; display: block; margin-bottom: 6px;">✦ Lien envoyé</strong>Va vérifier ta boîte ' + email + '. Tu y trouveras un lien à cliquer pour entrer directement dans ton espace.<br><br><em>Si tu ne le vois pas, regarde dans tes spams. Le lien expire dans 1 heure.</em>';
-    BTN.disabled = false;
-    BTN.textContent = 'Renvoyer un lien ✦';
-    EMAIL_INPUT.blur();
+    // Vérifie que c'est bien une Fondatrice (role membre)
+    if (data?.user?.id) {
+      const { data: profile } = await supa.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+      if (profile && profile.role === 'admin') {
+        window.location.replace('/admin');
+        return;
+      }
+    }
+
+    window.location.replace('/espace-membre');
   } catch (err) {
-    STATUS.className = 'status error';
-    STATUS.textContent = 'Erreur technique : ' + (err.message || 'inconnue');
-    BTN.disabled = false;
-    BTN.textContent = 'Recevoir mon lien d\'accès ✦';
+    LOGIN_STATUS.className = 'status error';
+    LOGIN_STATUS.textContent = 'Erreur technique : ' + (err.message || 'inconnue');
+    LOGIN_BTN.disabled = false;
+    LOGIN_BTN.textContent = 'Entrer dans le Temple ✦';
+  }
+});
+
+// ===== RESET PASSWORD =====
+const RESET_FORM = document.getElementById('resetForm');
+const RESET_BTN = document.getElementById('resetBtn');
+const RESET_STATUS = document.getElementById('resetStatus');
+
+RESET_FORM.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+  if (!email) return;
+
+  RESET_BTN.disabled = true;
+  RESET_BTN.innerHTML = '<span class="spinner"></span>Envoi...';
+  RESET_STATUS.className = 'status';
+  RESET_STATUS.textContent = '';
+
+  try {
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://sanctuarys.me/nouveau-mot-de-passe'
+    });
+
+    if (error) {
+      RESET_STATUS.className = 'status error';
+      RESET_STATUS.textContent = 'Erreur : ' + error.message;
+      RESET_BTN.disabled = false;
+      RESET_BTN.textContent = 'Recevoir le lien de récupération ✦';
+      return;
+    }
+
+    RESET_STATUS.className = 'status success';
+    RESET_STATUS.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep); display: block; margin-bottom: 6px;">✦ Lien envoyé</strong>Si cet email est enregistré comme Fondatrice, tu vas recevoir dans la minute un message avec un lien pour choisir un nouveau mot de passe. Vérifie aussi tes spams.';
+    RESET_BTN.disabled = false;
+    RESET_BTN.textContent = 'Renvoyer un lien ✦';
+  } catch (err) {
+    RESET_STATUS.className = 'status error';
+    RESET_STATUS.textContent = 'Erreur technique : ' + (err.message || 'inconnue');
+    RESET_BTN.disabled = false;
+    RESET_BTN.textContent = 'Recevoir le lien de récupération ✦';
   }
 });
 </script>
