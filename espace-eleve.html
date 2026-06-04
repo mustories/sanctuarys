@@ -2618,17 +2618,35 @@
     }, 600);
   }
 
-  // Save button (mark as submitted)
+  // Save button (mark as submitted + advance to next day)
   const saveBtn = document.getElementById('saveJournal');
   if (saveBtn) {
     saveBtn.addEventListener('click', async () => {
       autoSaveJournal();
       await new Promise(r => setTimeout(r, 700));
-      if (CURRENT_ENTRY?.id) {
-        await Sanctuarys.submitJournalEntry(CURRENT_ENTRY.id);
-        showToast(`Journal du jour ${PROFILE.current_day} envoyé à Princesse ✦`);
-      } else {
+      if (!CURRENT_ENTRY?.id) {
         showToast('Écris quelque chose avant d\'envoyer');
+        return;
+      }
+      await Sanctuarys.submitJournalEntry(CURRENT_ENTRY.id);
+      const submittedDay = PROFILE.current_day;
+
+      // Avance automatiquement au jour suivant (cap à 14)
+      if (PROFILE.current_day < 14) {
+        const newDay = PROFILE.current_day + 1;
+        try {
+          const supa = await Sanctuarys.init();
+          await supa.from('profiles').update({ current_day: newDay }).eq('id', PROFILE.id);
+          PROFILE.current_day = newDay;
+          CURRENT_ENTRY = null;
+          await loadJournalForToday();
+          await loadCalendar();
+          showToast(`Jour ${submittedDay} envoyé à Princesse ✦ Jour ${newDay} ouvert`);
+        } catch (err) {
+          showToast(`Jour ${submittedDay} envoyé ✦ Erreur passage jour suivant : ` + err.message);
+        }
+      } else {
+        showToast(`Jour 14 envoyé ✦ Module 02 complété`);
       }
     });
   }

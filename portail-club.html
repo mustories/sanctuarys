@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Fondatrice · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Portail Fondatrice du Yoni Social Club. Entre dans ton espace privé Sanctuarys.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --or: #D4A04C;
+    --vert-succes: #6B8C4A;
+    --rouge-vif: #B22B2B;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.22), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.15), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.05; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .card {
+    max-width: 540px;
+    width: 100%;
+    background: var(--blanc);
+    padding: 60px 50px;
+    border: 1px solid var(--line);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .card::before {
+    content: '✦';
+    position: absolute;
+    top: -22px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--blanc);
+    padding: 0 18px;
+    font-size: 28px;
+    color: var(--terracotta-deep);
+  }
+  .logo {
+    width: 130px;
+    margin: 0 auto 30px;
+    display: block;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif;
+    font-size: 54px;
+    line-height: 1.05;
+    color: var(--marron-deep);
+    font-weight: 400;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+  }
+  h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  p.intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--marron);
+    margin-bottom: 36px;
+  }
+  form { display: flex; flex-direction: column; gap: 14px; }
+  label {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  input[type=email] {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    background: var(--blanc-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--marron-deep);
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  input[type=email]:focus { outline: none; border-color: var(--terracotta); }
+  button[type=submit] {
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: none;
+    padding: 18px 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  button[type=submit]:hover:not(:disabled) { background: var(--terracotta-deep); }
+  button[type=submit]:disabled { opacity: 0.5; cursor: not-allowed; }
+  .alt-row {
+    margin-top: 30px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--marron-soft);
+    line-height: 1.7;
+  }
+  .alt-row a {
+    color: var(--terracotta-deep);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+  .status {
+    margin-top: 22px;
+    padding: 16px 22px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.6;
+    text-align: left;
+    display: none;
+  }
+  .status.success { display: block; background: rgba(107, 140, 74, 0.10); border-left: 3px solid var(--vert-succes); color: var(--marron-deep); }
+  .status.error { display: block; background: rgba(178, 43, 43, 0.08); border-left: 3px solid var(--rouge-vif); color: var(--marron-deep); }
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--terracotta);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .back-link {
+    margin-top: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .back-link:hover { color: var(--terracotta-deep); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <img class="logo" src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+  <div class="meta">Yoni Social Club</div>
+  <h1>Portail<br><em>Fondatrice.</em></h1>
+  <p class="intro">Tu es Fondatrice du Club. Entre ton email, nous t'envoyons un lien magique pour ouvrir ton espace privé. Pas de mot de passe à retenir.</p>
+
+  <form id="loginForm">
+    <div>
+      <label>Ton email Fondatrice</label>
+      <input type="email" id="emailInput" required placeholder="ton@email.com" autocomplete="email">
+    </div>
+    <button type="submit" id="submitBtn">Recevoir mon lien d'accès ✦</button>
+  </form>
+
+  <div class="status" id="statusMsg"></div>
+
+  <div class="alt-row">
+    Tu n'es pas encore Fondatrice ?<br><a href="/club">Découvrir le Pass Fondatrice</a>
+  </div>
+
+  <a href="/index.html" class="back-link">← Retour à l'accueil</a>
+</div>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+const FORM = document.getElementById('loginForm');
+const BTN = document.getElementById('submitBtn');
+const STATUS = document.getElementById('statusMsg');
+const EMAIL_INPUT = document.getElementById('emailInput');
+
+// Si déjà connectée, redirection vers /espace-membre
+(async () => {
+  try {
+    const supa = await Sanctuarys.init();
+    const { data } = await supa.auth.getSession();
+    if (data?.session) {
+      window.location.replace('/espace-membre');
+    }
+  } catch (err) { /* ignore */ }
+})();
+
+FORM.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = EMAIL_INPUT.value.trim().toLowerCase();
+  if (!email) return;
+
+  BTN.disabled = true;
+  BTN.innerHTML = '<span class="spinner"></span>Envoi...';
+  STATUS.className = 'status';
+  STATUS.textContent = '';
+
+  try {
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: 'https://sanctuarys.me/espace-membre',
+        shouldCreateUser: false
+      }
+    });
+
+    if (error) {
+      // shouldCreateUser=false renvoie une erreur si l'email n'existe pas
+      if (error.message?.toLowerCase().includes('not found') || error.message?.toLowerCase().includes('signups not allowed')) {
+        STATUS.className = 'status error';
+        STATUS.innerHTML = 'Cet email n\'est pas reconnu comme Fondatrice. Vérifie l\'orthographe ou découvre <a href="/club">comment devenir Fondatrice</a>.';
+      } else {
+        STATUS.className = 'status error';
+        STATUS.textContent = 'Une erreur est survenue : ' + error.message;
+      }
+      BTN.disabled = false;
+      BTN.textContent = 'Recevoir mon lien d\'accès ✦';
+      return;
+    }
+
+    STATUS.className = 'status success';
+    STATUS.innerHTML = '<strong style="font-family: \'Italiana\', serif; font-weight: normal; font-style: normal; color: var(--marron-deep); font-size: 16px; display: block; margin-bottom: 6px;">✦ Lien envoyé</strong>Va vérifier ta boîte ' + email + '. Tu y trouveras un lien à cliquer pour entrer directement dans ton espace.<br><br><em>Si tu ne le vois pas, regarde dans tes spams. Le lien expire dans 1 heure.</em>';
+    BTN.disabled = false;
+    BTN.textContent = 'Renvoyer un lien ✦';
+    EMAIL_INPUT.blur();
+  } catch (err) {
+    STATUS.className = 'status error';
+    STATUS.textContent = 'Erreur technique : ' + (err.message || 'inconnue');
+    BTN.disabled = false;
+    BTN.textContent = 'Recevoir mon lien d\'accès ✦';
+  }
+});
+</script>
+
+</body>
+</html>
