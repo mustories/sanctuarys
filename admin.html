@@ -1846,7 +1846,9 @@
         </div>
         <div class="panel-meta">
           <div class="meta-row"><strong>Non lus</strong><span id="inboxUnreadMeta">0</span></div>
+          <div class="meta-row" id="inboxConnectedAs" style="display: none; font-size: 11px;"><strong>Compte</strong><span id="inboxConnectedEmail" style="font-family: 'Cormorant Garamond', serif; font-style: italic;"></span></div>
           <button class="btn-outline" onclick="syncOutlookNow()" style="padding: 10px 16px; font-size: 10px; margin-top: 10px;">Synchroniser ✦</button>
+          <button class="btn-outline" id="disconnectOutlookBtn" onclick="disconnectOutlook()" style="padding: 10px 16px; font-size: 10px; margin-top: 6px; display: none; border-color: var(--marron-soft); color: var(--marron-soft);">Déconnecter Outlook</button>
         </div>
       </div>
 
@@ -2800,9 +2802,38 @@
     const connected = creds && creds.length > 0;
     document.getElementById('inboxNotConnected').style.display = connected ? 'none' : 'block';
     document.getElementById('inboxConnected').style.display = connected ? 'block' : 'none';
-    if (!connected) return;
+    if (connected) {
+      const c = creds[0];
+      document.getElementById('inboxConnectedAs').style.display = 'flex';
+      document.getElementById('inboxConnectedEmail').textContent = c.email || '?';
+      document.getElementById('disconnectOutlookBtn').style.display = 'inline-flex';
+      window.OUTLOOK_CRED_ID = c.id;
+    } else {
+      document.getElementById('inboxConnectedAs').style.display = 'none';
+      document.getElementById('disconnectOutlookBtn').style.display = 'none';
+      window.OUTLOOK_CRED_ID = null;
+      return;
+    }
     await loadInboxMessages();
   }
+
+  async function disconnectOutlook() {
+    if (!window.OUTLOOK_CRED_ID) {
+      showToast('Aucun compte à déconnecter', 'error');
+      return;
+    }
+    const confirmed = confirm('Déconnecter le compte Outlook actuellement lié ? Tu pourras te reconnecter avec un autre compte juste après.');
+    if (!confirmed) return;
+    const supa = await Sanctuarys.init();
+    const { error } = await supa.from('outlook_credentials').update({ active: false }).eq('id', window.OUTLOOK_CRED_ID);
+    if (error) {
+      showToast('Erreur déconnexion : ' + error.message, 'error');
+      return;
+    }
+    showToast('Outlook déconnecté ✦ Tu peux maintenant reconnecter');
+    await loadInbox();
+  }
+  window.disconnectOutlook = disconnectOutlook;
 
   async function loadInboxMessages() {
     const supa = await Sanctuarys.init();

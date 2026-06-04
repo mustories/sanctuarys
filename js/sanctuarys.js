@@ -9,8 +9,27 @@
 const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t';
 
-// Import Supabase depuis le CDN ESM
-const supabasePromise = import('https://esm.sh/@supabase/supabase-js@2').then(({ createClient }) => {
+// Import Supabase depuis le CDN ESM avec fallback (esm.sh peut etre lent/down)
+async function loadSupabaseModule() {
+  const cdns = [
+    'https://esm.sh/@supabase/supabase-js@2.45.0',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm',
+    'https://esm.run/@supabase/supabase-js@2.45.0'
+  ];
+  let lastErr = null;
+  for (const url of cdns) {
+    try {
+      const mod = await import(url);
+      if (mod.createClient) return mod;
+    } catch (err) {
+      lastErr = err;
+      console.warn('CDN failed, trying next:', url, err?.message);
+    }
+  }
+  throw lastErr || new Error('Aucun CDN Supabase disponible');
+}
+
+const supabasePromise = loadSupabaseModule().then(({ createClient }) => {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true }
   });
