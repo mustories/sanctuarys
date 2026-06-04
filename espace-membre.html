@@ -1020,8 +1020,8 @@
       </div>
     </div>
     <div id="journalContent"></div>
-    <textarea class="journal-textarea" id="journalNewEntry" placeholder="Ce que tu déposes ici aujourd'hui..." style="margin-top: 14px;"></textarea>
-    <button class="panel-btn primary" style="width: 100%; margin-top: 10px;" onclick="addJournalEntry()">Déposer cette entrée ✦</button>
+    <textarea class="journal-textarea" id="journalNewEntry" placeholder="Ce que tu déposes ici aujourd'hui..." style="margin-top: 14px;" maxlength="5000"></textarea>
+    <button id="journalSubmitBtn" class="panel-btn primary" style="width: 100%; margin-top: 10px;" onclick="addJournalEntry()">Déposer cette entrée ✦</button>
   </div>
 
   <!-- Panel 5: Événements -->
@@ -1232,7 +1232,7 @@ async function renderCycle() {
     .from('cycle_logs')
     .select('*')
     .eq('member_id', MEMBER.id)
-    .order('cycle_start', { ascending: false })
+    .order('period_start_date', { ascending: false })
     .limit(1);
 
   const container = document.getElementById('cycleContent');
@@ -1248,14 +1248,14 @@ async function renderCycle() {
     return;
   }
 
-  const start = new Date(cycleLogs[0].cycle_start);
+  const start = new Date(cycleLogs[0].period_start_date);
 
   // Apprentissage : calcule la longueur moyenne du cycle a partir de l'historique
-  const sortedLogs = [...cycleLogs].sort((a, b) => new Date(a.cycle_start) - new Date(b.cycle_start));
+  const sortedLogs = [...cycleLogs].sort((a, b) => new Date(a.period_start_date) - new Date(b.period_start_date));
   const gaps = [];
   for (let i = 1; i < sortedLogs.length; i++) {
-    const prev = new Date(sortedLogs[i - 1].cycle_start);
-    const curr = new Date(sortedLogs[i].cycle_start);
+    const prev = new Date(sortedLogs[i - 1].period_start_date);
+    const curr = new Date(sortedLogs[i].period_start_date);
     const gap = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
     if (gap >= 18 && gap <= 60) gaps.push(gap);
   }
@@ -1270,8 +1270,8 @@ async function renderCycle() {
       stdDev = Math.max(2, Math.round(Math.sqrt(variance)));
       confidenceLevel = 'apprise';
     }
-  } else if (cycleLogs[0].cycle_length) {
-    avgLength = cycleLogs[0].cycle_length;
+  } else if (cycleLogs[0].cycle_length_days) {
+    avgLength = cycleLogs[0].cycle_length_days;
   }
 
   const today = new Date();
@@ -1384,7 +1384,7 @@ async function saveCycle() {
   }
   btn.disabled = true;
   btn.textContent = 'Enregistrement...';
-  const { error } = await SUPABASE_CLIENT.from('cycle_logs').insert({ member_id: MEMBER.id, cycle_start: startStr });
+  const { error } = await SUPABASE_CLIENT.from('cycle_logs').insert({ member_id: MEMBER.id, period_start_date: startStr });
   if (error) {
     showToast('Erreur enregistrement : ' + error.message, 'error');
     btn.disabled = false;
@@ -1521,16 +1521,28 @@ async function renderJournal() {
 
 async function addJournalEntry() {
   const text = document.getElementById('journalNewEntry').value.trim();
-  if (!text) return;
+  if (!text) {
+    showToast('Écris quelque chose avant de déposer', 'error');
+    return;
+  }
+  const btn = document.getElementById('journalSubmitBtn');
+  if (btn.disabled) return; // protection double-clic
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = 'Dépôt en cours...';
   const { error } = await SUPABASE_CLIENT
     .from('member_journal')
     .insert({ member_id: MEMBER.id, body: text });
   if (error) {
-    showToast('Erreur : ' + error.message, 'error');
+    showToast('Erreur enregistrement : ' + error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = originalText;
   } else {
     document.getElementById('journalNewEntry').value = '';
     showToast('Entrée déposée ✦');
     await renderJournal();
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
@@ -1603,9 +1615,36 @@ async function renderReferral() {
   container.innerHTML = html;
 }
 
-function copyReferral(code) {
+async function copyReferral(code) {
   const link = `${window.location.origin}/club?ref=${code}`;
-  navigator.clipboard.writeText(link).then(() => showToast('Lien copié ✦'));
+  // 1) API moderne navigator.clipboard
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast('Lien copié ✦');
+      return;
+    } catch (err) { /* fallback ci-dessous */ }
+  }
+  // 2) Fallback execCommand (Safari iOS et anciens navigateurs)
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.setAttribute('readonly', '');
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, 99999);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) {
+      showToast('Lien copié ✦');
+      return;
+    }
+  } catch (err) { /* fallback ci-dessous */ }
+  // 3) Fallback ultime : on affiche le lien pour copie manuelle
+  const userCopied = window.prompt('Copie ce lien d\'invitation :', link);
+  if (userCopied !== null) showToast('Lien affiché ✦');
 }
 
 // ===== POINT (questionnaire) =====
