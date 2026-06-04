@@ -156,7 +156,6 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
   <p>Une fois entrée, tu pourras :</p>
   <p style="margin-left: 12px;">✦ Définir ton mot de passe personnel depuis <strong>"Mon compte"</strong><br>
   ✦ Déposer ton Premier Seuil si pas encore fait<br>
-  ✦ Planifier ta première séance YoniSpa à Paris 12<sup>e</sup><br>
   ✦ Découvrir tout ce que le Club te réserve</p>
   <p>Nous avons aussi ajouté un <strong>Portail Fondatrice sur sanctuarys.me</strong> pour que tu puisses te reconnecter quand tu veux, simplement avec ton email et ton mot de passe. Et un système de récupération si jamais tu l'oublies.</p>
   <p>Le Temple t'attend, désormais sans obstacle.</p>
