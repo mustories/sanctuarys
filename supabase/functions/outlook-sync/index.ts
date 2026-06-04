@@ -108,6 +108,24 @@ Deno.serve(async (req) => {
         const data = await fetchResp.json()
         const messages = data.value || []
 
+        // Pré-charge le mapping email -> Fondatrice pour lier rapidement
+        const senderEmails = Array.from(new Set(
+          messages
+            .map((m: any) => m.from?.emailAddress?.address?.toLowerCase())
+            .filter(Boolean)
+        ))
+
+        const fondatriceMap: Record<string, string> = {}
+        if (senderEmails.length > 0) {
+          const { data: signups } = await admin
+            .from('club_signups')
+            .select('id, email')
+            .in('email', senderEmails)
+          for (const s of (signups || [])) {
+            if (s.email) fondatriceMap[s.email.toLowerCase()] = s.id
+          }
+        }
+
         let inserted = 0
         let updated = 0
 
@@ -115,6 +133,8 @@ Deno.serve(async (req) => {
           const fromObj = m.from?.emailAddress || {}
           const toEmails = (m.toRecipients || []).map((r: any) => r.emailAddress?.address).filter(Boolean)
           const ccEmails = (m.ccRecipients || []).map((r: any) => r.emailAddress?.address).filter(Boolean)
+          const fromEmailLower = (fromObj.address || '').toLowerCase()
+          const matchedFondatriceId = fondatriceMap[fromEmailLower] || null
 
           const row = {
             outlook_id: m.id,
@@ -132,7 +152,8 @@ Deno.serve(async (req) => {
             is_read: !!m.isRead,
             has_attachments: !!m.hasAttachments,
             importance: m.importance || 'normal',
-            folder: 'inbox'
+            folder: 'inbox',
+            fondatrice_signup_id: matchedFondatriceId
           }
 
           const { error: upErr } = await admin

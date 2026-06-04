@@ -582,6 +582,34 @@
   }
   .btn-outline:hover { background: var(--marron-deep); color: var(--blanc); }
 
+  .inbox-filter-btn {
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--marron-deep);
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .inbox-filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+  .inbox-filter-btn.active { background: var(--terracotta); color: var(--blanc); border-color: var(--terracotta); }
+
+  .inbox-fondatrice-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-left: 6px;
+    border-radius: 2px;
+  }
+
   .eleves-list {
     background: var(--blanc);
     border: 1px solid var(--line);
@@ -1829,6 +1857,14 @@
       </div>
 
       <div id="inboxConnected" style="display: none;">
+        <div style="background: var(--blanc-card); border: 1px solid var(--line); padding: 16px 18px; margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <input type="text" id="inboxSearchInput" placeholder="Rechercher (sujet, expéditeur, contenu)..." oninput="renderInboxList()" style="flex: 1; min-width: 240px; padding: 10px 14px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep);">
+          <div style="display: flex; gap: 6px;">
+            <button class="inbox-filter-btn active" data-filter="all" onclick="setInboxFilter('all')">Tous</button>
+            <button class="inbox-filter-btn" data-filter="unread" onclick="setInboxFilter('unread')">Non lus</button>
+            <button class="inbox-filter-btn" data-filter="fondatrices" onclick="setInboxFilter('fondatrices')">Fondatrices ✦</button>
+          </div>
+        </div>
         <div style="display: grid; grid-template-columns: 380px 1fr; gap: 24px;">
           <div style="background: var(--blanc-card); border: 1px solid var(--line); max-height: 700px; overflow-y: auto;">
             <div id="inboxMessagesList"></div>
@@ -2727,6 +2763,28 @@
   const MS_REDIRECT = 'https://sanctuarys.me/admin/outlook-callback';
   let INBOX_MESSAGES = [];
   let INBOX_SELECTED = null;
+  let INBOX_FILTER = 'all';
+  let INBOX_FONDATRICE_MAP = {}; // signup_id -> { prenom, nom, email }
+
+  function setInboxFilter(f) {
+    INBOX_FILTER = f;
+    document.querySelectorAll('.inbox-filter-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.filter === f);
+    });
+    renderInboxList();
+  }
+  window.setInboxFilter = setInboxFilter;
+
+  async function openFondatriceFromInbox(signupId) {
+    if (!signupId) return;
+    const supa = await Sanctuarys.init();
+    const { data } = await supa.from('club_signups').select('*').eq('id', signupId).single();
+    openPanel('fondatrices');
+    setTimeout(() => {
+      if (data && typeof openFondatriceModal === 'function') openFondatriceModal(data);
+    }, 300);
+  }
+  window.openFondatriceFromInbox = openFondatriceFromInbox;
 
   function connectOutlook() {
     const scope = encodeURIComponent('offline_access Mail.ReadWrite Mail.Send User.Read');
@@ -2752,35 +2810,70 @@
       .from('outlook_messages')
       .select('*')
       .order('received_at', { ascending: false })
-      .limit(100);
+      .limit(150);
     INBOX_MESSAGES = data || [];
+
+    // Charge le mapping signup_id -> Fondatrice
+    const ids = Array.from(new Set(INBOX_MESSAGES.map(m => m.fondatrice_signup_id).filter(Boolean)));
+    if (ids.length > 0) {
+      const { data: signups } = await supa
+        .from('club_signups')
+        .select('id, prenom, nom, email')
+        .in('id', ids);
+      INBOX_FONDATRICE_MAP = {};
+      (signups || []).forEach(s => { INBOX_FONDATRICE_MAP[s.id] = s; });
+    }
+
     renderInboxList();
     const unread = INBOX_MESSAGES.filter(m => !m.is_read).length;
     document.getElementById('inboxUnreadCount').textContent = unread;
     document.getElementById('inboxUnreadMeta').textContent = unread;
   }
 
+  function getFilteredInboxMessages() {
+    const q = (document.getElementById('inboxSearchInput')?.value || '').toLowerCase().trim();
+    return INBOX_MESSAGES.filter(m => {
+      if (INBOX_FILTER === 'unread' && m.is_read) return false;
+      if (INBOX_FILTER === 'fondatrices' && !m.fondatrice_signup_id) return false;
+      if (q) {
+        const hay = [
+          m.subject, m.from_email, m.from_name, m.body_preview
+        ].filter(Boolean).join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
   function renderInboxList() {
     const list = document.getElementById('inboxMessagesList');
-    if (INBOX_MESSAGES.length === 0) {
-      list.innerHTML = '<div style="padding: 40px 22px; text-align: center; font-family: \'Cormorant Garamond\', serif; font-style: italic; color: var(--marron-soft); font-size: 14px;">Aucun message synchronisé. Clique "Synchroniser ✦".</div>';
+    const filtered = getFilteredInboxMessages();
+    if (filtered.length === 0) {
+      const msg = INBOX_MESSAGES.length === 0
+        ? 'Aucun message synchronisé. Clique "Synchroniser ✦".'
+        : 'Aucun message ne correspond à ce filtre.';
+      list.innerHTML = `<div style="padding: 40px 22px; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--marron-soft); font-size: 14px;">${msg}</div>`;
       return;
     }
     list.innerHTML = '';
-    INBOX_MESSAGES.forEach(m => {
+    filtered.forEach(m => {
       const d = new Date(m.received_at);
       const today = new Date();
       const isToday = d.toDateString() === today.toDateString();
       const timeLabel = isToday ? d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
       const initial = ((m.from_name || m.from_email || '?')[0] || '?').toUpperCase();
+      const isFondatrice = !!m.fondatrice_signup_id;
       const row = document.createElement('div');
       row.style.cssText = `padding: 14px 18px; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: background 0.2s; ${m.is_read ? 'opacity: 0.65;' : 'background: rgba(168, 85, 55, 0.04);'} ${INBOX_SELECTED?.id === m.id ? 'background: rgba(168, 85, 55, 0.10); border-left: 3px solid var(--terracotta);' : ''}`;
+      const avatarBg = isFondatrice
+        ? 'background: linear-gradient(135deg, var(--terracotta), var(--marron-deep)); color: var(--blanc);'
+        : 'background: linear-gradient(135deg, var(--terracotta-pale), var(--or-pale)); color: var(--marron-deep);';
       row.innerHTML = `
         <div style="display: flex; align-items: flex-start; gap: 12px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--terracotta-pale), var(--or-pale)); display: flex; align-items: center; justify-content: center; color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 14px; flex-shrink: 0;">${initial}</div>
+          <div style="width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Italiana', serif; font-size: 14px; flex-shrink: 0; ${avatarBg}">${initial}</div>
           <div style="flex: 1; min-width: 0;">
             <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
-              <span style="font-family: 'Italiana', serif; font-size: 14px; color: var(--marron-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(m.from_name || m.from_email)}</span>
+              <span style="font-family: 'Italiana', serif; font-size: 14px; color: var(--marron-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(m.from_name || m.from_email)}${isFondatrice ? '<span class="inbox-fondatrice-badge">Fondatrice ✦</span>' : ''}</span>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--marron-soft); flex-shrink: 0;">${timeLabel}</span>
             </div>
             <div style="font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--marron-deep); margin-top: 2px; ${!m.is_read ? 'font-weight: 500;' : ''} white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(m.subject || '(sans sujet)')}</div>
@@ -2799,6 +2892,13 @@
     renderInboxList();
     const pane = document.getElementById('inboxDetailPane');
     const d = new Date(m.received_at);
+    const fondatrice = m.fondatrice_signup_id ? INBOX_FONDATRICE_MAP[m.fondatrice_signup_id] : null;
+    const fondatriceBlock = fondatrice ? `
+      <div style="margin-top: 10px; padding: 10px 14px; background: rgba(168, 85, 55, 0.06); border-left: 3px solid var(--terracotta); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--terracotta-deep); text-transform: uppercase;">Fondatrice ✦</span>
+        <span style="font-family: 'Italiana', serif; font-size: 16px; color: var(--marron-deep);">${escapeHTML((fondatrice.prenom || '') + ' ' + (fondatrice.nom || '')).trim()}</span>
+        <button onclick="openFondatriceFromInbox('${fondatrice.id}')" style="margin-left: auto; padding: 6px 14px; background: var(--terracotta); color: var(--blanc); border: none; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer;">Ouvrir sa fiche ✦</button>
+      </div>` : '';
     pane.innerHTML = `
       <div style="padding-bottom: 18px; border-bottom: 1px solid var(--line); margin-bottom: 22px;">
         <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">${d.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
@@ -2806,6 +2906,7 @@
         <div style="margin-top: 10px; font-family: 'Cormorant Garamond', serif; font-size: 14px; color: var(--marron);">
           <strong style="font-family: 'Italiana', serif; font-weight: normal;">${escapeHTML(m.from_name || '')}</strong> &lt;<a href="mailto:${escapeHTML(m.from_email)}" style="color: var(--terracotta-deep);">${escapeHTML(m.from_email)}</a>&gt;
         </div>
+        ${fondatriceBlock}
       </div>
       <div style="font-family: 'Cormorant Garamond', serif; font-size: 15px; line-height: 1.75; color: var(--marron-deep); max-height: 380px; overflow-y: auto;">
         ${m.body_html || ('<p style="white-space: pre-wrap;">' + escapeHTML(m.body_text || m.body_preview || '') + '</p>')}
