@@ -117,24 +117,9 @@ Deno.serve(async (req) => {
       }
 
       try {
-        // Genere un magic link
-        const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-          type: 'magiclink',
-          email: c.email.toLowerCase(),
-          options: {
-            redirectTo: 'https://sanctuarys.me/espace-membre'
-          }
-        })
-
-        if (linkError || !linkData?.properties?.action_link) {
-          results.push({ email: c.email, prenom: c.prenom, sent: false, reason: 'link_error: ' + (linkError?.message || 'unknown') })
-          continue
-        }
-
-        const link = linkData.properties.action_link
         const prenom = c.prenom || 'Fondatrice'
 
-        // Envoie l'email
+        // Envoie l'email avec le nouveau flow clair (sans magic link, vers portail-club)
         const emailHtml = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
 body { background: #FAF5EC; font-family: Georgia, serif; color: #2A1810; margin: 0; padding: 40px 20px; }
@@ -144,23 +129,34 @@ h1 em { font-style: italic; color: #A85537; }
 .meta { font-family: monospace; font-size: 10px; letter-spacing: 4px; color: #A85537; text-transform: uppercase; margin: 0 0 32px; }
 p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-family: Georgia, serif; }
 .btn { display: inline-block; padding: 18px 38px; background: #C8704D; color: #FAF5EC !important; text-decoration: none; font-family: monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin: 28px 0; }
+.steps { background: #FFFCF5; border: 1px solid rgba(106, 68, 35, 0.18); padding: 22px 26px; margin: 22px 0; }
+.steps p { margin-bottom: 10px; }
 .footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
 </style></head><body>
 <div class="container">
   <p class="meta">✦ Sanctuarys · Yoni Social Club</p>
-  <h1>Ton Temple<br><em>t'attend.</em></h1>
+  <h1>Ton Temple ✦<br><em>Une seule étape pour entrer.</em></h1>
   <p>Chère ${prenom},</p>
-  <p>Quelques-unes d'entre vous nous ont écrit ces derniers jours pour nous signaler des difficultés à entrer dans votre espace privé Fondatrice. Nous avons tout entendu, <strong>et tout réparé</strong>.</p>
-  <p>Voici ton <strong>nouveau lien d'accès direct</strong> qui te connectera sans mot de passe à chercher, en un clic :</p>
-  <p style="text-align: center;"><a href="${link}" class="btn">Entrer dans le Temple ✦</a></p>
-  <p>Une fois entrée, tu pourras :</p>
-  <p style="margin-left: 12px;">✦ Définir ton mot de passe personnel depuis <strong>"Mon compte"</strong><br>
-  ✦ Déposer ton Premier Seuil si pas encore fait<br>
-  ✦ Découvrir tout ce que le Club te réserve</p>
-  <p>Nous avons aussi ajouté un <strong>Portail Fondatrice sur sanctuarys.me</strong> pour que tu puisses te reconnecter quand tu veux, simplement avec ton email et ton mot de passe. Et un système de récupération si jamais tu l'oublies.</p>
-  <p>Le Temple t'attend, désormais sans obstacle.</p>
-  <p style="font-size: 13px; color: #6B4423; text-align: center; font-style: italic;">Si le bouton ne s'affiche pas, copie ce lien :<br><a href="${link}" style="color: #A85537; word-break: break-all;">${link}</a></p>
-  <p>Merci pour ta patience et ta confiance.</p>
+  <p>Tu as reçu ce matin un email avec un lien d'accès. Certaines d'entre vous ont essayé et se sont retrouvées bloquées à l'entrée. Nous avons compris d'où venait le problème et nous l'avons corrigé. Pardon pour ces aller-retours.</p>
+  <p>Nous sommes en pleine phase de construction de votre espace privé. Le Temple s'affine de jour en jour, et chacun de vos retours nous aide à le rendre plus juste avant le jour J. <strong>Continue à nous écrire si quelque chose bloque ou te paraît étrange</strong>, c'est exactement ce dont nous avons besoin.</p>
+  <p><strong>Voici le chemin clarifié pour entrer dans ton Temple :</strong></p>
+  <div class="steps">
+    <p>1. Va sur <a href="https://sanctuarys.me/portail-club" style="color: #A85537;"><strong>sanctuarys.me/portail-club</strong></a></p>
+    <p>2. Tu verras un bandeau visible en haut : <strong>✦ Première fois ?</strong></p>
+    <p>3. Clique sur <strong>"Définir mon mot de passe ✦"</strong></p>
+    <p>4. Entre l'email Fondatrice avec lequel tu as réservé ta place</p>
+    <p>5. Tu reçois immédiatement un email avec un lien</p>
+    <p>6. Le lien t'amène sur une page où tu choisis le mot de passe de ton choix</p>
+    <p>7. Ce mot de passe te servira à toutes tes prochaines connexions</p>
+  </div>
+  <p style="text-align: center;"><a href="https://sanctuarys.me/portail-club" class="btn">Ouvrir le Portail ✦</a></p>
+  <p><strong>Une fois entrée, tu trouveras :</strong></p>
+  <p style="margin-left: 12px;">✦ Ton Premier Seuil (si pas encore déposé)<br>
+  ✦ Ton journal personnel<br>
+  ✦ Tes séances et événements<br>
+  ✦ Tout ce que le Club te réserve</p>
+  <p style="background: rgba(212, 160, 76, 0.10); padding: 16px 20px; border-left: 3px solid #D4A04C; font-size: 14px;">Si tu as <strong>déjà défini ton mot de passe et l'as oublié</strong>, le même bouton fonctionne aussi pour le réinitialiser. Si tu te <strong>souviens de ton mot de passe</strong>, tu peux te connecter normalement depuis le même portail.</p>
+  <p>Encore pardon pour la patience que vous nous accordez. Vous êtes les premières à ouvrir cette porte, et votre regard nous est précieux. N'hésite jamais à nous remonter ce qui te paraît à corriger.</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec attention,</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">L'équipe Sanctuarys</p>
   <div class="footer">Sanctuarys · Paris 12<sup>e</sup> · sanctuarys.me · info@sanctuarys.me</div>
@@ -175,7 +171,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
           body: JSON.stringify({
             from: 'Sanctuarys <info@sanctuarys.me>',
             to: c.email.toLowerCase(),
-            subject: 'Ton accès au Temple ✦ Tout est réparé',
+            subject: 'Ton accès au Temple ✦ Chemin clarifié',
             html: emailHtml
           })
         })
