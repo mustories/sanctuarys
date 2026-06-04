@@ -1696,7 +1696,15 @@
           <option value="pending">En attente de paiement</option>
           <option value="contacted">Contactées</option>
         </select>
-        <button class="btn-outline" type="button" onclick="bulkResendInviteAll()" style="padding: 12px 18px; font-size: 10px; margin-left: auto;">Renvoyer les liens d'accès ✦</button>
+        <button class="btn-outline" type="button" onclick="toggleSelectAllFondatrices()" style="padding: 12px 18px; font-size: 10px; margin-left: auto;">Tout sélectionner</button>
+        <button class="btn-outline" type="button" onclick="bulkResendInviteAll()" style="padding: 12px 18px; font-size: 10px;">Envoyer à toutes ✦</button>
+      </div>
+
+      <div id="fondatriceBulkBar" style="display: none; margin-top: 14px; padding: 14px 20px; background: rgba(168, 85, 55, 0.08); border: 1px solid var(--terracotta); align-items: center; gap: 14px; justify-content: space-between;">
+        <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep);">
+          <strong style="font-family: 'Italiana', serif; font-weight: normal; font-style: normal; color: var(--terracotta-deep); font-size: 18px;"><span id="fondatriceBulkCount">0</span></strong> Fondatrice<span id="fondatriceBulkPlural">s</span> sélectionnée<span id="fondatriceBulkPlural2">s</span>
+        </div>
+        <button class="btn-primary" type="button" id="fondatriceBulkSendBtn" onclick="sendLinkToSelected()" style="padding: 12px 24px;">Envoyer le lien d'accès aux sélectionnées ✦</button>
       </div>
 
       <div class="eleves-list" id="fondatricesList">
@@ -3100,8 +3108,13 @@
       const allaitanteBadge = f.allaitement === true
         ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(212, 160, 76, 0.18); border: 1px solid var(--or); color: var(--marron-deep); font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Allaitante</span>'
         : '';
+      const isAccepted = f.status === 'accepted' || f.status === 'contacted';
+      const checkboxHtml = isAccepted
+        ? `<input type="checkbox" class="fondatrice-select" data-email="${escapeHTML(f.email)}" style="width: 18px; height: 18px; accent-color: var(--terracotta); cursor: pointer; margin-right: 8px;" onclick="event.stopPropagation();" onchange="updateFondatriceSelectionCount();">`
+        : '<span style="width: 18px; display: inline-block; margin-right: 8px;"></span>';
       row.innerHTML = `
-        <div class="eleve-name">
+        <div class="eleve-name" style="display: flex; align-items: center;">
+          ${checkboxHtml}
           <div class="eleve-avatar" ${avatarStyle}>${initial}</div>
           <div>
             <div class="name">${escapeHTML(f.prenom)} ${escapeHTML(f.nom || '')}${allaitanteBadge}</div>
@@ -3120,7 +3133,72 @@
       row.addEventListener('click', () => openFondatriceModal(f));
       list.appendChild(row);
     });
+
+    updateFondatriceSelectionCount();
   }
+
+  function updateFondatriceSelectionCount() {
+    const checkboxes = document.querySelectorAll('.fondatrice-select');
+    const checked = document.querySelectorAll('.fondatrice-select:checked');
+    const bar = document.getElementById('fondatriceBulkBar');
+    if (!bar) return;
+    if (checked.length === 0) {
+      bar.style.display = 'none';
+    } else {
+      bar.style.display = 'flex';
+      document.getElementById('fondatriceBulkCount').textContent = checked.length;
+    }
+  }
+  window.updateFondatriceSelectionCount = updateFondatriceSelectionCount;
+
+  function toggleSelectAllFondatrices() {
+    const checkboxes = document.querySelectorAll('.fondatrice-select');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+    updateFondatriceSelectionCount();
+  }
+  window.toggleSelectAllFondatrices = toggleSelectAllFondatrices;
+
+  async function sendLinkToSelected() {
+    const checked = document.querySelectorAll('.fondatrice-select:checked');
+    if (checked.length === 0) {
+      showToast('Sélectionne au moins une Fondatrice', 'error');
+      return;
+    }
+    const emails = Array.from(checked).map(cb => cb.dataset.email);
+    if (!confirm(`Envoyer le lien d'accès aux ${emails.length} Fondatrice${emails.length > 1 ? 's' : ''} sélectionnée${emails.length > 1 ? 's' : ''} ?\n\nEmails :\n${emails.join('\n')}`)) return;
+
+    const btn = document.getElementById('fondatriceBulkSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+
+    try {
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/bulk-resend-invite', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ mode: 'send', target_emails: emails })
+      });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || 'Erreur inconnue');
+      console.log('Résultat bulk-resend:', result);
+      alert(`✦ ${result.sent || 0} email${result.sent > 1 ? 's' : ''} envoyé${result.sent > 1 ? 's' : ''} sur ${result.found || 0} sélectionné${result.found > 1 ? 's' : ''}` + (result.failed > 0 ? `\n\n${result.failed} échec${result.failed > 1 ? 's' : ''} (détails console)` : ''));
+      document.querySelectorAll('.fondatrice-select:checked').forEach(cb => cb.checked = false);
+      updateFondatriceSelectionCount();
+    } catch (err) {
+      alert('Erreur : ' + (err.message || 'envoi impossible'));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le lien d\'accès aux sélectionnées ✦';
+    }
+  }
+  window.sendLinkToSelected = sendLinkToSelected;
 
   async function openFondatriceModal(f) {
     CURRENT_FONDATRICE = f;

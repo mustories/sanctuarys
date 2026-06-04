@@ -35,17 +35,26 @@ Deno.serve(async (req) => {
     })
 
     const body = await req.json().catch(() => ({}))
-    const { mode, only_unconfirmed } = body
+    const { mode, only_unconfirmed, target_emails } = body
     // mode = 'preview' : retourne juste la liste sans envoyer
     // mode = 'send' : envoie pour de vrai
     // only_unconfirmed = true : ne cible que les non-activees (defaut: tout le monde)
+    // target_emails : array d'emails specifiques a cibler (sinon tout le monde)
 
     // Trouve les Fondatrices payees (memberships actives) dont le compte Auth n'est pas confirme
     // On utilise un RPC ou une jointure custom
-    const { data: paidSignups, error: errSignups } = await admin
+    let query = admin
       .from('club_signups')
       .select('email, prenom, nom, member_id')
       .in('status', ['accepted', 'contacted'])
+
+    // Si target_emails fourni, on filtre uniquement ces emails
+    if (Array.isArray(target_emails) && target_emails.length > 0) {
+      const cleanEmails = target_emails.map(e => String(e).toLowerCase().trim()).filter(Boolean)
+      query = query.in('email', cleanEmails)
+    }
+
+    const { data: paidSignups, error: errSignups } = await query
 
     if (errSignups) {
       return json({ error: 'Lecture signups : ' + errSignups.message }, 500)
@@ -140,12 +149,19 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
 <div class="container">
   <p class="meta">✦ Sanctuarys · Yoni Social Club</p>
   <h1>Ton Temple<br><em>t'attend.</em></h1>
-  <p>${prenom},</p>
-  <p>Si tu as eu le moindre souci pour entrer dans ton espace privé Fondatrice, voici un <strong>nouveau lien d'accès direct</strong> qui te connectera sans mot de passe à chercher, en un clic.</p>
-  <p>${c.status === 'confirmed' ? 'Tu peux l\'utiliser même si ton compte est déjà activé. Le lien expire dans une heure.' : 'C\'est aussi le bon moment de finaliser ton entrée si tu ne l\'as pas encore fait.'}</p>
+  <p>Chère ${prenom},</p>
+  <p>Quelques-unes d'entre vous nous ont écrit ces derniers jours pour nous signaler des difficultés à entrer dans votre espace privé Fondatrice. Nous avons tout entendu, <strong>et tout réparé</strong>.</p>
+  <p>Voici ton <strong>nouveau lien d'accès direct</strong> qui te connectera sans mot de passe à chercher, en un clic :</p>
   <p style="text-align: center;"><a href="${link}" class="btn">Entrer dans le Temple ✦</a></p>
+  <p>Une fois entrée, tu pourras :</p>
+  <p style="margin-left: 12px;">✦ Définir ton mot de passe personnel depuis <strong>"Mon compte"</strong><br>
+  ✦ Déposer ton Premier Seuil si pas encore fait<br>
+  ✦ Planifier ta première séance YoniSpa à Paris 12<sup>e</sup><br>
+  ✦ Découvrir tout ce que le Club te réserve</p>
+  <p>Nous avons aussi ajouté un <strong>Portail Fondatrice sur sanctuarys.me</strong> pour que tu puisses te reconnecter quand tu veux, simplement avec ton email et ton mot de passe. Et un système de récupération si jamais tu l'oublies.</p>
+  <p>Le Temple t'attend, désormais sans obstacle.</p>
   <p style="font-size: 13px; color: #6B4423; text-align: center; font-style: italic;">Si le bouton ne s'affiche pas, copie ce lien :<br><a href="${link}" style="color: #A85537; word-break: break-all;">${link}</a></p>
-  <p>Une fois entrée, tu pourras déposer ton Premier Seuil, planifier ta première séance YoniSpa à Paris 12<sup>e</sup>, et découvrir tout ce que le Club te réserve.</p>
+  <p>Merci pour ta patience et ta confiance.</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec attention,</p>
   <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">L'équipe Sanctuarys</p>
   <div class="footer">Sanctuarys · Paris 12<sup>e</sup> · sanctuarys.me · info@sanctuarys.me</div>
@@ -160,7 +176,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
           body: JSON.stringify({
             from: 'Sanctuarys <info@sanctuarys.me>',
             to: c.email.toLowerCase(),
-            subject: 'Ton Temple t\'attend ✦ Nouveau lien d\'accès',
+            subject: 'Ton accès au Temple ✦ Tout est réparé',
             html: emailHtml
           })
         })
