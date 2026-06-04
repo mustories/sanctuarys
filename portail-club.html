@@ -211,6 +211,12 @@
     <h1>Portail<br><em>Fondatrice.</em></h1>
     <p class="intro">Entre tes identifiants pour ouvrir ton espace privé.</p>
 
+    <div style="background: rgba(212, 160, 76, 0.10); border: 1px solid var(--or); padding: 18px 20px; margin-bottom: 26px; text-align: left;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;">✦ Première fois ?</div>
+      <p style="font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--marron-deep); line-height: 1.55; margin-bottom: 12px;">Tu n'as pas encore défini de mot de passe ? Clique ici, nous t'envoyons un lien pour le créer.</p>
+      <button onclick="showView('reset')" type="button" style="background: var(--terracotta); color: var(--blanc); border: none; padding: 11px 22px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; width: 100%;">Définir mon mot de passe ✦</button>
+    </div>
+
     <form id="loginForm">
       <div>
         <label>Email</label>
@@ -234,18 +240,18 @@
     </div>
   </div>
 
-  <!-- VUE 2 : RESET PASSWORD -->
+  <!-- VUE 2 : RESET / PREMIERE CONNEXION -->
   <div class="toggle-view" id="viewReset">
-    <div class="meta">Récupérer l'accès</div>
-    <h1>Nouveau<br><em>mot de passe.</em></h1>
-    <p class="intro">Entre ton email Fondatrice, nous t'envoyons un lien pour choisir un nouveau mot de passe.</p>
+    <div class="meta">Définir ton accès</div>
+    <h1>Ton<br><em>mot de passe.</em></h1>
+    <p class="intro">Que ce soit ta première connexion ou un oubli, entre ton email Fondatrice. Nous t'envoyons un lien pour choisir ton mot de passe.</p>
 
     <form id="resetForm">
       <div>
         <label>Ton email Fondatrice</label>
         <input type="email" id="resetEmail" required placeholder="ton@email.com" autocomplete="email">
       </div>
-      <button type="submit" id="resetBtn">Recevoir le lien de récupération ✦</button>
+      <button type="submit" id="resetBtn">Recevoir le lien ✦</button>
     </form>
 
     <div class="status" id="resetStatus"></div>
