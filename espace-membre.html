@@ -1310,6 +1310,9 @@ async function renderCycle() {
     nextLabel = `Tes règles étaient prévues il y a ${Math.abs(daysUntilNext)} jours<br><span style="font-size: 12px; color: var(--marron-soft);">Si elles ne sont pas venues, marque la date de leur retour quand elles arrivent.</span>`;
   }
 
+  // Construit le calendrier visuel du mois en cours
+  const calendarHTML = buildCycleCalendar(sortedLogs, avgLength, today);
+
   container.innerHTML = `
     <div class="cycle-current">
       <div class="cycle-day">J ${day}</div>
@@ -1322,10 +1325,103 @@ async function renderCycle() {
         Durée moyenne de ton cycle : <strong style="font-style: normal; color: var(--marron-deep);">${avgLength} jours</strong>${confidenceTag}
       </div>
     </div>
+    ${calendarHTML}
     <button class="panel-btn primary" style="width: 100%; margin-top: 16px;" onclick="openCycleModal()">Marquer un nouveau cycle ✦</button>
     <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); text-align: center; margin-top: 10px;">Marque chaque mois la date où tes règles arrivent, le calcul s'affine tout seul.</p>
   `;
 }
+
+// =====================================================
+// Calendrier visuel des phases du cycle
+// =====================================================
+let CALENDAR_MONTH_OFFSET = 0;
+
+function buildCycleCalendar(sortedLogs, avgLength, today) {
+  const refDate = new Date(today.getFullYear(), today.getMonth() + CALENDAR_MONTH_OFFSET, 1);
+  const year = refDate.getFullYear();
+  const month = refDate.getMonth();
+  const monthLabel = refDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  // Jour de la semaine du 1er (lundi=0, dimanche=6 en France)
+  let firstDayOfWeek = new Date(year, month, 1).getDay();
+  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+  // Classifie chaque jour : period, ovulation, predicted, normal
+  function dayClass(d) {
+    // Cherche le cycle qui contient cette date
+    for (let i = 0; i < sortedLogs.length; i++) {
+      const cs = new Date(sortedLogs[i].period_start_date);
+      const nextCs = sortedLogs[i + 1] ? new Date(sortedLogs[i + 1].period_start_date) : null;
+      // Jours de regles (start a start+4 = 5 jours)
+      const periodEnd = new Date(cs);
+      periodEnd.setDate(cs.getDate() + 4);
+      if (d >= cs && d <= periodEnd) return 'period';
+      // Fenetre d'ovulation : jour 12 a 16 du cycle
+      const ovStart = new Date(cs); ovStart.setDate(cs.getDate() + 11);
+      const ovEnd = new Date(cs); ovEnd.setDate(cs.getDate() + 15);
+      if (d >= ovStart && d <= ovEnd && (!nextCs || d < nextCs)) return 'ovulation';
+    }
+    // Prediction prochaines regles a partir du dernier cycle
+    if (sortedLogs.length > 0) {
+      const lastStart = new Date(sortedLogs[sortedLogs.length - 1].period_start_date);
+      const predStart = new Date(lastStart);
+      predStart.setDate(lastStart.getDate() + avgLength);
+      const predEnd = new Date(predStart);
+      predEnd.setDate(predStart.getDate() + 4);
+      if (d >= predStart && d <= predEnd) return 'predicted-period';
+      // Ovulation prediction
+      const predOvStart = new Date(lastStart); predOvStart.setDate(lastStart.getDate() + avgLength + 11);
+      const predOvEnd = new Date(lastStart); predOvEnd.setDate(lastStart.getDate() + avgLength + 15);
+      if (d >= predOvStart && d <= predOvEnd) return 'predicted-ovulation';
+    }
+    return 'normal';
+  }
+
+  let cells = '';
+  // Cellules vides avant le 1er
+  for (let i = 0; i < firstDayOfWeek; i++) cells += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const cls = dayClass(date);
+    const isToday = date.toDateString() === today.toDateString();
+    let bg = 'transparent', color = 'var(--marron-deep)', border = 'none';
+    if (cls === 'period') { bg = 'var(--terracotta)'; color = 'var(--blanc)'; }
+    else if (cls === 'ovulation') { bg = 'var(--or)'; color = 'var(--marron-deep)'; }
+    else if (cls === 'predicted-period') { border = '1.5px dashed var(--terracotta)'; color = 'var(--terracotta-deep)'; }
+    else if (cls === 'predicted-ovulation') { border = '1.5px dashed var(--or)'; color = 'var(--marron)'; }
+    const todayRing = isToday ? 'box-shadow: 0 0 0 2px var(--marron-deep);' : '';
+    cells += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: ${bg}; color: ${color}; border: ${border}; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: ${isToday ? '500' : '400'}; ${todayRing}">${d}</div>`;
+  }
+
+  const navLabel = CALENDAR_MONTH_OFFSET === 0 ? '✦' : (CALENDAR_MONTH_OFFSET > 0 ? '+' + CALENDAR_MONTH_OFFSET : CALENDAR_MONTH_OFFSET);
+
+  return `
+    <div style="margin-top: 22px; background: var(--blanc-deep); border: 1px solid var(--line); padding: 22px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <button onclick="shiftCalendar(-1)" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--marron-soft); padding: 4px 12px;">‹</button>
+        <div style="font-family: 'Italiana', serif; font-size: 18px; color: var(--marron-deep); text-transform: capitalize; text-align: center;">${monthLabel}</div>
+        <button onclick="shiftCalendar(1)" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--marron-soft); padding: 4px 12px;">›</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-bottom: 6px;">
+        <div style="text-align: center;">L</div><div style="text-align: center;">M</div><div style="text-align: center;">M</div><div style="text-align: center;">J</div><div style="text-align: center;">V</div><div style="text-align: center;">S</div><div style="text-align: center;">D</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+        ${cells}
+      </div>
+      <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 14px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft);">
+        <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 14px; border-radius: 50%; background: var(--terracotta); display: inline-block;"></span>Règles</div>
+        <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 14px; border-radius: 50%; background: var(--or); display: inline-block;"></span>Ovulation</div>
+        <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed var(--terracotta); display: inline-block;"></span>Prévision</div>
+      </div>
+    </div>
+  `;
+}
+
+function shiftCalendar(delta) {
+  CALENDAR_MONTH_OFFSET += delta;
+  renderCycle();
+}
+window.shiftCalendar = shiftCalendar;
 
 function openCycleModal(prefillStart) {
   const today = new Date().toISOString().split('T')[0];
