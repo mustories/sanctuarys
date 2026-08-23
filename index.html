@@ -63,8 +63,8 @@
     font-weight: 300;
     overflow-x: hidden;
   }
-  /* Curseur custom uniquement quand le JS a confirmé + device avec souris */
-  @media (hover: hover) and (pointer: fine) {
+  /* Curseur custom uniquement quand le JS a confirmé + device avec souris + fenêtre assez large */
+  @media (hover: hover) and (pointer: fine) and (min-width: 1101px) {
     body.cursor-ready { cursor: none; }
     body.cursor-ready a,
     body.cursor-ready button,
@@ -181,6 +181,21 @@
   .nav-links a.active { color: var(--terracotta-deep); opacity: 1; border-bottom-color: var(--terracotta-deep); }
   .nav-links a.active .idx { opacity: 1; }
   nav.on-dark .nav-links a.active { color: var(--terracotta-pale); border-bottom-color: var(--terracotta-pale); }
+
+  /* Bouton menu mobile (masqué en desktop) */
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 32px; height: 28px; background: transparent; border: none;
+    padding: 0; cursor: pointer; flex-shrink: 0;
+  }
+  .nav-toggle span {
+    display: block; width: 100%; height: 1px;
+    background: var(--marron-deep); transition: transform 0.3s, opacity 0.3s, background 0.3s;
+  }
+  nav.on-dark .nav-toggle span { background: var(--blanc); }
+  .nav-toggle.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
   .nav-cta {
     padding: 11px 22px; background: transparent;
@@ -380,6 +395,7 @@
   .section-dark .section-info strong { color: var(--or-pale); }
   .section-dark .section-info .info-row { border-color: rgba(212, 160, 76, 0.15); }
   .section-dark .section-header { border-color: rgba(212, 160, 76, 0.2); }
+  .section-header-2col { grid-template-columns: 1fr 2fr; }
 
   /* 01 MANIFESTE */
   .manifesto { background: var(--blanc); padding-top: 180px; }
@@ -526,6 +542,7 @@
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 4px; margin-top: 40px;
   }
+  .expressions-grid-2col { grid-template-columns: repeat(2, 1fr); gap: 24px; }
   .expr-card {
     position: relative; height: 70vh; min-height: 600px;
     overflow: hidden; cursor: none;
@@ -952,12 +969,27 @@
     body { cursor: default; }
     .cursor, .cursor-trail { display: none; }
     nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
-    .nav-links { display: none; }
+    .nav-toggle { display: flex; }
+    .nav-links {
+      display: none; position: fixed; top: 68px; left: 0; right: 0;
+      flex-direction: column; gap: 2px; justify-self: auto;
+      background: var(--blanc); padding: 10px 24px 24px;
+      border-bottom: 1px solid var(--line); box-shadow: 0 20px 40px rgba(42, 24, 16, 0.12);
+      max-height: calc(100vh - 68px); overflow-y: auto; z-index: 95;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links li { width: 100%; border-bottom: 1px solid var(--line-soft); }
+    .nav-links li:last-child { border-bottom: none; }
+    .nav-links a, nav.on-dark .nav-links a {
+      color: var(--marron-deep); opacity: 1;
+      padding: 16px 4px; width: 100%; font-size: 12px;
+    }
+    .nav-links a.active, nav.on-dark .nav-links a.active { color: var(--terracotta-deep); }
     .hero { padding: 100px 24px 40px; }
     .hero-bottom-bar { grid-template-columns: 1fr; gap: 24px; }
     .scroll-indicator { display: none; }
     .section { padding: 80px 24px; }
-    .section-header { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
+    .section-header, .section-header-2col { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
     .manifesto-body { grid-template-columns: 1fr; gap: 40px; }
     .manifesto-headline { position: relative; top: auto; }
     .lignee { padding: 80px 24px; }
@@ -970,7 +1002,7 @@
     .lignee-num-cell:nth-child(2) { border-right: none; }
     .lignee-num-cell:nth-child(odd) { border-right: 1px solid var(--line); }
     .lignee-num-cell:nth-child(1), .lignee-num-cell:nth-child(2) { border-bottom: 1px solid var(--line); }
-    .expressions-grid { grid-template-columns: 1fr; gap: 4px; }
+    .expressions-grid, .expressions-grid-2col { grid-template-columns: 1fr; gap: 4px; }
     .expr-card { height: 70vh; min-height: 480px; }
     .expr-card-roman { font-size: 100px; }
     .valeurs-grid { grid-template-columns: 1fr 1fr; }
@@ -1027,6 +1059,9 @@
   </ul>
   <div class="nav-right">
     <a href="/reserver.html" class="nav-cta"><span>Prendre RDV ✦</span></a>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
@@ -1080,7 +1115,7 @@
 
   <!-- 01 MANIFESTE -->
   <section class="section manifesto" id="manifeste">
-    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+    <div class="section-header section-header-2col">
       <div class="section-num">01 / Manifeste</div>
       <h2 class="section-title">Une gynécologie<br><em>naturelle.</em></h2>
     </div>
@@ -1165,7 +1200,7 @@
         </div>
       </div>
 
-      <div class="expressions-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px;">
+      <div class="expressions-grid expressions-grid-2col">
         <div class="expr-card expr-1">
           <div class="expr-card-photo"></div>
           <div class="expr-card-top">
@@ -1220,7 +1255,7 @@
 
   <!-- 04 VALEURS -->
   <section class="section valeurs-section" id="valeurs">
-    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+    <div class="section-header section-header-2col">
       <div class="section-num">04 / Valeurs</div>
       <h2 class="section-title">Ce que nous<br><em>portons.</em></h2>
     </div>
@@ -1341,7 +1376,7 @@
 
   <!-- 07 FAQ -->
   <section class="faq" id="faq">
-    <div class="section-header" style="grid-template-columns: 1fr 2fr; max-width: 1700px; margin: 0 auto 80px;">
+    <div class="section-header section-header-2col" style="max-width: 1700px; margin: 0 auto 80px;">
       <div class="section-num">07 / Questions</div>
       <h2 class="section-title">Avant de<br><em>franchir le seuil.</em></h2>
     </div>
@@ -1417,7 +1452,7 @@
 <!-- CONNEXION -->
 <section class="tab-panel" data-tab="connexion" id="panel-connexion">
   <section class="section" style="max-width: 1300px;">
-    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+    <div class="section-header section-header-2col">
       <div class="section-num">08 / Connexion</div>
       <h2 class="section-title">Accéder à<br><em>mon espace.</em></h2>
     </div>
@@ -1639,6 +1674,20 @@
     if (y > 30) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
   });
 
+  // Menu mobile (hamburger)
+  const navToggle = document.getElementById('navToggle');
+  const navLinksEl = document.querySelector('.nav-links');
+  function closeMobileMenu() {
+    navLinksEl.classList.remove('open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinksEl.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
   // === Navigation par onglets ===
   function showTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1653,6 +1702,7 @@
     if (name === 'accueil') nav.classList.add('on-dark');
     else nav.classList.remove('on-dark');
 
+    closeMobileMenu();
     window.scrollTo(0, 0);
   }
   showTab('accueil');
