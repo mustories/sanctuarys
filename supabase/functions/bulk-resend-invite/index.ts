@@ -64,42 +64,37 @@ Deno.serve(async (req) => {
       return json({ success: true, found: 0, sent: 0, message: 'Aucune Fondatrice payee trouvee' })
     }
 
-    // Pour chacune, vérifie auth.users.email_confirmed_at via admin.listUsers
+    // OPTIMISATION : Charge tous les auth users UNE SEULE FOIS (au lieu de N fois)
+    let usersByEmail: Record<string, any> = {}
+    if (only_unconfirmed) {
+      const { data: allUsersData } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 })
+      for (const u of (allUsersData?.users || [])) {
+        if (u.email) usersByEmail[u.email.toLowerCase()] = u
+      }
+    }
+
     const candidates: any[] = []
     for (const s of paidSignups) {
       if (!s.email) continue
-      const { data: userData, error: userErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1 })
-      if (userErr) continue
-      // listUsers ne supporte pas filtre par email, on doit chercher
-      const { data: targetUser } = await admin.auth.admin.getUserById(s.member_id || '00000000-0000-0000-0000-000000000000').catch(() => ({ data: null }))
-      let actualUser: any = null
-      if (targetUser?.user) {
-        actualUser = targetUser.user
-      } else {
-        // Fallback : récupère via une recherche par email
-        const allUsers = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 })
-        actualUser = allUsers.data?.users?.find((u: any) => u.email?.toLowerCase() === s.email.toLowerCase())
-      }
-
-      if (!actualUser) {
-        candidates.push({ email: s.email, prenom: s.prenom, status: 'no_auth_user' })
-        continue
-      }
-
-      const isConfirmed = !!actualUser.email_confirmed_at || !!actualUser.confirmed_at
+      const emailLower = s.email.toLowerCase()
 
       if (only_unconfirmed) {
-        // Cible seulement les non-confirmees
+        // Mode filtrage : ne garder que les non-activees
+        const u = usersByEmail[emailLower]
+        if (!u) {
+          candidates.push({ email: s.email, prenom: s.prenom, status: 'no_auth_user' })
+          continue
+        }
+        const isConfirmed = !!u.email_confirmed_at || !!u.confirmed_at
         if (!isConfirmed) {
-          candidates.push({ email: s.email, prenom: s.prenom, status: 'not_confirmed', user_id: actualUser.id })
+          candidates.push({ email: s.email, prenom: s.prenom, status: 'not_confirmed', user_id: u.id })
         }
       } else {
-        // Cible TOUTES les Fondatrices payees
+        // Mode par défaut : envoie a TOUTES les Fondatrices payees (rapide)
         candidates.push({
           email: s.email,
           prenom: s.prenom,
-          status: isConfirmed ? 'confirmed' : 'not_confirmed',
-          user_id: actualUser.id
+          status: 'paid'
         })
       }
     }
@@ -108,59 +103,83 @@ Deno.serve(async (req) => {
       return json({ success: true, found: candidates.length, candidates })
     }
 
-    // Mode send : envoie pour chaque candidate
-    const results = []
-    for (const c of candidates) {
-      if (c.status === 'no_auth_user') {
-        results.push({ email: c.email, prenom: c.prenom, sent: false, reason: c.status })
-        continue
-      }
-
-      try {
-        const prenom = c.prenom || 'Fondatrice'
-
-        // Envoie l'email avec le nouveau flow clair (sans magic link, vers portail-club)
-        const emailHtml = `<!DOCTYPE html>
+    // Mode send : envoie en PARALLELE pour eviter le timeout
+    function buildEmailHtml(prenom: string): string {
+      return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
 body { background: #FAF5EC; font-family: Georgia, serif; color: #2A1810; margin: 0; padding: 40px 20px; }
-.container { max-width: 580px; margin: 0 auto; background: #FAF5EC; padding: 48px; border: 1px solid rgba(106, 68, 35, 0.18); }
-h1 { font-family: 'Italiana', Georgia, serif; font-size: 40px; color: #2A1810; line-height: 1; margin: 0 0 12px; font-weight: normal; }
+.container { max-width: 620px; margin: 0 auto; background: #FAF5EC; padding: 52px 44px; border: 1px solid rgba(106, 68, 35, 0.18); }
+h1 { font-family: 'Italiana', Georgia, serif; font-size: 38px; color: #2A1810; line-height: 1.1; margin: 0 0 18px; font-weight: normal; }
 h1 em { font-style: italic; color: #A85537; }
-.meta { font-family: monospace; font-size: 10px; letter-spacing: 4px; color: #A85537; text-transform: uppercase; margin: 0 0 32px; }
-p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-family: Georgia, serif; }
-.btn { display: inline-block; padding: 18px 38px; background: #C8704D; color: #FAF5EC !important; text-decoration: none; font-family: monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin: 28px 0; }
-.steps { background: #FFFCF5; border: 1px solid rgba(106, 68, 35, 0.18); padding: 22px 26px; margin: 22px 0; }
-.steps p { margin-bottom: 10px; }
-.footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
+h2 { font-family: 'Italiana', Georgia, serif; font-size: 22px; color: #2A1810; margin: 30px 0 14px; font-weight: normal; }
+.meta { font-family: monospace; font-size: 10px; letter-spacing: 4px; color: #A85537; text-transform: uppercase; margin: 0 0 28px; }
+p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 16px; font-family: Georgia, serif; }
+.planning { background: #FFFCF5; border: 1px solid rgba(106, 68, 35, 0.18); padding: 22px 26px; margin: 18px 0 28px; }
+.planning-row { padding: 12px 0; border-bottom: 1px dashed rgba(106, 68, 35, 0.15); }
+.planning-row:last-child { border-bottom: none; }
+.planning-date { font-family: monospace; font-size: 11px; letter-spacing: 2px; color: #A85537; text-transform: uppercase; margin-bottom: 4px; }
+.planning-title { font-family: 'Italiana', Georgia, serif; font-size: 17px; color: #2A1810; }
+.highlight { background: rgba(212, 160, 76, 0.10); border-left: 3px solid #D4A04C; padding: 16px 22px; margin: 18px 0; font-style: italic; }
+.footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 42px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
 </style></head><body>
 <div class="container">
   <p class="meta">✦ Sanctuarys · Yoni Social Club</p>
-  <h1>Ton Temple ✦<br><em>Une seule étape pour entrer.</em></h1>
-  <p>Chère ${prenom},</p>
-  <p>Tu as reçu ce matin un email avec un lien d'accès. Certaines d'entre vous ont essayé et se sont retrouvées bloquées à l'entrée. Nous avons compris d'où venait le problème et nous l'avons corrigé. Pardon pour ces aller-retours.</p>
-  <p>Nous sommes en pleine phase de construction de votre espace privé. Le Temple s'affine de jour en jour, et chacun de vos retours nous aide à le rendre plus juste avant le jour J. <strong>Continue à nous écrire si quelque chose bloque ou te paraît étrange</strong>, c'est exactement ce dont nous avons besoin.</p>
-  <p><strong>Voici le chemin clarifié pour entrer dans ton Temple :</strong></p>
-  <div class="steps">
-    <p>1. Va sur <a href="https://sanctuarys.me/portail-club" style="color: #A85537;"><strong>sanctuarys.me/portail-club</strong></a></p>
-    <p>2. Tu verras un bandeau visible en haut : <strong>✦ Première fois ?</strong></p>
-    <p>3. Clique sur <strong>"Définir mon mot de passe ✦"</strong></p>
-    <p>4. Entre l'email Fondatrice avec lequel tu as réservé ta place</p>
-    <p>5. Tu reçois immédiatement un email avec un lien</p>
-    <p>6. Le lien t'amène sur une page où tu choisis le mot de passe de ton choix</p>
-    <p>7. Ce mot de passe te servira à toutes tes prochaines connexions</p>
+  <h1>Le Sanctuaire<br><em>ouvre ses portes.</em> 🌿</h1>
+  <p>✨ Chère ${prenom},</p>
+  <p>J'ai la joie de vous annoncer que le Sanctuaire ouvrira officiellement ses portes dès la semaine prochaine. 🌿</p>
+  <p>Je vous partage le planning de rentrée <strong>Août & Septembre</strong> pour que vous puissiez vous préparer et anticiper chaque étape de cette ouverture.</p>
+
+  <h2>🗓️ Planning de rentrée</h2>
+  <div class="planning">
+    <div class="planning-row">
+      <div class="planning-date">10 au 16 août</div>
+      <div class="planning-title">Ouverture & nouveaux espaces</div>
+      <p style="margin: 4px 0 0; font-size: 14px; font-style: italic;">Finalisation des aménagements, ouverture officielle au public.</p>
+    </div>
+    <div class="planning-row">
+      <div class="planning-date">17 au 23 août</div>
+      <div class="planning-title">Boutique & Créations</div>
+      <p style="margin: 4px 0 0; font-size: 14px; font-style: italic;">Démarrage des ventes physiques et conseils sur place.</p>
+    </div>
+    <div class="planning-row">
+      <div class="planning-date">24 au 30 août</div>
+      <div class="planning-title">Soins individuels & Partenariats</div>
+      <p style="margin: 4px 0 0; font-size: 14px; font-style: italic;">Reprise des consultations solo, intégration des produits créateurs.</p>
+    </div>
+    <div class="planning-row">
+      <div class="planning-date">31 août au 6 septembre</div>
+      <div class="planning-title">Transmission & Pédagogie</div>
+      <p style="margin: 4px 0 0; font-size: 14px; font-style: italic;">Reprise des sessions de Formation Bain Vapeur Vaginal.</p>
+    </div>
+    <div class="planning-row">
+      <div class="planning-date">Dès le 7 septembre</div>
+      <div class="planning-title">Lancement des espaces collectifs</div>
+      <p style="margin: 4px 0 0; font-size: 14px; font-style: italic;">Cercles de Femmes, Ateliers signature, déploiement complet de la grille de soins.</p>
+    </div>
   </div>
-  <p style="text-align: center;"><a href="https://sanctuarys.me/portail-club" class="btn">Ouvrir le Portail ✦</a></p>
-  <p><strong>Une fois entrée, tu trouveras :</strong></p>
-  <p style="margin-left: 12px;">✦ Ton Premier Seuil (si pas encore déposé)<br>
-  ✦ Ton journal personnel<br>
-  ✦ Tes séances et événements<br>
-  ✦ Tout ce que le Club te réserve</p>
-  <p style="background: rgba(212, 160, 76, 0.10); padding: 16px 20px; border-left: 3px solid #D4A04C; font-size: 14px;">Si tu as <strong>déjà défini ton mot de passe et l'as oublié</strong>, le même bouton fonctionne aussi pour le réinitialiser. Si tu te <strong>souviens de ton mot de passe</strong>, tu peux te connecter normalement depuis le même portail.</p>
-  <p>Encore pardon pour la patience que vous nous accordez. Vous êtes les premières à ouvrir cette porte, et votre regard nous est précieux. N'hésite jamais à nous remonter ce qui te paraît à corriger.</p>
-  <p style="font-family: 'Italiana', Georgia, serif; font-size: 18px; color: #A85537; margin-top: 30px;">Avec attention,</p>
-  <p style="font-family: 'Italiana', Georgia, serif; font-size: 20px; color: #2A1810; margin-top: -10px;">L'équipe Sanctuarys</p>
+
+  <h2>🛁 En attendant l'ouverture des soins...</h2>
+  <p>Les soins de Bain Vapeur Vaginal débuteront officiellement en septembre, le temps de finaliser chaque détail pour vous accueillir dans un espace à la hauteur de ce que vous méritez.</p>
+  <div class="highlight">
+    <p style="margin: 0; font-size: 15px; color: #2A1810;">D'ici là, si vous souhaitez prendre soin de vous dès maintenant, vous pouvez me contacter en privé : je vous enverrai, <strong>à mes frais, une cure de Bain Vapeur Vaginal composée de 4 sachets</strong>. Vous pourrez les utiliser en vapeur vaginale, mais également en bain de corps pour réguler votre Yin ou votre Yang selon vos besoins du moment. Une façon de commencer à vous ancrer dans cette énergie de transformation avant même l'ouverture officielle.</p>
+  </div>
+
+  <h2>💻 Un mot sur votre espace digital</h2>
+  <p>Votre espace membre Sanctuarys est actuellement en cours de finalisation et notre équipe y travaille activement. Vous y aurez à nouveau accès très bientôt, dès que les derniers ajustements seront en place. Merci pour votre patience, cet espace est pensé avec soin pour vous offrir la meilleure expérience possible.</p>
+
+  <p style="margin-top: 30px;">Merci infiniment pour votre confiance, votre patience et votre présence dans cette belle aventure. Chaque étape est pensée pour que cette ouverture soit un véritable espace de transformation.</p>
+  <p>À très bientôt au Sanctuaire. 🤍</p>
+  <p style="font-family: 'Italiana', Georgia, serif; font-size: 22px; color: #2A1810; margin-top: 28px;">Princesse Tchassi</p>
+
   <div class="footer">Sanctuarys · Paris 12<sup>e</sup> · sanctuarys.me · info@sanctuarys.me</div>
 </div></body></html>`
+    }
+
+    // Envoi PARALLELE de tous les emails (Promise.all)
+    const sendPromises = candidates.map(async (c) => {
+      try {
+        const prenom = c.prenom || 'Fondatrice'
+        const emailHtml = buildEmailHtml(prenom)
 
         const resendResp = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -171,23 +190,22 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
           body: JSON.stringify({
             from: 'Sanctuarys <info@sanctuarys.me>',
             to: c.email.toLowerCase(),
-            subject: 'Ton accès au Temple ✦ Chemin clarifié',
+            subject: 'Le Sanctuaire ouvre ses portes 🌿',
             html: emailHtml
           })
         })
 
         if (!resendResp.ok) {
           const errTxt = await resendResp.text()
-          results.push({ email: c.email, prenom: c.prenom, sent: false, reason: 'resend_error: ' + errTxt })
-          continue
+          return { email: c.email, prenom: c.prenom, sent: false, reason: 'resend_error: ' + errTxt }
         }
-
-        results.push({ email: c.email, prenom: c.prenom, sent: true })
+        return { email: c.email, prenom: c.prenom, sent: true }
       } catch (err: any) {
-        results.push({ email: c.email, prenom: c.prenom, sent: false, reason: 'exception: ' + err.message })
+        return { email: c.email, prenom: c.prenom, sent: false, reason: 'exception: ' + err.message }
       }
-    }
+    })
 
+    const results = await Promise.all(sendPromises)
     const sentCount = results.filter(r => r.sent).length
 
     return json({

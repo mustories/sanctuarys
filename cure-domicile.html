@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cure à domicile · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Cure Sanctuarys à domicile : analyse de l'utérus à distance, prescription de plantes composée pour toi, livraison en Europe et en Amérique.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sanctuarys.me/cure-domicile">
+<meta property="og:title" content="Cure à domicile · Sanctuarys">
+<meta property="og:description" content="Analyse à distance, plantes composées, livraison Europe et Amérique.">
+<meta property="og:image" content="https://sanctuarys.me/assets/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --rose: #D4A89A;
+    --rouge-vif: #B22B2B;
+    --vert-succes: #6B8C4A;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--blanc); color: var(--marron-deep); font-family: 'Inter', sans-serif; font-weight: 300; overflow-x: hidden; }
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    opacity: 0.05; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    padding: 20px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250, 245, 236, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(106, 68, 35, 0.1);
+  }
+  nav a.logo { text-decoration: none; display: flex; align-items: center; }
+  nav a.logo img { height: 42px; }
+  nav .back {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--marron-deep); text-transform: uppercase; text-decoration: none;
+    padding: 10px 18px; border: 1px solid var(--terracotta);
+    transition: all 0.3s;
+  }
+  nav .back:hover { background: var(--terracotta); color: var(--blanc); }
+
+  .hero {
+    padding: 160px 40px 80px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at 50% 20%, rgba(200, 112, 77, 0.14), transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(184, 137, 90, 0.10), transparent 50%),
+      var(--blanc);
+  }
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 5px;
+    color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 26px;
+  }
+  h1 {
+    font-family: 'Italiana', serif; font-size: clamp(44px, 6vw, 76px); line-height: 1.05;
+    color: var(--marron-deep); margin-bottom: 24px; font-weight: 400;
+  }
+  h1 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); display: block; margin-top: 6px; }
+  .lead {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(18px, 2vw, 22px); line-height: 1.65; color: var(--marron);
+    max-width: 620px; margin: 0 auto 42px;
+  }
+
+  .hero-cta {
+    display: inline-block; padding: 18px 38px;
+    background: var(--terracotta); color: var(--blanc);
+    text-decoration: none; text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px;
+    transition: all 0.3s;
+  }
+  .hero-cta:hover { background: var(--marron-deep); }
+
+  section { padding: 90px 40px; }
+
+  .parcours {
+    background: var(--blanc-deep);
+    padding: 100px 40px;
+  }
+  .parcours-inner { max-width: 1100px; margin: 0 auto; }
+  .parcours-title {
+    text-align: center; font-family: 'Italiana', serif; font-size: clamp(34px, 4vw, 52px);
+    color: var(--marron-deep); margin-bottom: 12px; font-weight: 400;
+  }
+  .parcours-title em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .parcours-sub {
+    text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 17px; color: var(--marron-soft); margin-bottom: 60px;
+  }
+  .steps {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+  }
+  .step {
+    background: var(--blanc); border: 1px solid var(--line); padding: 32px 28px;
+    position: relative;
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .step-roman {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 60px;
+    color: var(--terracotta-pale); position: absolute; top: 20px; right: 22px;
+    line-height: 1;
+  }
+  .step h3 {
+    font-family: 'Italiana', serif; font-size: 24px; color: var(--marron-deep);
+    margin-bottom: 12px; font-weight: 400;
+  }
+  .step p {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px;
+    color: var(--marron); line-height: 1.7;
+  }
+
+  .zones {
+    padding: 90px 40px; text-align: center;
+  }
+  .zones h2 {
+    font-family: 'Italiana', serif; font-size: clamp(30px, 4vw, 46px);
+    color: var(--marron-deep); font-weight: 400; margin-bottom: 40px;
+  }
+  .zones h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .zones-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; max-width: 900px; margin: 0 auto;
+  }
+  .zone-card {
+    background: var(--blanc-deep); border: 1px solid var(--line);
+    padding: 34px 30px; text-align: left;
+  }
+  .zone-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--or); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .zone-card h3 { font-family: 'Italiana', serif; font-size: 26px; margin-bottom: 12px; font-weight: 400; color: var(--marron-deep); }
+  .zone-card p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron); line-height: 1.65; }
+  .zone-card ul { margin-top: 12px; padding-left: 18px; }
+  .zone-card li { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--marron); line-height: 1.9; }
+
+  .form-section {
+    background: var(--marron-noir); color: var(--rose);
+    padding: 100px 40px;
+  }
+  .form-inner { max-width: 720px; margin: 0 auto; }
+  .form-section h2 {
+    font-family: 'Italiana', serif; font-size: clamp(30px, 4vw, 44px); color: var(--blanc);
+    text-align: center; font-weight: 400; margin-bottom: 14px;
+  }
+  .form-section h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-pale); }
+  .form-section .lead-form {
+    text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 16px; color: var(--rose); margin-bottom: 44px; line-height: 1.65;
+  }
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2.5px; color: var(--or-pale); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 14px 16px;
+    background: rgba(250, 245, 236, 0.06);
+    border: 1px solid rgba(212, 160, 76, 0.25);
+    color: var(--blanc);
+    font-family: 'Cormorant Garamond', serif; font-size: 16px;
+    font-style: italic;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--terracotta);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } }
+  .form-submit {
+    width: 100%; padding: 18px; background: var(--terracotta); color: var(--blanc);
+    border: none; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
+    transition: background 0.3s;
+  }
+  .form-submit:hover { background: var(--terracotta-deep); }
+  .form-submit:disabled { background: var(--marron-soft); cursor: not-allowed; }
+  .form-note {
+    text-align: center; margin-top: 20px; font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 13px; color: var(--rose); opacity: 0.75;
+  }
+  .form-success {
+    display: none; padding: 30px; background: rgba(107, 140, 74, 0.15);
+    border: 1px solid var(--vert-succes); text-align: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--blanc);
+    line-height: 1.7;
+  }
+  .form-success.show { display: block; }
+  .form-error {
+    display: none; padding: 14px 18px;
+    background: rgba(178, 43, 43, 0.15); border-left: 3px solid var(--rouge-vif);
+    color: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic;
+    margin-bottom: 20px;
+  }
+  .form-error.show { display: block; }
+
+  footer {
+    padding: 40px; text-align: center; background: var(--marron-noir);
+    color: var(--rose); font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
+  }
+  footer a { color: var(--terracotta-pale); text-decoration: none; margin: 0 8px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <a href="/" class="back">← Retour à l'accueil</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-meta">✦ Cure à domicile · Europe · Amérique</div>
+  <h1>Ta cure<br><em>t'attend chez toi.</em></h1>
+  <p class="lead">Tu vis loin de nos murs, tu voyages, tu ne peux pas venir maintenant. La cure à domicile te suit. Une analyse à distance, une prescription composée pour toi par une Gardienne Sanctuarys, un envoi de plantes à ta porte.</p>
+  <a href="#commander" class="hero-cta">Commander ma cure ✦</a>
+</section>
+
+<section class="parcours">
+  <div class="parcours-inner">
+    <h2 class="parcours-title">Ton parcours <em>en quatre temps.</em></h2>
+    <p class="parcours-sub">La même liturgie qu'en nos murs, elle s'invite chez toi.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-roman">I</div>
+        <div class="step-num">01 · Demande</div>
+        <h3>Tu écris ta situation.</h3>
+        <p>Formulaire ci-dessous, quelques questions pour poser le contexte : cycle, fertilité, symptômes, allaitement, intention.</p>
+      </div>
+      <div class="step">
+        <div class="step-roman">II</div>
+        <div class="step-num">02 · Analyse</div>
+        <h3>Radiesthésie à distance.</h3>
+        <p>Une Gardienne Sanctuarys lit ton utérus à distance. Elle t'envoie un compte rendu et te propose une prescription personnalisée de plantes.</p>
+      </div>
+      <div class="step">
+        <div class="step-roman">III</div>
+        <div class="step-num">03 · Préparation</div>
+        <h3>Ta cure est composée.</h3>
+        <p>Les plantes sont dosées, préparées et emballées par notre équipe. Chaque flacon porte sa fiche : usage traditionnel, lecture énergétique, posologie personnelle.</p>
+      </div>
+      <div class="step">
+        <div class="step-roman">IV</div>
+        <div class="step-num">04 · Livraison</div>
+        <h3>Le colis arrive.</h3>
+        <p>Ta cure te parvient sous 7 à 14 jours en Europe, 14 à 21 jours en Amérique. Tu commences chez toi, la Gardienne reste disponible pour ton suivi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="zones">
+  <h2>Où nous <em>livrons.</em></h2>
+  <div class="zones-grid">
+    <div class="zone-card">
+      <div class="zone-label">✦ Zone A</div>
+      <h3>Europe</h3>
+      <p>Livraison sous 7 à 14 jours ouvrés.</p>
+      <ul>
+        <li>France, Belgique, Suisse, Luxembourg</li>
+        <li>Espagne, Portugal, Italie</li>
+        <li>Allemagne, Pays-Bas, Autriche</li>
+        <li>Royaume-Uni, Irlande</li>
+        <li>Autres pays européens sur devis</li>
+      </ul>
+    </div>
+    <div class="zone-card">
+      <div class="zone-label">✦ Zone B</div>
+      <h3>Amérique</h3>
+      <p>Livraison sous 14 à 21 jours ouvrés.</p>
+      <ul>
+        <li>Canada</li>
+        <li>États-Unis</li>
+        <li>Antilles françaises</li>
+        <li>Amérique latine sur devis</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="form-section" id="commander">
+  <div class="form-inner">
+    <h2>Commander ma <em>cure.</em></h2>
+    <p class="lead-form">Écris-nous ta situation. La Gardienne prend contact sous deux jours ouvrés pour ouvrir ta lecture.</p>
+
+    <div class="form-error" id="formError"></div>
+
+    <form id="cureForm">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Prénom *</label>
+          <input type="text" name="prenom" required>
+        </div>
+        <div class="form-group">
+          <label>Nom *</label>
+          <input type="text" name="nom" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label>Téléphone (avec code pays) *</label>
+        <input type="tel" name="phone" required placeholder="+33 6 ...">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Pays de livraison *</label>
+          <select name="destination_country" required>
+            <option value="">Choisis...</option>
+            <option>France</option>
+            <option>Belgique</option>
+            <option>Suisse</option>
+            <option>Luxembourg</option>
+            <option>Espagne</option>
+            <option>Portugal</option>
+            <option>Italie</option>
+            <option>Allemagne</option>
+            <option>Pays-Bas</option>
+            <option>Autriche</option>
+            <option>Royaume-Uni</option>
+            <option>Irlande</option>
+            <option>Canada</option>
+            <option>États-Unis</option>
+            <option>Antilles françaises</option>
+            <option>Autre pays européen</option>
+            <option>Autre pays américain</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ville *</label>
+          <input type="text" name="destination_city" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Adresse complète de livraison</label>
+        <textarea name="destination_address" rows="2" placeholder="Rue, code postal, précisions..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Type de cure recherchée *</label>
+        <select name="cure_type" required>
+          <option value="">Choisis...</option>
+          <option value="fertilite">Fertilité et préparation à la conception</option>
+          <option value="regulation_cycle">Régulation du cycle</option>
+          <option value="douleurs">Douleurs cycliques ou pré-menstruelles</option>
+          <option value="post_partum">Retour post-partum, ré-équilibrage</option>
+          <option value="pre_menopause">Périménopause, ménopause</option>
+          <option value="detox">Détox utérine, mémoire, résidus</option>
+          <option value="entretien">Entretien général, terrain</option>
+          <option value="autre">Autre (précise dans ta situation)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ta situation *</label>
+        <textarea name="notes" rows="4" required placeholder="Cycle, symptômes, ce qui t'amène, ta démarche."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Es-tu en allaitement ?</label>
+        <div style="display: flex; gap: 24px; margin-top: 6px;">
+          <label style="display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--blanc); cursor: pointer; font-style: italic;">
+            <input type="radio" name="allaitement" value="non" style="accent-color: var(--terracotta);">Non
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--blanc); cursor: pointer; font-style: italic;">
+            <input type="radio" name="allaitement" value="oui" style="accent-color: var(--terracotta);">Oui
+          </label>
+        </div>
+      </div>
+      <div style="background: rgba(178, 43, 43, 0.15); border-left: 3px solid var(--rouge-vif); padding: 14px 20px; margin-bottom: 24px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--blanc); line-height: 1.65;">
+        Sanctuarys ne compose pas de cure pour femme enceinte. En envoyant ce formulaire, tu confirmes ne pas être enceinte. Les allaitantes sont accueillies, indique-le ci-dessus.
+      </div>
+      <button type="submit" class="form-submit" id="submitBtn">Envoyer ma demande de cure ✦</button>
+      <p class="form-note">Une Gardienne te répond sous deux jours ouvrés avec le devis et les prochaines étapes.</p>
+    </form>
+
+    <div class="form-success" id="formSuccess">
+      <strong style="font-family: 'Italiana', serif; font-weight: normal; font-style: normal; font-size: 22px; color: var(--terracotta-pale); display: block; margin-bottom: 12px;">✦ Ta demande est reçue</strong>
+      Une Gardienne Sanctuarys revient vers toi sous deux jours ouvrés avec ton devis, ton créneau d'analyse à distance et les instructions pour la suite. Si tu souhaites accélérer, écris directement à info@sanctuarys.me.
+    </div>
+  </div>
+</section>
+
+<footer>
+  Sanctuarys · Cure à domicile · sanctuarys.me · info@sanctuarys.me
+  <div style="margin-top: 12px;">
+    <a href="/">Accueil</a> · <a href="/cgv">CGV</a> · <a href="/mentions-legales">Mentions légales</a>
+  </div>
+</footer>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+  document.getElementById('cureForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('submitBtn');
+    const errorEl = document.getElementById('formError');
+    const successEl = document.getElementById('formSuccess');
+    errorEl.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+
+    const data = new FormData(form);
+    const payload = {
+      client_name: `${data.get('prenom').trim()} ${data.get('nom').trim()}`,
+      client_email: data.get('email').trim().toLowerCase(),
+      destination_country: data.get('destination_country'),
+      destination_city: data.get('destination_city').trim(),
+      destination_address: (data.get('destination_address') || '').trim() || null,
+      cure_type: data.get('cure_type'),
+      notes: `Téléphone: ${data.get('phone').trim()}\nAllaitement: ${data.get('allaitement') || 'non précisé'}\n\nSituation: ${data.get('notes').trim()}`
+    };
+
+    try {
+      const supa = await Sanctuarys.init();
+      const { error } = await supa.from('home_cures').insert(payload);
+      if (error) throw new Error(error.message);
+      form.style.display = 'none';
+      successEl.classList.add('show');
+      window.scrollTo({ top: successEl.offsetTop - 100, behavior: 'smooth' });
+    } catch (err) {
+      errorEl.textContent = 'Erreur : ' + err.message + '. Écris directement à info@sanctuarys.me.';
+      errorEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Envoyer ma demande de cure ✦';
+    }
+  });
+</script>
+</body>
+</html>
