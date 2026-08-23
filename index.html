@@ -97,19 +97,22 @@
 
   /* Custom cursor */
   .cursor {
-    position: fixed; width: 8px; height: 8px;
-    border-radius: 50%; background: var(--terracotta-deep);
+    position: fixed; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--blanc);
+    mix-blend-mode: difference;
     pointer-events: none; z-index: 1000;
     transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
   }
   .cursor-trail {
-    position: fixed; width: 44px; height: 44px;
-    border: 1px solid var(--or); border-radius: 50%;
+    position: fixed; width: 46px; height: 46px;
+    border: 1.5px solid var(--blanc); border-radius: 50%;
+    mix-blend-mode: difference;
     pointer-events: none; z-index: 999;
-    transform: translate(-50%, -50%); opacity: 0.5;
+    transform: translate(-50%, -50%); opacity: 0.85;
     transition: width 0.4s, height 0.4s, opacity 0.4s, background 0.3s, border-color 0.3s;
   }
-  body.cursor-hover .cursor-trail { width: 80px; height: 80px; background: rgba(184, 137, 90, 0.1); border-color: var(--terracotta); }
+  body.cursor-hover .cursor-trail { width: 84px; height: 84px; background: rgba(255, 255, 255, 0.18); }
 
   h1, h2, h3, h4 { font-weight: 400; letter-spacing: 0; }
 
@@ -1456,27 +1459,13 @@
       <div class="section-num">08 / Connexion</div>
       <h2 class="section-title">Accéder à<br><em>mon espace.</em></h2>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+    <div style="display: flex; justify-content: center;">
 
-      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
-        <div class="offre-tag">✦ Espace cliente</div>
-        <h3 class="offre-title" style="font-size: 28px;">Fondatrice<em>.</em></h3>
+      <div class="offre-card" style="text-align: left; padding: 46px 38px; max-width: 420px; width: 100%;">
+        <div class="offre-tag">✦ Ton espace</div>
+        <h3 class="offre-title" style="font-size: 28px;">Espace<br><em>membre.</em></h3>
         <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Ton suivi de soins, tes comptes rendus et tes prochains rendez-vous.</p>
-        <a href="/portail-club.html" class="btn-primary"><span>Entrer ✦</span></a>
-      </div>
-
-      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
-        <div class="offre-tag">✦ Formation</div>
-        <h3 class="offre-title" style="font-size: 28px;">Espace<br><em>Élève.</em></h3>
-        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Tes modules, tes ressources et ton parcours à l'École Sanctuarys.</p>
-        <a href="/espace-eleve.html" class="btn-primary"><span>Entrer ✦</span></a>
-      </div>
-
-      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
-        <div class="offre-tag">✦ Accès restreint</div>
-        <h3 class="offre-title" style="font-size: 28px;">Admin<em>.</em></h3>
-        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Réservé à l'administration de Sanctuarys.</p>
-        <a href="/admin.html" class="btn-outline"><span>Entrer ✦</span></a>
+        <a href="/espace-membre.html" class="btn-primary"><span>Entrer ✦</span></a>
       </div>
 
     </div>
