@@ -464,10 +464,14 @@
   function initDatePicker() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    // Ouverture des reservations a partir du 1er septembre 2026 :
+    // on part directement sur cette semaine-la si on n'y est pas encore
+    const openingFloor = new Date(2026, 8, 1);
+    const base = openingFloor > today ? openingFloor : today;
     // Aligner sur lundi de la semaine
-    const dow = today.getDay();
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    const dow = base.getDay();
+    const monday = new Date(base);
+    monday.setDate(base.getDate() - (dow === 0 ? 6 : dow - 1));
     state.weekStart = monday;
     renderDatePicker();
   }
@@ -491,15 +495,18 @@
     const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    // Ouverture des reservations a partir du 1er septembre 2026
+    const openingFloor = new Date(2026, 8, 1);
+    const earliestBookable = openingFloor > today ? openingFloor : today;
 
     let cells = '';
     for (let i = 0; i < 7; i++) {
       const d = new Date(state.weekStart);
       d.setDate(d.getDate() + i);
-      const isPast = d < today;
+      const isPast = d < earliestBookable;
       const dow = d.getDay();
-      // Sanctuarys ouvert mardi-samedi (dow 2..6). Ferme dimanche(0) et lundi(1).
-      const isClosed = dow === 0 || dow === 1;
+      // Sanctuarys ouvert lundi-samedi (dow 1..6). Ferme dimanche(0).
+      const isClosed = dow === 0;
       const iso = d.toISOString().split('T')[0];
       cells += `<div class="date-cell ${isPast ? 'past' : ''} ${isClosed ? 'closed' : ''}" data-date="${iso}" ${(!isPast && !isClosed) ? `onclick="chooseDate('${iso}', this)"` : ''}>
         <div class="day-name">${dayNames[i]}</div>

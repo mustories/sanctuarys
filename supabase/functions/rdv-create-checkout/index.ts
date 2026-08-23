@@ -44,7 +44,16 @@ Deno.serve(async (req) => {
       return json({ error: 'Champs obligatoires manquants : sanctuary, creneau, prenom, nom, email, telephone' }, 400)
     }
 
-    // Verifie que le creneau est libre (60 min, statut non annule)
+    // Sanctuary info (capacite + metadata)
+    const { data: sanctuary } = await admin
+      .from('sanctuaries')
+      .select('nom, ville, capacity')
+      .eq('id', sanctuary_id)
+      .single()
+
+    const capacity = sanctuary?.capacity ?? 1
+
+    // Verifie que le creneau a encore de la place (capacite = nombre de sieges du lieu)
     const startDate = new Date(start_at)
     const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
 
@@ -64,16 +73,9 @@ Deno.serve(async (req) => {
       return true
     })
 
-    if (stillActive.length > 0) {
+    if (stillActive.length >= capacity) {
       return json({ error: 'Ce creneau vient d\'etre reserve, choisis-en un autre.' }, 409)
     }
-
-    // Sanctuary info pour metadata
-    const { data: sanctuary } = await admin
-      .from('sanctuaries')
-      .select('nom, ville')
-      .eq('id', sanctuary_id)
-      .single()
 
     // Cree l'appointment en pending_payment
     const { data: appt, error: apptError } = await admin
