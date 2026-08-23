@@ -10,7 +10,12 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&family=Cinzel:wght@400;500&family=Caveat:wght@400;500;600&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Marcellus&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&family=Caveat:wght@400;500;600&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Alias pour eviter de casser les anciennes references */
+  body :is(*) { font-variant-ligatures: contextual; }
+  .use-italiana, .italiana-alias { font-family: 'Marcellus', serif !important; font-style: normal !important; }
+</style>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -115,7 +120,7 @@
     background: linear-gradient(135deg, var(--terracotta-pale), var(--or-pale));
     display: flex; align-items: center; justify-content: center;
     color: var(--marron-deep);
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 18px;
     border: 1px solid var(--or);
   }
@@ -151,7 +156,7 @@
   }
   .hero-meta .line { flex: 1; height: 1px; background: var(--line); max-width: 80px; }
   .hero h1 {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: clamp(40px, 5.5vw, 76px);
     line-height: 1.0;
     letter-spacing: -0.5px;
@@ -160,13 +165,13 @@
     margin-bottom: 16px;
   }
   .hero h1 em {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     color: var(--terracotta-deep);
   }
   .hero-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 20px;
     line-height: 1.6;
     color: var(--marron);
@@ -194,7 +199,7 @@
     text-transform: uppercase;
   }
   .status-pill-value {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 16px;
     color: var(--marron-deep);
     margin-top: 2px;
@@ -228,16 +233,16 @@
   }
   .welcome-banner-text { flex: 1; }
   .welcome-banner h3 {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 32px;
     color: var(--marron-deep);
     font-weight: 400;
     margin-bottom: 6px;
   }
-  .welcome-banner h3 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .welcome-banner h3 em { font-family: 'Fraunces', serif; font-style: normal; color: var(--terracotta-deep); }
   .welcome-banner p {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 16px;
     line-height: 1.65;
     color: var(--marron);
@@ -301,12 +306,12 @@
     text-transform: uppercase;
   }
   .panel h2 {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 30px; line-height: 1.1;
     color: var(--marron-deep);
     font-weight: 400; margin-top: 6px;
   }
-  .panel h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .panel h2 em { font-family: 'Fraunces', serif; font-style: normal; color: var(--terracotta-deep); }
   .panel-badge {
     font-family: 'JetBrains Mono', monospace;
     font-size: 8px; letter-spacing: 2px;
@@ -341,15 +346,15 @@
     padding: 30px 10px;
   }
   .empty-state .symbol {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 56px;
     color: var(--terracotta-pale);
     line-height: 1;
     margin-bottom: 14px;
   }
   .empty-state p {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 16px;
     line-height: 1.6;
     color: var(--marron);
@@ -377,14 +382,14 @@
   /* ===== Panel 1: Cycle ===== */
   .cycle-current { text-align: center; padding: 16px 0 20px; }
   .cycle-day {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 64px;
     color: var(--terracotta-deep);
     line-height: 1;
   }
   .cycle-phase {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 17px;
     color: var(--marron);
     margin-top: 8px;
@@ -458,14 +463,14 @@
     margin-bottom: 14px;
   }
   .modal h2 {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 36px;
     color: var(--marron-deep);
     font-weight: 400;
     margin-bottom: 20px;
     line-height: 1.1;
   }
-  .modal h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .modal h2 em { font-family: 'Fraunces', serif; font-style: normal; color: var(--terracotta-deep); }
 
   /* ===== Premier seuil form ===== */
   .ps-section {
@@ -475,14 +480,14 @@
   }
   .ps-section:last-of-type { border-bottom: none; }
   .ps-section-title {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 22px;
     color: var(--marron-deep);
     margin-bottom: 6px;
   }
   .ps-help {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 13px;
     color: var(--marron-soft);
     margin-bottom: 14px;
@@ -507,13 +512,13 @@
     padding: 11px 14px;
     border: 1px solid var(--line);
     background: var(--blanc);
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Fraunces', serif;
     font-size: 15px;
     color: var(--marron-deep);
     font-style: normal;
     transition: border-color 0.2s;
   }
-  textarea.ps-input { font-style: italic; line-height: 1.55; resize: vertical; }
+  textarea.ps-input { font-style: normal; line-height: 1.55; resize: vertical; }
   .ps-input:focus { outline: none; border-color: var(--terracotta); }
   .ps-checkboxes {
     display: grid;
@@ -533,8 +538,8 @@
   .ps-checkbox:hover { border-color: var(--terracotta); }
   .ps-checkbox input { accent-color: var(--terracotta); width: 16px; height: 16px; cursor: pointer; }
   .ps-checkbox span {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 14px;
     color: var(--marron-deep);
   }
@@ -564,19 +569,19 @@
     background: rgba(168, 85, 55, 0.06);
   }
   .soin-option .name {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 18px;
     color: var(--marron-deep);
   }
   .soin-option .meta {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 13px;
     color: var(--marron-soft);
     margin-top: 2px;
   }
   .soin-option .price {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 20px;
     color: var(--terracotta-deep);
   }
@@ -584,7 +589,7 @@
     width: 100%;
     padding: 12px 16px;
     border: 1px solid var(--line);
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Fraunces', serif;
     font-size: 16px;
     color: var(--marron-deep);
     background: var(--blanc);
@@ -615,8 +620,8 @@
     grid-column: 1 / -1;
     padding: 16px;
     text-align: center;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 14px;
     color: var(--marron-soft);
     background: var(--blanc-deep);
@@ -631,8 +636,8 @@
     padding: 16px 20px;
     margin-bottom: 14px;
     border-left: 3px solid var(--terracotta);
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 15px;
     color: var(--marron-deep);
     line-height: 1.7;
@@ -735,7 +740,7 @@
   }
   .journal-textarea::placeholder {
     font-family: 'Caveat', cursive;
-    font-style: italic;
+    font-style: normal;
     color: var(--marron-soft);
     opacity: .55;
   }
@@ -743,7 +748,7 @@
   /* Référral */
   .credit-display { text-align: center; margin: 6px 0 18px; }
   .credit-big {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 56px;
     color: var(--or);
     line-height: 1;
@@ -799,8 +804,8 @@
     background: var(--blanc-card);
     border: 1px solid var(--line);
     padding: 12px 14px;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 14px;
     color: var(--marron);
     text-align: center;
@@ -812,14 +817,14 @@
     margin-bottom: 14px;
   }
   .seances-counter .big {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 56px;
     color: var(--terracotta-deep);
     line-height: 1;
   }
   .seances-counter .total {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 20px;
     color: var(--marron-soft);
   }
@@ -843,14 +848,14 @@
     margin-bottom: 8px;
   }
   .next-seance-date {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 22px;
     color: var(--marron-deep);
     line-height: 1.2;
   }
   .next-seance-time {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 14px;
     color: var(--marron);
     margin-top: 4px;
@@ -867,7 +872,7 @@
   .soin-row:last-child { border-bottom: none; }
   .soin-day { text-align: center; }
   .soin-day-num {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 22px;
     color: var(--terracotta-deep);
     line-height: 1;
@@ -880,13 +885,13 @@
     margin-top: 2px;
   }
   .soin-name {
-    font-family: 'Italiana', serif;
+    font-family: 'Marcellus', serif;
     font-size: 16px;
     color: var(--marron-deep);
   }
   .soin-report-preview {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
+    font-family: 'Fraunces', serif;
+    font-style: normal;
     font-size: 13px;
     color: var(--marron);
     margin-top: 4px;
@@ -1002,7 +1007,7 @@
     </div>
     <div class="point-overview">
       <div>
-        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron); line-height: 1.7;" id="pointDescription">
+        <p style="font-family: 'Fraunces', serif; font-style: normal; font-size: 17px; color: var(--marron); line-height: 1.7;" id="pointDescription">
           Le point d'entrée est ton premier rituel dans le Temple. Tu y déposes ton état actuel sur sept domaines de vie. À chaque nouveau point, tu vois ton évolution. Princesse les lit pour préparer tes protocoles personnalisés et le choix de tes plantes.
         </p>
         <div class="point-grid">
@@ -1128,7 +1133,7 @@
     <button class="modal-close" onclick="closePointModal()">×</button>
     <div class="modal-meta" id="pointModalMeta">Point d'entrée</div>
     <h2 id="pointModalTitle">Mon <em>point.</em></h2>
-    <p id="pointModalIntro" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); margin-bottom: 24px;">Quelques minutes pour déposer ton état actuel sur 7 domaines de vie.</p>
+    <p id="pointModalIntro" style="font-family: 'Fraunces', serif; font-style: normal; font-size: 16px; color: var(--marron); margin-bottom: 24px;">Quelques minutes pour déposer ton état actuel sur 7 domaines de vie.</p>
 
     <div id="pointForm"></div>
 
@@ -1146,11 +1151,11 @@
     <div style="margin-top: 22px;">
       <label class="ps-label">Email de connexion</label>
       <input type="email" id="acctEmail" class="ps-input" readonly style="background: var(--blanc-deep);">
-      <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--marron-soft); margin-top: 4px;">Pour changer ton email, écris à info@sanctuarys.me.</div>
+      <div style="font-family: 'Fraunces', serif; font-style: normal; font-size: 12px; color: var(--marron-soft); margin-top: 4px;">Pour changer ton email, écris à info@sanctuarys.me.</div>
     </div>
 
     <div style="margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line);">
-      <div style="font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep); margin-bottom: 14px;">Changer mon <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">mot de passe.</em></div>
+      <div style="font-family: 'Marcellus', serif; font-size: 20px; color: var(--marron-deep); margin-bottom: 14px;">Changer mon <em style="font-family: 'Fraunces', serif; font-style: normal; color: var(--terracotta-deep);">mot de passe.</em></div>
       <div style="margin-bottom: 12px;">
         <label class="ps-label">Nouveau mot de passe</label>
         <input type="password" id="acctNewPw" class="ps-input" minlength="8" placeholder="••••••••">
@@ -1162,7 +1167,7 @@
       <button class="btn-full" onclick="changePassword()" id="changePwBtn">Mettre à jour mon mot de passe ✦</button>
     </div>
 
-    <div id="acctStatus" style="margin-top: 18px; padding: 14px 18px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; line-height: 1.6; display: none;"></div>
+    <div id="acctStatus" style="margin-top: 18px; padding: 14px 18px; font-family: 'Fraunces', serif; font-style: normal; font-size: 14px; line-height: 1.6; display: none;"></div>
   </div>
 </div>
 
@@ -1244,7 +1249,7 @@ async function init() {
 
   } catch (err) {
     console.error('init error:', err);
-    document.getElementById('loading').innerHTML = `<div style="text-align:center; max-width:400px;"><img src="/assets/sanctuarys-logo-1.png" style="width:90px; margin-bottom:20px;"><p style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--marron);">Le Temple n'est pas encore accessible. Erreur : ${err.message}</p></div>`;
+    document.getElementById('loading').innerHTML = `<div style="text-align:center; max-width:400px;"><img src="/assets/sanctuarys-logo-1.png" style="width:90px; margin-bottom:20px;"><p style="font-family:'Fraunces',serif;font-style:normal;color:var(--marron);">Le Temple n'est pas encore accessible. Erreur : ${err.message}</p></div>`;
   }
 }
 
@@ -1364,15 +1369,15 @@ async function renderCycle() {
       <div class="cycle-phase">Tu es dans la ${phase}</div>
       <div class="cycle-next">
         Cycle commencé le ${fmt(start)}<br>
-        <span style="color: var(--terracotta-deep); font-style: italic; font-size: 13px; display: inline-block; margin-top: 6px;">${nextLabel}</span>
+        <span style="color: var(--terracotta-deep); font-style: normal; font-size: 13px; display: inline-block; margin-top: 6px;">${nextLabel}</span>
       </div>
-      <div style="margin-top: 14px; padding: 12px 16px; background: rgba(212, 160, 76, 0.08); border-left: 3px solid var(--or); text-align: left; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron); line-height: 1.55;">
+      <div style="margin-top: 14px; padding: 12px 16px; background: rgba(212, 160, 76, 0.08); border-left: 3px solid var(--or); text-align: left; font-family: 'Fraunces', serif; font-style: normal; font-size: 13px; color: var(--marron); line-height: 1.55;">
         Durée moyenne de ton cycle : <strong style="font-style: normal; color: var(--marron-deep);">${avgLength} jours</strong>${confidenceTag}
       </div>
     </div>
     ${calendarHTML}
     <button class="panel-btn primary" style="width: 100%; margin-top: 16px;" onclick="openCycleModal()">Marquer un nouveau cycle ✦</button>
-    <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--marron-soft); text-align: center; margin-top: 10px;">Marque chaque mois la date où tes règles arrivent, le calcul s'affine tout seul.</p>
+    <p style="font-family: 'Fraunces', serif; font-style: normal; font-size: 13px; color: var(--marron-soft); text-align: center; margin-top: 10px;">Marque chaque mois la date où tes règles arrivent, le calcul s'affine tout seul.</p>
   `;
 }
 
@@ -1491,15 +1496,15 @@ function openCycleModal(prefillStart) {
     <div style="background: var(--blanc); max-width: 460px; width: 100%; padding: 36px 32px; border: 1px solid var(--line); position: relative;">
       <button onclick="closeCycleModal()" style="position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--marron-soft);">×</button>
       <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 10px;">✦ Mon cycle</div>
-      <h2 style="font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep); line-height: 1.1; margin-bottom: 8px; font-weight: normal;">Marquer un <em style="font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep);">cycle.</em></h2>
-      <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron); line-height: 1.6; margin-bottom: 22px;">Marque le <strong>premier jour</strong> où tes règles sont arrivées. Plus tu les marques mois après mois, plus la prédiction s'affine.</p>
+      <h2 style="font-family: 'Marcellus', serif; font-size: 28px; color: var(--marron-deep); line-height: 1.1; margin-bottom: 8px; font-weight: normal;">Marquer un <em style="font-family: 'Fraunces', serif; font-style: normal; color: var(--terracotta-deep);">cycle.</em></h2>
+      <p style="font-family: 'Fraunces', serif; font-style: normal; font-size: 14px; color: var(--marron); line-height: 1.6; margin-bottom: 22px;">Marque le <strong>premier jour</strong> où tes règles sont arrivées. Plus tu les marques mois après mois, plus la prédiction s'affine.</p>
 
       <div style="margin-bottom: 22px;">
         <label style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--marron-deep); text-transform: uppercase; margin-bottom: 8px;">Premier jour de ce cycle</label>
-        <input type="date" id="cycleStartInput" value="${defaultStart}" max="${today}" style="width: 100%; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);">
+        <input type="date" id="cycleStartInput" value="${defaultStart}" max="${today}" style="width: 100%; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Fraunces', serif; font-size: 16px; color: var(--marron-deep);">
       </div>
 
-      <div id="cycleNextPreview" style="background: rgba(212, 160, 76, 0.10); border-left: 3px solid var(--or); padding: 14px 18px; margin-bottom: 22px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.6;"></div>
+      <div id="cycleNextPreview" style="background: rgba(212, 160, 76, 0.10); border-left: 3px solid var(--or); padding: 14px 18px; margin-bottom: 22px; font-family: 'Fraunces', serif; font-style: normal; font-size: 14px; color: var(--marron-deep); line-height: 1.6;"></div>
 
       <button id="saveCycleBtn" onclick="saveCycle()" style="width: 100%; padding: 14px; background: var(--terracotta); color: var(--blanc); border: none; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer;">Enregistrer ce cycle ✦</button>
     </div>
@@ -1596,7 +1601,7 @@ async function renderSeances() {
       </div>
     `;
   } else {
-    html += `<p style="font-family:'Cormorant Garamond',serif;font-style:italic;text-align:center;color:var(--marron-soft);font-size:14px;padding:10px 0;">Tu as utilisé tes 3 séances Fondatrice. Tu peux acheter une séance supplémentaire à tarif Fondatrice.</p>`;
+    html += `<p style="font-family:'Fraunces',serif;font-style:normal;text-align:center;color:var(--marron-soft);font-size:14px;padding:10px 0;">Tu as utilisé tes 3 séances Fondatrice. Tu peux acheter une séance supplémentaire à tarif Fondatrice.</p>`;
   }
   html += `<button class="panel-btn primary" style="width: 100%; margin-top: 12px;" onclick="openBookingModal()">${left > 0 ? 'Planifier une séance ✦' : 'Acheter une séance ✦'}</button>`;
   container.innerHTML = html;
@@ -1724,8 +1729,8 @@ async function renderEvents() {
     html += `
       <div style="background:var(--blanc-deep);padding:16px 20px;border:1px solid var(--line);margin-bottom:10px;">
         <span style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--blanc);background:var(--terracotta);padding:4px 10px;text-transform:uppercase;margin-bottom:10px;">${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
-        <div style="font-family:'Italiana',serif;font-size:20px;color:var(--marron-deep);">${escapeHtml(e.title)}</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--marron-soft);margin-top:6px;">${escapeHtml(e.location || 'En ligne')} · ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
+        <div style="font-family:'Marcellus',serif;font-size:20px;color:var(--marron-deep);">${escapeHtml(e.title)}</div>
+        <div style="font-family:'Fraunces',serif;font-style:normal;font-size:13px;color:var(--marron-soft);margin-top:6px;">${escapeHtml(e.location || 'En ligne')} · ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div>
       </div>
     `;
   });
@@ -1760,7 +1765,7 @@ async function renderReferral() {
     html += `<div style="padding-top:14px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--marron-soft);text-transform:uppercase;margin-bottom:10px;">Tes filleules ✦ ${filleules.length}</div>`;
     filleules.forEach(f => {
       const accepted = f.status === 'accepted';
-      html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-soft);font-family:'Cormorant Garamond',serif;font-size:14px;"><span style="color:var(--marron-deep);font-style:italic;">${escapeHtml(f.prenom)} ${escapeHtml((f.nom||'')[0]||'')}.</span><span style="color:${accepted ? 'var(--or)':'var(--marron-soft)'};font-family:'Italiana',serif;">${accepted ? '+ 180€' : 'en attente'}</span></div>`;
+      html += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-soft);font-family:'Fraunces',serif;font-size:14px;"><span style="color:var(--marron-deep);font-style:normal;">${escapeHtml(f.prenom)} ${escapeHtml((f.nom||'')[0]||'')}.</span><span style="color:${accepted ? 'var(--or)':'var(--marron-soft)'};font-family:'Marcellus',serif;">${accepted ? '+ 180€' : 'en attente'}</span></div>`;
     });
   } else {
     html += `<div class="empty-state" style="padding:14px 0;"><p style="font-size:14px;">Aucune filleule encore. Partage ton lien et chaque entrée te donne 180€ de crédit.</p></div>`;
@@ -1815,7 +1820,7 @@ async function renderPoint() {
     document.getElementById('pointHistory').innerHTML = `
       <div style="background:var(--blanc-card);border:1px solid var(--line);padding:14px 16px;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--marron-soft);text-transform:uppercase;margin-bottom:6px;">Dernier point</div>
-        <div style="font-family:'Italiana',serif;font-size:16px;color:var(--marron-deep);">${last.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+        <div style="font-family:'Marcellus',serif;font-size:16px;color:var(--marron-deep);">${last.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
       </div>
     `;
   } else {
@@ -2003,8 +2008,8 @@ function renderPremierSeuilForm() {
   POINT_DOMAINS.forEach(d => {
     html += `
       <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft);">
-        <div style="font-family:'Italiana',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
+        <div style="font-family:'Marcellus',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
+        <div style="font-family:'Fraunces',serif;font-style:normal;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
         ${renderRating10(d.key)}
         <textarea name="${d.key}_detail" rows="2" class="ps-input" style="margin-top:8px;" placeholder="Ce qui se joue pour toi dans ce domaine en ce moment..."></textarea>
       </div>
@@ -2035,8 +2040,8 @@ function renderPointRapideForm() {
   POINT_DOMAINS.forEach(d => {
     html += `
       <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line-soft);">
-        <div style="font-family:'Italiana',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
+        <div style="font-family:'Marcellus',serif;font-size:18px;color:var(--marron-deep);">${d.label}</div>
+        <div style="font-family:'Fraunces',serif;font-style:normal;font-size:12px;color:var(--marron-soft);margin-bottom:8px;">${d.desc}</div>
         ${renderRating10(d.key)}
       </div>
     `;
@@ -2060,7 +2065,7 @@ function renderRating10(name) {
         </label>
       `).join('')}
     </div>
-    <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--marron-soft);">
+    <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:'Fraunces',serif;font-style:normal;font-size:11px;color:var(--marron-soft);">
       <span>Difficile</span><span>Aligné</span>
     </div>
   `;
@@ -2370,7 +2375,7 @@ async function changePassword() {
     status.style.background = 'rgba(107, 140, 74, 0.10)';
     status.style.borderLeft = '3px solid var(--vert-doux)';
     status.style.color = 'var(--marron-deep)';
-    status.innerHTML = '<strong style="font-family: Italiana, serif; font-weight: normal; font-style: normal; color: var(--marron-deep); display: block; margin-bottom: 4px;">✦ Mot de passe mis à jour</strong>Tu pourras te reconnecter avec ce nouveau mot de passe à ton prochain accès.';
+    status.innerHTML = '<strong style="font-family: Marcellus, serif; font-weight: normal; font-style: normal; color: var(--marron-deep); display: block; margin-bottom: 4px;">✦ Mot de passe mis à jour</strong>Tu pourras te reconnecter avec ce nouveau mot de passe à ton prochain accès.';
     document.getElementById('acctNewPw').value = '';
     document.getElementById('acctConfirmPw').value = '';
     showToast('Mot de passe enregistré ✦');
