@@ -1372,9 +1372,9 @@
         </div>
         <div class="stats-grid">
           <div class="stat-card" style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.06), rgba(212, 160, 76, 0.06)); border-color: var(--terracotta);">
-            <div class="stat-label">Fondatrices entrées</div>
-            <div class="stat-value"><em id="dashFondatricesPaid">—</em><span style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--marron-soft);"> / 123</span></div>
-            <div class="stat-detail"><span id="dashFondatricesPending">—</span> demandes en attente</div>
+            <div class="stat-label">Fondatrices historiques</div>
+            <div class="stat-value"><em id="dashFondatricesPaid">—</em></div>
+            <div class="stat-detail"><span id="dashFondatricesPending">—</span> à activer</div>
           </div>
           <div class="stat-card" style="background: rgba(184, 137, 90, 0.06); border-color: var(--or);">
             <div class="stat-label">Revenu Fondatrices</div>
@@ -1711,8 +1711,8 @@
           <p class="page-subtitle">Toutes les femmes qui ont demandé à entrer dans le Temple. Réponds, accueille, accompagne.</p>
         </div>
         <div class="panel-meta">
-          <div class="meta-row"><strong>Fondatrices</strong><span id="fondatricesPaidCount">0</span> / 123 places</div>
-          <div class="meta-row"><strong>En attente</strong><span id="fondatricesPendingCount">0</span> paiement en cours</div>
+          <div class="meta-row"><strong>Fondatrices actives</strong><span id="fondatricesPaidCount">0</span></div>
+          <div class="meta-row"><strong>En attente</strong><span id="fondatricesPendingCount">0</span> à activer</div>
         </div>
       </div>
 
@@ -1897,7 +1897,7 @@
             <div style="text-align: center; padding: 30px 20px; color: var(--marron-soft); font-family: 'Cormorant Garamond', serif; font-style: italic;">
               <div style="font-family: 'Italiana', serif; font-size: 36px; color: var(--terracotta-deep); margin-bottom: 12px;">✦</div>
               <p style="font-size: 16px; line-height: 1.6;">Bonjour Princesse,</p>
-              <p style="font-size: 14px; line-height: 1.6; margin-top: 8px;">Je suis Ishtar. Je connais tes 123 places, tes Fondatrices, tes séances, tes revenus, tes événements et chaque Premier Seuil déposé. Demande-moi tout ce dont tu as besoin pour piloter le Temple.</p>
+              <p style="font-size: 14px; line-height: 1.6; margin-top: 8px;">Je suis Ishtar. Je connais tes Fondatrices historiques, tes rendez-vous, tes séances, tes revenus, tes événements et chaque Premier Seuil déposé. Demande-moi tout ce dont tu as besoin pour piloter le Temple.</p>
             </div>
           </div>
           <div style="border-top: 1px solid var(--line); padding: 18px 22px; display: flex; gap: 10px; align-items: flex-end;">
@@ -3767,13 +3767,13 @@
     const pending = all.filter(f => f.status === 'pending');
     const allaitantes = all.filter(f => f.allaitement === true && (f.status === 'accepted' || f.status === 'contacted'));
     const paidCount = paid.length;
-    const pct = Math.round((paidCount / 123) * 100);
 
     document.getElementById('dashFondatricesPaid').textContent = paidCount;
     document.getElementById('dashFondatricesPending').textContent = pending.length;
     document.getElementById('dashRevenue').textContent = (paidCount * 180).toLocaleString('fr-FR') + ' €';
     document.getElementById('dashAllaitantes').textContent = allaitantes.length;
-    document.getElementById('dashboardProgress').textContent = pct + '% des 123 places';
+    const progressEl = document.getElementById('dashboardProgress');
+    if (progressEl) progressEl.textContent = paidCount + ' Fondatrices actives';
 
     // 2. Stats séances cette semaine
     const weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
