@@ -166,17 +166,21 @@
     color: var(--marron-soft); text-transform: uppercase;
     opacity: 0.75; transition: color 0.4s;
   }
-  .nav-links { display: flex; gap: 36px; list-style: none; justify-self: center; }
+  .nav-links { display: flex; gap: 26px; list-style: none; justify-self: center; flex-wrap: wrap; justify-content: center; }
   .nav-links a {
     text-decoration: none; color: var(--marron-deep);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; transition: color 0.4s;
+    text-transform: uppercase; transition: color 0.4s, border-color 0.4s;
     opacity: 0.85; cursor: none;
     display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid transparent; padding-bottom: 4px;
   }
   .nav-links a .idx { color: var(--terracotta); opacity: 0.7; font-size: 9px; }
   .nav-links a:hover { color: var(--terracotta-deep); opacity: 1; }
+  .nav-links a.active { color: var(--terracotta-deep); opacity: 1; border-bottom-color: var(--terracotta-deep); }
+  .nav-links a.active .idx { opacity: 1; }
+  nav.on-dark .nav-links a.active { color: var(--terracotta-pale); border-bottom-color: var(--terracotta-pale); }
 
   .nav-cta {
     padding: 11px 22px; background: transparent;
@@ -197,25 +201,9 @@
   .nav-cta:hover { color: var(--blanc); }
   .nav-cta:hover::before { transform: translateY(0); }
 
-  /* SIDE INDEX */
-  .side-index {
-    position: fixed; right: 32px; top: 50%;
-    transform: translateY(-50%); z-index: 80;
-    display: flex; flex-direction: column; gap: 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: 2px;
-    color: var(--marron-soft);
-    mix-blend-mode: difference;
-  }
-  .side-index a {
-    color: var(--rose); opacity: 0.7;
-    text-decoration: none;
-    transition: opacity 0.3s, color 0.3s;
-    cursor: none; display: flex; align-items: center; gap: 10px;
-  }
-  .side-index a .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.6; }
-  .side-index a.active, .side-index a:hover { opacity: 1; color: var(--terracotta-pale); }
-  .side-index a.active .dot { background: var(--terracotta-pale); opacity: 1; }
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
 
   /* HERO */
   .hero {
@@ -962,7 +950,7 @@
   /* RESPONSIVE */
   @media (max-width: 1100px) {
     body { cursor: default; }
-    .cursor, .cursor-trail, .side-index { display: none; }
+    .cursor, .cursor-trail { display: none; }
     nav { grid-template-columns: 1fr auto; padding: 16px 24px; }
     .nav-links { display: none; }
     .hero { padding: 100px 24px 40px; }
@@ -1020,18 +1008,6 @@
 <div class="cursor" id="cursor"></div>
 <div class="cursor-trail" id="cursorTrail"></div>
 
-<!-- SIDE INDEX -->
-<div class="side-index">
-  <a href="#manifeste" data-section="manifeste"><span class="dot"></span>01 Manifeste</a>
-  <a href="#lignee" data-section="lignee"><span class="dot"></span>02 Lignée</a>
-  <a href="#expressions" data-section="expressions"><span class="dot"></span>03 Expressions</a>
-  <a href="#valeurs" data-section="valeurs"><span class="dot"></span>04 Valeurs</a>
-  <a href="#offre" data-section="offre"><span class="dot"></span>05 Pass</a>
-  <a href="#les123" data-section="les123"><span class="dot"></span>06 Les 123</a>
-  <a href="#faq" data-section="faq"><span class="dot"></span>07 Questions</a>
-  <a href="#inscription" data-section="inscription"><span class="dot"></span>08 Entrée</a>
-</div>
-
 <!-- NAV -->
 <nav id="mainNav" class="on-dark">
   <div class="nav-left">
@@ -1041,373 +1017,444 @@
     <div class="nav-meta">Gynécologie naturelle</div>
   </div>
   <ul class="nav-links">
-    <li><a href="#manifeste"><span class="idx">01</span> Manifeste</a></li>
-    <li><a href="#expressions"><span class="idx">02</span> Les 4 Piliers</a></li>
-    <li><a href="#lieux"><span class="idx">03</span> Nos lieux</a></li>
-    <li><a href="#cure-domicile"><span class="idx">04</span> Cure à domicile</a></li>
+    <li><a href="#" class="tab-link active" data-tab="accueil" onclick="showTab('accueil');return false;"><span class="idx">01</span> Accueil</a></li>
+    <li><a href="#" class="tab-link" data-tab="histoire" onclick="showTab('histoire');return false;"><span class="idx">02</span> Notre histoire</a></li>
+    <li><a href="#" class="tab-link" data-tab="piliers" onclick="showTab('piliers');return false;"><span class="idx">03</span> Les 4 piliers</a></li>
+    <li><a href="#" class="tab-link" data-tab="lieux" onclick="showTab('lieux');return false;"><span class="idx">04</span> Nos lieux</a></li>
+    <li><a href="#" class="tab-link" data-tab="cure" onclick="showTab('cure');return false;"><span class="idx">05</span> Cure à domicile</a></li>
+    <li><a href="#" class="tab-link" data-tab="questions" onclick="showTab('questions');return false;"><span class="idx">06</span> Questions</a></li>
+    <li><a href="#" class="tab-link" data-tab="connexion" onclick="showTab('connexion');return false;"><span class="idx">07</span> Connexion</a></li>
   </ul>
   <div class="nav-right">
-    <a href="#contact" class="nav-cta"><span>Prendre RDV ✦</span></a>
+    <a href="/reserver.html" class="nav-cta"><span>Prendre RDV ✦</span></a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <h1 class="hero-title">
-      <span class="word l1"><span>Le corps</span></span><br>
-      <span class="word l2"><span>est la <em>porte.</em></span></span>
-    </h1>
-    <div class="hero-bottom-bar">
-      <div class="hero-tagline">Sanctuarys, maisons de gynécologie naturelle et de fertilité. On y lit l'utérus, on y compose les plantes, on y délivre le Bain Vapeur Vaginal. Une lignée qui se pose dans plusieurs villes, une même liturgie partout.<br><span style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--or-pale); text-transform: uppercase; opacity: 0.85; display: inline-block; margin-top: 16px;">Fondé par Princesse Tchassi Bekou</span></div>
-      <div class="hero-detail"><strong>Paris 12<sup>e</sup></strong>Ouvert</div>
-      <div class="hero-detail"><strong>Bruxelles</strong>Bientôt</div>
-      <div class="hero-detail"><strong>Cure à domicile</strong>Europe · Amérique</div>
+<main id="tabPanels">
+
+<!-- ACCUEIL -->
+<section class="tab-panel active" data-tab="accueil" id="panel-accueil">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="word l1"><span>Le corps</span></span><br>
+        <span class="word l2"><span>est la <em>porte.</em></span></span>
+      </h1>
+      <div class="hero-bottom-bar">
+        <div class="hero-tagline">Sanctuarys, maisons de gynécologie naturelle et de fertilité. On y lit l'utérus, on y compose les plantes, on y délivre le Bain Vapeur Vaginal. Une lignée qui se pose dans plusieurs villes, une même liturgie partout.<br><span style="font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--or-pale); text-transform: uppercase; opacity: 0.85; display: inline-block; margin-top: 16px;">Fondé par Princesse Tchassi Bekou</span></div>
+        <div class="hero-detail"><strong>Paris 12<sup>e</sup></strong>Ouvert</div>
+        <div class="hero-detail"><strong>Bruxelles</strong>Bientôt</div>
+        <div class="hero-detail"><strong>Cure à domicile</strong>Europe · Amérique</div>
+      </div>
+    </div>
+    <div class="scroll-indicator"><span>Scroll</span><div class="line-anim"></div></div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <div>
+        <span>Gynécologie naturelle</span>
+        <span>Radiesthésie de l'utérus</span>
+        <span>Bar à plantes</span>
+        <span>Bain Vapeur Vaginal</span>
+        <span>Fertilité</span>
+        <span>Cure à domicile</span>
+        <span>Gynécologie naturelle</span>
+        <span>Radiesthésie de l'utérus</span>
+        <span>Bar à plantes</span>
+        <span>Bain Vapeur Vaginal</span>
+        <span>Fertilité</span>
+        <span>Cure à domicile</span>
+      </div>
     </div>
   </div>
-  <div class="scroll-indicator"><span>Scroll</span><div class="line-anim"></div></div>
+
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee">
-  <div class="marquee-track">
-    <div>
-      <span>Gynécologie naturelle</span>
-      <span>Radiesthésie de l'utérus</span>
-      <span>Bar à plantes</span>
-      <span>Bain Vapeur Vaginal</span>
-      <span>Fertilité</span>
-      <span>Cure à domicile</span>
-      <span>Gynécologie naturelle</span>
-      <span>Radiesthésie de l'utérus</span>
-      <span>Bar à plantes</span>
-      <span>Bain Vapeur Vaginal</span>
-      <span>Fertilité</span>
-      <span>Cure à domicile</span>
-    </div>
-  </div>
-</div>
+<!-- NOTRE HISTOIRE -->
+<section class="tab-panel" data-tab="histoire" id="panel-histoire">
 
-<!-- 01 MANIFESTE -->
-<section class="section manifesto" id="manifeste">
-  <div class="section-header" style="grid-template-columns: 1fr 2fr;">
-    <div class="section-num">01 / Manifeste</div>
-    <h2 class="section-title">Une gynécologie<br><em>naturelle.</em></h2>
-  </div>
-  <div class="manifesto-body">
-    <h3 class="manifesto-headline">L'équilibre d'une femme<br>passe par l'équilibre<br><em>de son utérus.</em></h3>
-    <div class="manifesto-text">
-      <p>Sanctuarys est une maison de gynécologie naturelle et de fertilité. On y vient pour être lue, avant d'être soignée. Chaque femme reçoit une analyse de son utérus par radiesthésie, une prescription de plantes composée pour elle, un Bain Vapeur Vaginal délivré par une Gardienne formée.</p>
-      <p>Nous ne construisons rien de durable sur un terrain épuisé. Pas de clarté mentale, pas d'élan spirituel, pas de fertilité réelle. C'est de là que nous partons : réparer le terrain, écouter le cycle, restaurer le champ.</p>
-      <p>Une même liturgie dans chaque Sanctuarys. Les mêmes plantes, la même précision, la même écoute. Que tu franchisses le seuil à Paris ou à Bruxelles, tu retrouveras la même main.</p>
+  <!-- 01 MANIFESTE -->
+  <section class="section manifesto" id="manifeste">
+    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+      <div class="section-num">01 / Manifeste</div>
+      <h2 class="section-title">Une gynécologie<br><em>naturelle.</em></h2>
     </div>
-  </div>
+    <div class="manifesto-body">
+      <h3 class="manifesto-headline">L'équilibre d'une femme<br>passe par l'équilibre<br><em>de son utérus.</em></h3>
+      <div class="manifesto-text">
+        <p>Sanctuarys est une maison de gynécologie naturelle et de fertilité. On y vient pour être lue, avant d'être soignée. Chaque femme reçoit une analyse de son utérus par radiesthésie, une prescription de plantes composée pour elle, un Bain Vapeur Vaginal délivré par une Gardienne formée.</p>
+        <p>Nous ne construisons rien de durable sur un terrain épuisé. Pas de clarté mentale, pas d'élan spirituel, pas de fertilité réelle. C'est de là que nous partons : réparer le terrain, écouter le cycle, restaurer le champ.</p>
+        <p>Une même liturgie dans chaque Sanctuarys. Les mêmes plantes, la même précision, la même écoute. Que tu franchisses le seuil à Paris ou à Bruxelles, tu retrouveras la même main.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 LIGNÉE -->
+  <section class="lignee" id="lignee">
+    <div class="lignee-inner">
+      <div class="section-header">
+        <div class="section-num">02 / Lignée</div>
+        <h2 class="section-title">Un seuil porté<br>par une <em>filiation.</em></h2>
+        <div class="section-info">
+          <div class="info-row"><strong>Depuis</strong>2018</div>
+          <div class="info-row"><strong>Origine</strong>Gynécologie naturelle</div>
+          <div class="info-row"><strong>Continuité</strong>Sanctuarys, 2026</div>
+        </div>
+      </div>
+
+      <div class="lignee-body">
+        <div class="lignee-image-wrap">
+          <img class="lignee-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+          <div class="lignee-image-caption">
+            <div class="lignee-image-caption-divider"></div>
+            <div class="lignee-image-caption-name">Princesse Tchassi Bekou</div>
+            <div class="lignee-image-caption-role">Fondatrice<em>Djailiworld · Djailimedspa · Sanctuarys</em></div>
+          </div>
+        </div>
+        <div class="lignee-text">
+          <p>Sanctuarys n'est pas un projet de plus. C'est <strong>l'aboutissement d'une transmission de huit années</strong> dans la gynécologie naturelle et la radiesthésie systémique.</p>
+          <p>En <strong>2018</strong>, Princesse Tchassi Bekou fonde <em>Djailiworld</em>, la première marque française dédiée à la gynécologie naturelle. Deux ans plus tard, en <strong>2020</strong>, elle ouvre le <em>Djailimedspa</em>, premier yoni spa de France, par lequel le vajacial, le hifu vaginal et le yoni steam entrent dans le paysage féminin français.</p>
+          <p>En huit ans, plus de <strong>dix mille femmes</strong> ont été accompagnées en gynécologie naturelle. Des grossesses surgissent là où la médecine n'avait plus de réponse. Des corps se déposent là où la honte avait tout figé.</p>
+          <p>À cette gynécologie ancestrale s'ajoute la maîtrise de la <em>radiesthésie</em>. <strong>Plus de 2500 lectures radiesthésiques</strong> sur des sujets aussi bien féminins que masculins, du corps à la structure de vie, du business à la lignée, à <strong>99,99% de justesse vérifiée</strong>. <strong>Trois cent cinquante personnes</strong> accompagnées en soin énergétique. <strong>Quarante praticiennes</strong> formées en radiesthésie.</p>
+          <p><strong>Sanctuarys est la fusion de ces deux lignées.</strong> Le temple qui les abrite ensemble.</p>
+        </div>
+      </div>
+
+      <div class="lignee-numbers">
+        <div class="lignee-num-cell">
+          <div class="num">10 000<span>+</span></div>
+          <div class="label">Femmes accompagnées<br>en gynécologie naturelle</div>
+        </div>
+        <div class="lignee-num-cell">
+          <div class="num">2 500<span>+</span></div>
+          <div class="label">Lectures<br>radiesthésiques</div>
+        </div>
+        <div class="lignee-num-cell">
+          <div class="num">99,99<span>%</span></div>
+          <div class="label">De justesse<br>vérifiée</div>
+        </div>
+        <div class="lignee-num-cell">
+          <div class="num">350<span>+</span></div>
+          <div class="label">Personnes en soin<br>énergétique</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </section>
 
-<!-- 02 LIGNÉE -->
-<section class="lignee" id="lignee">
-  <div class="lignee-inner">
+<!-- LES 4 PILIERS -->
+<section class="tab-panel" data-tab="piliers" id="panel-piliers">
+
+  <!-- 03 EXPRESSIONS -->
+  <section class="expressions" id="expressions">
+    <div class="expressions-inner">
+      <div class="section-header" style="border-color: rgba(212, 160, 76, 0.2);">
+        <div class="section-num" style="color: var(--or-pale);"><span style="background: var(--or-pale); width: 30px; height: 1px; display: inline-block;"></span>03 / Les 4 Piliers</div>
+        <h2 class="section-title" style="color: var(--blanc);">Un parcours en<br><em style="color: var(--terracotta-pale);">quatre temps.</em></h2>
+        <div class="section-info" style="color: var(--rose-pale);">
+          <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Analyse</strong>Radiesthésie de l'utérus</div>
+          <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Prescription</strong>Bar à plantes</div>
+          <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Soin</strong>Bain Vapeur Vaginal</div>
+          <div class="info-row" style="border: none;"><strong style="color: var(--or-pale);">Continuité</strong>Cure à domicile</div>
+        </div>
+      </div>
+
+      <div class="expressions-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px;">
+        <div class="expr-card expr-1">
+          <div class="expr-card-photo"></div>
+          <div class="expr-card-top">
+            <span>I · L'analyse</span>
+            <span class="num">01</span>
+          </div>
+          <div class="expr-card-content">
+            <div class="expr-card-roman">I</div>
+            <h3 class="expr-card-title">L'utérus lu.</h3>
+            <p class="expr-card-desc">Chaque parcours commence par une lecture <strong>radiesthésique de ton utérus</strong>. La Gardienne écoute ce que ton terrain raconte : cycle, résidus, mémoire, fertilité, équilibre. La prescription qui suit ne sort pas d'un catalogue, elle sort de ta lecture.</p>
+          </div>
+        </div>
+        <div class="expr-card expr-2">
+          <div class="expr-card-photo"></div>
+          <div class="expr-card-top">
+            <span>II · Les plantes</span>
+            <span class="num">02</span>
+          </div>
+          <div class="expr-card-content">
+            <div class="expr-card-roman">II</div>
+            <h3 class="expr-card-title">Le Bar à plantes.</h3>
+            <p class="expr-card-desc">Un <strong>Bar à plantes central</strong>, mêmes références dans tous les Sanctuarys. Chaque flacon, chaque sachet, chaque résine, chaque huile porte sa fiche d'éducation. Tu sais ce que tu prends et pourquoi. Composition sur mesure au terme de ton analyse.</p>
+          </div>
+        </div>
+        <div class="expr-card expr-3">
+          <div class="expr-card-photo"></div>
+          <div class="expr-card-top">
+            <span>III · Le soin</span>
+            <span class="num">03</span>
+          </div>
+          <div class="expr-card-content">
+            <div class="expr-card-roman">III</div>
+            <h3 class="expr-card-title">Le Bain Vapeur Vaginal.</h3>
+            <p class="expr-card-desc">Le soin signature Sanctuarys, délivré par une <strong>Gardienne formée</strong>. Vapeur ciblée, plantes personnelles, écoute profonde. Chaque séance est enregistrée dans ton espace client, avec son compte rendu et sa reprogrammation.</p>
+          </div>
+        </div>
+        <div class="expr-card expr-4">
+          <div class="expr-card-photo"></div>
+          <div class="expr-card-top">
+            <span>IV · La cure</span>
+            <span class="num">04</span>
+          </div>
+          <div class="expr-card-content">
+            <div class="expr-card-roman">IV</div>
+            <h3 class="expr-card-title">La cure à domicile.</h3>
+            <p class="expr-card-desc">Si tu ne peux venir en nos murs, ou si tu veux prolonger ton soin, la cure à domicile te suit. <strong>Analyse à distance</strong>, prescription de plantes envoyées chez toi. Livraison en Europe et en Amérique.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 VALEURS -->
+  <section class="section valeurs-section" id="valeurs">
+    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+      <div class="section-num">04 / Valeurs</div>
+      <h2 class="section-title">Ce que nous<br><em>portons.</em></h2>
+    </div>
+    <div class="valeurs-grid">
+      <div class="valeur">
+        <div class="valeur-num">01</div>
+        <div class="valeur-name">Holistique<em>.</em></div>
+        <div class="valeur-desc">Corps, âme, cycle, business, lignée. Tout circule, rien n'est isolé.</div>
+      </div>
+      <div class="valeur">
+        <div class="valeur-num">02</div>
+        <div class="valeur-name">Véridique<em>.</em></div>
+        <div class="valeur-desc">Aucun marketing creux du bien-être. Seulement ce qui est vrai dans le corps.</div>
+      </div>
+      <div class="valeur">
+        <div class="valeur-num">03</div>
+        <div class="valeur-name">Originelle<em>.</em></div>
+        <div class="valeur-desc">Sagesses anciennes, traditions féminines, mémoire ancestrale du corps.</div>
+      </div>
+      <div class="valeur">
+        <div class="valeur-num">04</div>
+        <div class="valeur-name">Éthique<em>.</em></div>
+        <div class="valeur-desc">Transmission honorée, équipe formée, argent qui circule avec respect.</div>
+      </div>
+      <div class="valeur">
+        <div class="valeur-num">05</div>
+        <div class="valeur-name">Moderne<em>.</em></div>
+        <div class="valeur-desc">Pas de revival folklorique. La femme contemporaine, accueillie telle qu'elle est.</div>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- NOS LIEUX -->
+<section class="tab-panel" data-tab="lieux" id="panel-lieux">
+
+  <!-- 05 NOS LIEUX -->
+  <section class="section offre-section" id="lieux">
     <div class="section-header">
-      <div class="section-num">02 / Lignée</div>
-      <h2 class="section-title">Un seuil porté<br>par une <em>filiation.</em></h2>
+      <div class="section-num">05 / Nos lieux</div>
+      <h2 class="section-title">Trouver ma<br><em>Sanctuarys.</em></h2>
       <div class="section-info">
-        <div class="info-row"><strong>Depuis</strong>2018</div>
-        <div class="info-row"><strong>Origine</strong>Gynécologie naturelle</div>
-        <div class="info-row"><strong>Continuité</strong>Sanctuarys, 2026</div>
+        <div class="info-row"><strong>Paris 12<sup>e</sup></strong>Ouvert</div>
+        <div class="info-row"><strong>Bruxelles</strong>Ouverture prochaine</div>
+        <div class="info-row"><strong>Autres villes</strong>À venir</div>
       </div>
     </div>
 
-    <div class="lignee-body">
-      <div class="lignee-image-wrap">
-        <img class="lignee-logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
-        <div class="lignee-image-caption">
-          <div class="lignee-image-caption-divider"></div>
-          <div class="lignee-image-caption-name">Princesse Tchassi Bekou</div>
-          <div class="lignee-image-caption-role">Fondatrice<em>Djailiworld · Djailimedspa · Sanctuarys</em></div>
-        </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1000px; margin: 0 auto;">
+
+      <div class="offre-card" style="text-align: left; padding: 42px 38px;">
+        <div class="offre-tag" style="background: rgba(184, 137, 90, 0.15); color: var(--terracotta-deep);">✦ Ouvert</div>
+        <h3 class="offre-title" style="font-size: 34px;">Sanctuarys<br><em>Paris.</em></h3>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--marron-soft); margin-bottom: 24px;">69 rue Traversière<br>75012 Paris</div>
+
+        <ul class="offre-list">
+          <li><div><strong>Prise de RDV en ligne</strong> avec l'une de nos Gardiennes formées.</div></li>
+          <li><div><strong>Analyse de l'utérus par radiesthésie</strong> à l'accueil, avant tout soin.</div></li>
+          <li><div><strong>Prescription au Bar à plantes</strong> composée pour toi selon ton analyse.</div></li>
+          <li><div><strong>Bain Vapeur Vaginal</strong> délivré dans nos cabines dédiées, dans le respect du cycle.</div></li>
+          <li><div><strong>Compte rendu du soin</strong> déposé dans ton espace client, avec suggestion de reprogrammation.</div></li>
+        </ul>
+
+        <a href="#contact" class="btn-primary"><span>Prendre RDV à Paris ✦</span></a>
       </div>
-      <div class="lignee-text">
-        <p>Sanctuarys n'est pas un projet de plus. C'est <strong>l'aboutissement d'une transmission de huit années</strong> dans la gynécologie naturelle et la radiesthésie systémique.</p>
-        <p>En <strong>2018</strong>, Princesse Tchassi Bekou fonde <em>Djailiworld</em>, la première marque française dédiée à la gynécologie naturelle. Deux ans plus tard, en <strong>2020</strong>, elle ouvre le <em>Djailimedspa</em>, premier yoni spa de France, par lequel le vajacial, le hifu vaginal et le yoni steam entrent dans le paysage féminin français.</p>
-        <p>En huit ans, plus de <strong>dix mille femmes</strong> ont été accompagnées en gynécologie naturelle. Des grossesses surgissent là où la médecine n'avait plus de réponse. Des corps se déposent là où la honte avait tout figé.</p>
-        <p>À cette gynécologie ancestrale s'ajoute la maîtrise de la <em>radiesthésie</em>. <strong>Plus de 2500 lectures radiesthésiques</strong> sur des sujets aussi bien féminins que masculins, du corps à la structure de vie, du business à la lignée, à <strong>99,99% de justesse vérifiée</strong>. <strong>Trois cent cinquante personnes</strong> accompagnées en soin énergétique. <strong>Quarante praticiennes</strong> formées en radiesthésie.</p>
-        <p><strong>Sanctuarys est la fusion de ces deux lignées.</strong> Le temple qui les abrite ensemble.</p>
+
+      <div class="offre-card" style="text-align: left; padding: 42px 38px; background: linear-gradient(135deg, var(--blanc-deep), var(--blanc)); border-style: dashed;">
+        <div class="offre-tag" style="background: rgba(212, 160, 76, 0.15); color: var(--or-deep);">✦ Ouverture prochaine</div>
+        <h3 class="offre-title" style="font-size: 34px;">Sanctuarys<br><em>Bruxelles.</em></h3>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--marron-soft); margin-bottom: 24px;">Adresse annoncée bientôt<br>Belgique</div>
+
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron); line-height: 1.7; margin-bottom: 24px;">La deuxième maison Sanctuarys ouvre ses portes prochainement à Bruxelles. Même liturgie, mêmes plantes, mêmes Gardiennes formées à l'école. Inscris-toi à la liste pour être prévenue en premier de l'ouverture.</p>
+
+        <form onsubmit="return notifyBrussels(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <input type="email" required placeholder="ton@email.com" style="flex: 1; min-width: 180px; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep);">
+          <button type="submit" class="btn-primary" style="padding: 14px 22px; white-space: nowrap;"><span>Être prévenue ✦</span></button>
+        </form>
       </div>
+
     </div>
 
-    <div class="lignee-numbers">
-      <div class="lignee-num-cell">
-        <div class="num">10 000<span>+</span></div>
-        <div class="label">Femmes accompagnées<br>en gynécologie naturelle</div>
-      </div>
-      <div class="lignee-num-cell">
-        <div class="num">2 500<span>+</span></div>
-        <div class="label">Lectures<br>radiesthésiques</div>
-      </div>
-      <div class="lignee-num-cell">
-        <div class="num">99,99<span>%</span></div>
-        <div class="label">De justesse<br>vérifiée</div>
-      </div>
-      <div class="lignee-num-cell">
-        <div class="num">350<span>+</span></div>
-        <div class="label">Personnes en soin<br>énergétique</div>
-      </div>
+    <div style="margin-top: 42px; padding: 22px 28px; background: rgba(178, 43, 43, 0.06); border: 1px solid rgba(178, 43, 43, 0.18); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.6; text-align: center; max-width: 780px; margin-left: auto; margin-right: auto;">
+      Pour des raisons de sécurité physiologique, Sanctuarys n'accueille pas les femmes enceintes. Si tu allaites, tu es la bienvenue ; merci de nous l'indiquer lors de ta prise de rendez-vous afin que nous adaptions tes protocoles et le choix des plantes.
     </div>
-  </div>
+  </section>
+
 </section>
 
-<!-- 03 EXPRESSIONS -->
-<section class="expressions" id="expressions">
-  <div class="expressions-inner">
-    <div class="section-header" style="border-color: rgba(212, 160, 76, 0.2);">
-      <div class="section-num" style="color: var(--or-pale);"><span style="background: var(--or-pale); width: 30px; height: 1px; display: inline-block;"></span>03 / Les 4 Piliers</div>
-      <h2 class="section-title" style="color: var(--blanc);">Un parcours en<br><em style="color: var(--terracotta-pale);">quatre temps.</em></h2>
-      <div class="section-info" style="color: var(--rose-pale);">
-        <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Analyse</strong>Radiesthésie de l'utérus</div>
-        <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Prescription</strong>Bar à plantes</div>
-        <div class="info-row" style="border-color: rgba(212, 160, 76, 0.15);"><strong style="color: var(--or-pale);">Soin</strong>Bain Vapeur Vaginal</div>
-        <div class="info-row" style="border: none;"><strong style="color: var(--or-pale);">Continuité</strong>Cure à domicile</div>
+<!-- CURE A DOMICILE -->
+<section class="tab-panel" data-tab="cure" id="panel-cure">
+
+  <!-- 06 CURE A DOMICILE -->
+  <section class="les123" id="cure-domicile">
+    <div class="les123-inner">
+      <div class="les123-label">La cure à domicile</div>
+      <div class="nombre">✦</div>
+      <h2>La cure<br><em>à domicile.</em></h2>
+      <p>Tu vis loin de nos murs, tu voyages, tu ne peux pas venir maintenant. La cure à domicile te suit. Une analyse à distance, une prescription composée pour toi, un envoi de plantes à ta porte. Nous livrons en <strong style="font-style: normal; color: var(--or-pale);">Europe et en Amérique</strong>. La liturgie reste la même, elle s'invite chez toi.</p>
+      <div style="margin-top: 38px;">
+        <a href="/cure-domicile" class="btn-primary" style="display: inline-block;"><span>Commander ma cure ✦</span></a>
       </div>
     </div>
+  </section>
 
-    <div class="expressions-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px;">
-      <div class="expr-card expr-1">
-        <div class="expr-card-photo"></div>
-        <div class="expr-card-top">
-          <span>I · L'analyse</span>
-          <span class="num">01</span>
-        </div>
-        <div class="expr-card-content">
-          <div class="expr-card-roman">I</div>
-          <h3 class="expr-card-title">L'utérus lu.</h3>
-          <p class="expr-card-desc">Chaque parcours commence par une lecture <strong>radiesthésique de ton utérus</strong>. La Gardienne écoute ce que ton terrain raconte : cycle, résidus, mémoire, fertilité, équilibre. La prescription qui suit ne sort pas d'un catalogue, elle sort de ta lecture.</p>
-        </div>
+  <!-- GALERIE -->
+  <div class="galerie">
+    <div class="galerie-photo galerie-1"></div>
+    <div class="galerie-photo galerie-2"></div>
+    <div class="galerie-photo galerie-3"></div>
+    <div class="galerie-photo galerie-4"></div>
+  </div>
+
+</section>
+
+<!-- QUESTIONS -->
+<section class="tab-panel" data-tab="questions" id="panel-questions">
+
+  <!-- 07 FAQ -->
+  <section class="faq" id="faq">
+    <div class="section-header" style="grid-template-columns: 1fr 2fr; max-width: 1700px; margin: 0 auto 80px;">
+      <div class="section-num">07 / Questions</div>
+      <h2 class="section-title">Avant de<br><em>franchir le seuil.</em></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Qu'est-ce qu'un Sanctuarys ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Une <strong>maison de gynécologie naturelle et de fertilité</strong>. On y vient pour être lue avant d'être soignée : analyse de l'utérus par radiesthésie, prescription de plantes composée au Bar à plantes, Bain Vapeur Vaginal délivré par une Gardienne formée, suivi et reprogrammation dans un espace client. Le concept se déploie dans plusieurs villes, à commencer par Paris et bientôt Bruxelles.
+        </div></div>
       </div>
-      <div class="expr-card expr-2">
-        <div class="expr-card-photo"></div>
-        <div class="expr-card-top">
-          <span>II · Les plantes</span>
-          <span class="num">02</span>
-        </div>
-        <div class="expr-card-content">
-          <div class="expr-card-roman">II</div>
-          <h3 class="expr-card-title">Le Bar à plantes.</h3>
-          <p class="expr-card-desc">Un <strong>Bar à plantes central</strong>, mêmes références dans tous les Sanctuarys. Chaque flacon, chaque sachet, chaque résine, chaque huile porte sa fiche d'éducation. Tu sais ce que tu prends et pourquoi. Composition sur mesure au terme de ton analyse.</p>
-        </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Qu'est-ce que la radiesthésie de l'utérus ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          C'est une <strong>lecture énergétique et vibratoire de ton utérus</strong>. La Gardienne, formée par Princesse Tchassi, entend ce que ton terrain raconte : cycle, résidus, mémoire, fertilité, équilibre yin-yang. Cette lecture précise, à <strong>99,99% de justesse vérifiée</strong> sur plus de 2500 lectures, sert de base à toute la suite du parcours.
+        </div></div>
       </div>
-      <div class="expr-card expr-3">
-        <div class="expr-card-photo"></div>
-        <div class="expr-card-top">
-          <span>III · Le soin</span>
-          <span class="num">03</span>
-        </div>
-        <div class="expr-card-content">
-          <div class="expr-card-roman">III</div>
-          <h3 class="expr-card-title">Le Bain Vapeur Vaginal.</h3>
-          <p class="expr-card-desc">Le soin signature Sanctuarys, délivré par une <strong>Gardienne formée</strong>. Vapeur ciblée, plantes personnelles, écoute profonde. Chaque séance est enregistrée dans ton espace client, avec son compte rendu et sa reprogrammation.</p>
-        </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Le Bar à plantes, c'est quoi ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Le <strong>Bar à plantes Sanctuarys</strong> réunit les mêmes références dans tous nos lieux : synergies botaniques, résines, huiles, encens. Chaque produit porte sa fiche d'éducation (usage traditionnel + lecture énergétique). Ta prescription est composée pour toi, en direct, au terme de ton analyse.
+        </div></div>
       </div>
-      <div class="expr-card expr-4">
-        <div class="expr-card-photo"></div>
-        <div class="expr-card-top">
-          <span>IV · La cure</span>
-          <span class="num">04</span>
-        </div>
-        <div class="expr-card-content">
-          <div class="expr-card-roman">IV</div>
-          <h3 class="expr-card-title">La cure à domicile.</h3>
-          <p class="expr-card-desc">Si tu ne peux venir en nos murs, ou si tu veux prolonger ton soin, la cure à domicile te suit. <strong>Analyse à distance</strong>, prescription de plantes envoyées chez toi. Livraison en Europe et en Amérique.</p>
-        </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>C'est quoi un Bain Vapeur Vaginal ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Un <strong>soin ancestral</strong> qui déploie la vapeur chargée de plantes vers ton utérus, dans une cabine dédiée. Il ré-oxygène le terrain, apaise les douleurs cycliques, nettoie les résidus, favorise la fertilité. Chaque séance dure environ 30 minutes, précédée de l'analyse et suivie du compte-rendu.
+        </div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>La cure à domicile fonctionne-t-elle si je vis loin ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Oui. La <strong>cure à domicile</strong> te suit partout en <strong>Europe et en Amérique</strong>. Ton analyse est faite à distance (échanges + photo/audio si nécessaire), la Gardienne compose ta prescription, tes plantes sont envoyées chez toi avec les gestes précis. Idéale si tu voyages, si tu allaites, ou si tu veux prolonger un soin reçu sur place.
+        </div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Je suis enceinte ou j'allaite, puis-je venir ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Si tu es <strong>enceinte</strong>, nous ne pouvons pas t'accueillir pour des raisons de sécurité physiologique. Nous t'attendons avec joie dès la naissance. Si tu <strong>allaites</strong>, tu es la bienvenue, indique-le simplement à ta prise de RDV, nous adapterons tes protocoles et le choix des plantes pour respecter ce moment de transmission.
+        </div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Comment devenir Gardienne ?</span>
+          <span class="faq-mark">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          Les Gardiennes sont formées par Princesse Tchassi à l'<strong>École Sanctuarys</strong> : gynécologie naturelle, radiesthésie, Bain Vapeur Vaginal, prescription de plantes. La formation dure plusieurs mois. Chaque Sanctuarys accueille ensuite ses propres Gardiennes. Pour candidater, écris-nous.
+        </div></div>
       </div>
     </div>
-  </div>
+  </section>
+
 </section>
 
-<!-- 04 VALEURS -->
-<section class="section valeurs-section" id="valeurs">
-  <div class="section-header" style="grid-template-columns: 1fr 2fr;">
-    <div class="section-num">04 / Valeurs</div>
-    <h2 class="section-title">Ce que nous<br><em>portons.</em></h2>
-  </div>
-  <div class="valeurs-grid">
-    <div class="valeur">
-      <div class="valeur-num">01</div>
-      <div class="valeur-name">Holistique<em>.</em></div>
-      <div class="valeur-desc">Corps, âme, cycle, business, lignée. Tout circule, rien n'est isolé.</div>
+<!-- CONNEXION -->
+<section class="tab-panel" data-tab="connexion" id="panel-connexion">
+  <section class="section" style="max-width: 1300px;">
+    <div class="section-header" style="grid-template-columns: 1fr 2fr;">
+      <div class="section-num">08 / Connexion</div>
+      <h2 class="section-title">Accéder à<br><em>mon espace.</em></h2>
     </div>
-    <div class="valeur">
-      <div class="valeur-num">02</div>
-      <div class="valeur-name">Véridique<em>.</em></div>
-      <div class="valeur-desc">Aucun marketing creux du bien-être. Seulement ce qui est vrai dans le corps.</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+
+      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
+        <div class="offre-tag">✦ Espace cliente</div>
+        <h3 class="offre-title" style="font-size: 28px;">Fondatrice<em>.</em></h3>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Ton suivi de soins, tes comptes rendus et tes prochains rendez-vous.</p>
+        <a href="/portail-club.html" class="btn-primary"><span>Entrer ✦</span></a>
+      </div>
+
+      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
+        <div class="offre-tag">✦ Formation</div>
+        <h3 class="offre-title" style="font-size: 28px;">Espace<br><em>Élève.</em></h3>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Tes modules, tes ressources et ton parcours à l'École Sanctuarys.</p>
+        <a href="/espace-eleve.html" class="btn-primary"><span>Entrer ✦</span></a>
+      </div>
+
+      <div class="offre-card" style="text-align: left; padding: 46px 38px;">
+        <div class="offre-tag">✦ Accès restreint</div>
+        <h3 class="offre-title" style="font-size: 28px;">Admin<em>.</em></h3>
+        <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--marron); line-height: 1.7; margin-bottom: 28px;">Réservé à l'administration de Sanctuarys.</p>
+        <a href="/admin.html" class="btn-outline"><span>Entrer ✦</span></a>
+      </div>
+
     </div>
-    <div class="valeur">
-      <div class="valeur-num">03</div>
-      <div class="valeur-name">Originelle<em>.</em></div>
-      <div class="valeur-desc">Sagesses anciennes, traditions féminines, mémoire ancestrale du corps.</div>
-    </div>
-    <div class="valeur">
-      <div class="valeur-num">04</div>
-      <div class="valeur-name">Éthique<em>.</em></div>
-      <div class="valeur-desc">Transmission honorée, équipe formée, argent qui circule avec respect.</div>
-    </div>
-    <div class="valeur">
-      <div class="valeur-num">05</div>
-      <div class="valeur-name">Moderne<em>.</em></div>
-      <div class="valeur-desc">Pas de revival folklorique. La femme contemporaine, accueillie telle qu'elle est.</div>
-    </div>
-  </div>
+  </section>
 </section>
 
-<!-- 05 NOS LIEUX -->
-<section class="section offre-section" id="lieux">
-  <div class="section-header">
-    <div class="section-num">05 / Nos lieux</div>
-    <h2 class="section-title">Trouver ma<br><em>Sanctuarys.</em></h2>
-    <div class="section-info">
-      <div class="info-row"><strong>Paris 12<sup>e</sup></strong>Ouvert</div>
-      <div class="info-row"><strong>Bruxelles</strong>Ouverture prochaine</div>
-      <div class="info-row"><strong>Autres villes</strong>À venir</div>
-    </div>
-  </div>
+</main>
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1000px; margin: 0 auto;">
-
-    <div class="offre-card" style="text-align: left; padding: 42px 38px;">
-      <div class="offre-tag" style="background: rgba(184, 137, 90, 0.15); color: var(--terracotta-deep);">✦ Ouvert</div>
-      <h3 class="offre-title" style="font-size: 34px;">Sanctuarys<br><em>Paris.</em></h3>
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--marron-soft); margin-bottom: 24px;">69 rue Traversière<br>75012 Paris</div>
-
-      <ul class="offre-list">
-        <li><div><strong>Prise de RDV en ligne</strong> avec l'une de nos Gardiennes formées.</div></li>
-        <li><div><strong>Analyse de l'utérus par radiesthésie</strong> à l'accueil, avant tout soin.</div></li>
-        <li><div><strong>Prescription au Bar à plantes</strong> composée pour toi selon ton analyse.</div></li>
-        <li><div><strong>Bain Vapeur Vaginal</strong> délivré dans nos cabines dédiées, dans le respect du cycle.</div></li>
-        <li><div><strong>Compte rendu du soin</strong> déposé dans ton espace client, avec suggestion de reprogrammation.</div></li>
-      </ul>
-
-      <a href="#contact" class="btn-primary"><span>Prendre RDV à Paris ✦</span></a>
-    </div>
-
-    <div class="offre-card" style="text-align: left; padding: 42px 38px; background: linear-gradient(135deg, var(--blanc-deep), var(--blanc)); border-style: dashed;">
-      <div class="offre-tag" style="background: rgba(212, 160, 76, 0.15); color: var(--or-deep);">✦ Ouverture prochaine</div>
-      <h3 class="offre-title" style="font-size: 34px;">Sanctuarys<br><em>Bruxelles.</em></h3>
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--marron-soft); margin-bottom: 24px;">Adresse annoncée bientôt<br>Belgique</div>
-
-      <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron); line-height: 1.7; margin-bottom: 24px;">La deuxième maison Sanctuarys ouvre ses portes prochainement à Bruxelles. Même liturgie, mêmes plantes, mêmes Gardiennes formées à l'école. Inscris-toi à la liste pour être prévenue en premier de l'ouverture.</p>
-
-      <form onsubmit="return notifyBrussels(event)" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <input type="email" required placeholder="ton@email.com" style="flex: 1; min-width: 180px; padding: 14px 16px; border: 1px solid var(--line); background: var(--blanc); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep);">
-        <button type="submit" class="btn-primary" style="padding: 14px 22px; white-space: nowrap;"><span>Être prévenue ✦</span></button>
-      </form>
-    </div>
-
-  </div>
-
-  <div style="margin-top: 42px; padding: 22px 28px; background: rgba(178, 43, 43, 0.06); border: 1px solid rgba(178, 43, 43, 0.18); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron-deep); line-height: 1.6; text-align: center; max-width: 780px; margin-left: auto; margin-right: auto;">
-    Pour des raisons de sécurité physiologique, Sanctuarys n'accueille pas les femmes enceintes. Si tu allaites, tu es la bienvenue ; merci de nous l'indiquer lors de ta prise de rendez-vous afin que nous adaptions tes protocoles et le choix des plantes.
-  </div>
-</section>
-
-<!-- 06 CURE A DOMICILE -->
-<section class="les123" id="cure-domicile">
-  <div class="les123-inner">
-    <div class="les123-label">La cure à domicile</div>
-    <div class="nombre">✦</div>
-    <h2>La cure<br><em>à domicile.</em></h2>
-    <p>Tu vis loin de nos murs, tu voyages, tu ne peux pas venir maintenant. La cure à domicile te suit. Une analyse à distance, une prescription composée pour toi, un envoi de plantes à ta porte. Nous livrons en <strong style="font-style: normal; color: var(--or-pale);">Europe et en Amérique</strong>. La liturgie reste la même, elle s'invite chez toi.</p>
-    <div style="margin-top: 38px;">
-      <a href="/cure-domicile" class="btn-primary" style="display: inline-block;"><span>Commander ma cure ✦</span></a>
-    </div>
-  </div>
-</section>
-
-<!-- GALERIE -->
-<div class="galerie">
-  <div class="galerie-photo galerie-1"></div>
-  <div class="galerie-photo galerie-2"></div>
-  <div class="galerie-photo galerie-3"></div>
-  <div class="galerie-photo galerie-4"></div>
-</div>
-
-<!-- 07 FAQ -->
-<section class="faq" id="faq">
-  <div class="section-header" style="grid-template-columns: 1fr 2fr; max-width: 1700px; margin: 0 auto 80px;">
-    <div class="section-num">07 / Questions</div>
-    <h2 class="section-title">Avant de<br><em>franchir le seuil.</em></h2>
-  </div>
-  <div class="faq-list">
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>Qu'est-ce qu'un Sanctuarys ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Une <strong>maison de gynécologie naturelle et de fertilité</strong>. On y vient pour être lue avant d'être soignée : analyse de l'utérus par radiesthésie, prescription de plantes composée au Bar à plantes, Bain Vapeur Vaginal délivré par une Gardienne formée, suivi et reprogrammation dans un espace client. Le concept se déploie dans plusieurs villes, à commencer par Paris et bientôt Bruxelles.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>Qu'est-ce que la radiesthésie de l'utérus ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        C'est une <strong>lecture énergétique et vibratoire de ton utérus</strong>. La Gardienne, formée par Princesse Tchassi, entend ce que ton terrain raconte : cycle, résidus, mémoire, fertilité, équilibre yin-yang. Cette lecture précise, à <strong>99,99% de justesse vérifiée</strong> sur plus de 2500 lectures, sert de base à toute la suite du parcours.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>Le Bar à plantes, c'est quoi ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Le <strong>Bar à plantes Sanctuarys</strong> réunit les mêmes références dans tous nos lieux : synergies botaniques, résines, huiles, encens. Chaque produit porte sa fiche d'éducation (usage traditionnel + lecture énergétique). Ta prescription est composée pour toi, en direct, au terme de ton analyse.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>C'est quoi un Bain Vapeur Vaginal ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Un <strong>soin ancestral</strong> qui déploie la vapeur chargée de plantes vers ton utérus, dans une cabine dédiée. Il ré-oxygène le terrain, apaise les douleurs cycliques, nettoie les résidus, favorise la fertilité. Chaque séance dure environ 30 minutes, précédée de l'analyse et suivie du compte-rendu.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>La cure à domicile fonctionne-t-elle si je vis loin ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Oui. La <strong>cure à domicile</strong> te suit partout en <strong>Europe et en Amérique</strong>. Ton analyse est faite à distance (échanges + photo/audio si nécessaire), la Gardienne compose ta prescription, tes plantes sont envoyées chez toi avec les gestes précis. Idéale si tu voyages, si tu allaites, ou si tu veux prolonger un soin reçu sur place.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>Je suis enceinte ou j'allaite, puis-je venir ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Si tu es <strong>enceinte</strong>, nous ne pouvons pas t'accueillir pour des raisons de sécurité physiologique. Nous t'attendons avec joie dès la naissance. Si tu <strong>allaites</strong>, tu es la bienvenue, indique-le simplement à ta prise de RDV, nous adapterons tes protocoles et le choix des plantes pour respecter ce moment de transmission.
-      </div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" type="button">
-        <span>Comment devenir Gardienne ?</span>
-        <span class="faq-mark">+</span>
-      </button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        Les Gardiennes sont formées par Princesse Tchassi à l'<strong>École Sanctuarys</strong> : gynécologie naturelle, radiesthésie, Bain Vapeur Vaginal, prescription de plantes. La formation dure plusieurs mois. Chaque Sanctuarys accueille ensuite ses propres Gardiennes. Pour candidater, écris-nous.
-      </div></div>
-    </div>
-  </div>
-</section>
-
-<!-- 08 CONTACT -->
+<!-- 08 CONTACT (persistant, hors onglets) -->
 <section class="inscription" id="contact">
   <div class="inscription-inner">
     <div class="inscription-header">
-      <div class="inscription-label">08 / Écris-nous</div>
+      <div class="inscription-label">Écris-nous</div>
       <h2>Prendre contact<br><em>avec Sanctuarys.</em></h2>
       <p>Une question sur un soin, une cure à domicile, une candidature de Gardienne, une ouverture de Sanctuarys dans ta ville. Écris-nous, nous te répondons sous deux jours ouvrés.</p>
     </div>
@@ -1486,7 +1533,7 @@
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- FOOTER (persistant, hors onglets) -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -1497,18 +1544,18 @@
     <div class="footer-col">
       <h5>Sanctuarys</h5>
       <ul>
-        <li><a href="#manifeste">Manifeste</a></li>
-        <li><a href="#expressions">Les 4 Piliers</a></li>
-        <li><a href="#lieux">Nos lieux</a></li>
-        <li><a href="#cure-domicile">Cure à domicile</a></li>
+        <li><a href="#" onclick="showTab('histoire');return false;">Manifeste</a></li>
+        <li><a href="#" onclick="showTab('piliers');return false;">Les 4 Piliers</a></li>
+        <li><a href="#" onclick="showTab('lieux');return false;">Nos lieux</a></li>
+        <li><a href="#" onclick="showTab('cure');return false;">Cure à domicile</a></li>
         <li><a href="#contact">Prendre RDV</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h5>Accès privés</h5>
       <ul>
-        <li><a href="/portail-club">Portail Fondatrice</a></li>
-        <li><a href="/espace-eleve">Espace Élève</a></li>
+        <li><a href="/portail-club.html">Portail Fondatrice</a></li>
+        <li><a href="/espace-eleve.html">Espace Élève</a></li>
         <li><a href="mailto:info@sanctuarys.me">Nous écrire</a></li>
       </ul>
     </div>
@@ -1585,46 +1632,36 @@
     document.body.style.cursor = 'auto';
   }
 
-  // Nav scroll + on-dark detection
+  // Nav scroll (fond + padding réduits une fois la page défilée)
   const nav = document.getElementById('mainNav');
-  const hero = document.querySelector('.hero');
-  const expressions = document.getElementById('expressions');
-  const les123 = document.getElementById('cure-domicile');
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     if (y > 30) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
-    // Détection sections sombres
-    const darkSections = [hero, expressions, les123];
-    let onDark = false;
-    darkSections.forEach(s => {
-      if (!s) return;
-      const rect = s.getBoundingClientRect();
-      if (rect.top <= 70 && rect.bottom >= 70) onDark = true;
-    });
-    if (onDark) nav.classList.add('on-dark'); else nav.classList.remove('on-dark');
   });
 
-  // Side index active state
-  const sideLinks = document.querySelectorAll('.side-index a');
-  const sectionEls = ['manifeste', 'lignee', 'expressions', 'valeurs', 'lieux', 'cure-domicile', 'faq', 'contact'].map(id => document.getElementById(id));
+  // === Navigation par onglets ===
+  function showTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + name);
+    if (panel) panel.classList.add('active');
+
+    document.querySelectorAll('.nav-links a.tab-link').forEach(a => {
+      if (a.getAttribute('data-tab') === name) a.classList.add('active');
+      else a.classList.remove('active');
+    });
+
+    if (name === 'accueil') nav.classList.add('on-dark');
+    else nav.classList.remove('on-dark');
+
+    window.scrollTo(0, 0);
+  }
+  showTab('accueil');
 
   // FAQ accordéon
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
       item.classList.toggle('open');
-    });
-  });
-  window.addEventListener('scroll', () => {
-    let active = null;
-    sectionEls.forEach((s, i) => {
-      if (!s) return;
-      const rect = s.getBoundingClientRect();
-      if (rect.top <= 200 && rect.bottom >= 200) active = i;
-    });
-    sideLinks.forEach((l, i) => {
-      if (i === active) l.classList.add('active');
-      else l.classList.remove('active');
     });
   });
 
