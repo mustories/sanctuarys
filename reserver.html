@@ -374,7 +374,6 @@
 
 <script src="/js/sanctuarys.js"></script>
 <script>
-  const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
   const state = {
     sanctuary: null,
     weekStart: null,
@@ -431,11 +430,16 @@
   }
 
   async function loadSanctuaries() {
-    const supa = await Sanctuarys.init();
-    const { data, error } = await supa.from('sanctuaries').select('*').order('ordre');
     const container = document.getElementById('sanctuaryList');
+    let data, error;
+    try {
+      const supa = await Sanctuarys.init();
+      ({ data, error } = await supa.from('sanctuaries').select('*').eq('active', true).order('ordre'));
+    } catch (err) {
+      error = err;
+    }
     if (error || !data || data.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color: var(--marron-soft); font-style: italic;">Aucun lieu disponible pour le moment.</p>';
+      container.innerHTML = '<p style="text-align:center; color: var(--marron-soft); font-style: italic;">Aucun lieu disponible pour le moment. Réessaie dans un instant ou écris-nous à info@sanctuarys.me.</p>';
       return;
     }
     container.innerHTML = data.map(s => `
