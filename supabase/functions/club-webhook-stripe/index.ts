@@ -105,6 +105,82 @@ Deno.serve(async (req) => {
         .select('*, sanctuary:sanctuaries(nom, ville, adresse, code_postal)')
         .single()
 
+      // Auto-creation du compte cliente (espace-membre) + lien de connexion
+      let clientAccessLink: string | null = null
+      const clientEmail = ((email || appt?.client_email || '') as string).toLowerCase()
+      const clientPrenom = prenom || appt?.client_prenom || null
+      const clientNom = nom || appt?.client_nom || null
+      const clientPhone = phone || appt?.client_phone || null
+
+      if (appt && clientEmail) {
+        try {
+          const { data: existingClientProfile } = await admin
+            .from('profiles')
+            .select('id, role')
+            .eq('email', clientEmail)
+            .maybeSingle()
+
+          let clientProfileId: string | null = null
+
+          if (existingClientProfile) {
+            clientProfileId = existingClientProfile.id
+            // Ne retrograde jamais un role deja superieur (admin, formatrice, membre)
+            if (!['admin', 'formatrice', 'membre'].includes(existingClientProfile.role)) {
+              await admin.from('profiles').update({ role: 'membre' }).eq('id', clientProfileId)
+            }
+            const { data: magicData } = await admin.auth.admin.generateLink({
+              type: 'magiclink',
+              email: clientEmail,
+              options: { redirectTo: 'https://sanctuarys.me/espace-membre' }
+            })
+            clientAccessLink = magicData?.properties?.action_link || null
+          } else {
+            const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+              type: 'invite',
+              email: clientEmail,
+              options: {
+                redirectTo: 'https://sanctuarys.me/espace-membre',
+                data: {
+                  prenom: clientPrenom,
+                  nom: clientNom,
+                  phone: clientPhone,
+                  role_intended: 'membre'
+                }
+              }
+            })
+
+            if (linkError) {
+              console.error('rdv generateLink error:', linkError)
+            } else {
+              clientProfileId = linkData.user?.id || null
+              clientAccessLink = linkData.properties?.action_link || null
+              if (clientProfileId) {
+                await admin
+                  .from('profiles')
+                  .update({
+                    role: 'membre',
+                    prenom: clientPrenom || undefined,
+                    nom: clientNom || undefined,
+                    phone: clientPhone || undefined,
+                    email: clientEmail
+                  })
+                  .eq('id', clientProfileId)
+              }
+            }
+          }
+
+          if (clientProfileId) {
+            await admin
+              .from('appointments')
+              .update({ client_profile_id: clientProfileId })
+              .eq('id', appointmentId)
+          }
+        } catch (accountErr: any) {
+          // Ne bloque jamais la confirmation du RDV si la creation de compte echoue
+          console.error('rdv auto-account error:', accountErr)
+        }
+      }
+
       // Email de confirmation via Resend
       if (resendKey && appt) {
         const startLabel = new Date(appt.start_at).toLocaleString('fr-FR', {
@@ -129,6 +205,7 @@ p{font-size:16px;line-height:1.85;color:#4A3020;margin:0 0 16px}
 .box{background:#FFFCF5;border:1px solid rgba(106,68,35,.18);padding:22px 26px;margin:22px 0}
 .k{font-family:monospace;font-size:10px;letter-spacing:2.5px;color:#A85537;text-transform:uppercase}
 .v{font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin:4px 0 12px}
+.btn{display:inline-block;padding:18px 38px;background:#C8704D;color:#FAF5EC !important;text-decoration:none;font-family:monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:10px 0}
 </style></head><body><div class="c">
 <p class="meta">✦ Sanctuarys · RDV confirmé</p>
 <h1>Ton rendez-vous<br><em>est confirmé.</em></h1>
@@ -146,6 +223,9 @@ p{font-size:16px;line-height:1.85;color:#4A3020;margin:0 0 16px}
 </div>
 <p><strong>Prépare-toi</strong> : arrive 5 minutes avant l'heure. Prévois un vêtement ample et confortable. Nous fournissons le linge nécessaire pour le soin.</p>
 <p>Un rappel te sera envoyé 24h avant. Si un empêchement survient, préviens-nous par email au moins 48h à l'avance.</p>
+${clientAccessLink ? `<p><strong>Ton espace personnel t'attend</strong> : calendrier de cycle, journal, historique de tes prescriptions au Bar à plantes.</p>
+<p style="text-align:center"><a href="${clientAccessLink}" class="btn">Accéder à mon espace ✦</a></p>
+<p style="font-size:13px;color:#6B4423;text-align:center;font-style:italic">Si le bouton ne s'affiche pas, copie ce lien : <a href="${clientAccessLink}" style="color:#A85537;word-break:break-all">${clientAccessLink}</a></p>` : ''}
 <p style="font-family:'Italiana',Georgia,serif;font-size:18px;color:#A85537;margin-top:30px">Avec attention,</p>
 <p style="font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin-top:-10px">L'équipe Sanctuarys</p>
 <div style="font-family:monospace;font-size:10px;letter-spacing:3px;color:#6B4423;text-transform:uppercase;margin-top:40px;padding-top:24px;border-top:1px solid rgba(106,68,35,.18);opacity:.7">Sanctuarys · sanctuarys.me · info@sanctuarys.me</div>
