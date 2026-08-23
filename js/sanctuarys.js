@@ -41,8 +41,8 @@ const supabasePromise = loadSupabaseModule().then(({ createClient }) => {
 // =====================================================
 (function setupLogoStars() {
   const STAR = '✦'; // ✦
-  // Diamant Sanctuarys : losange terracotta avec petite etoile 4 branches au centre (mimique du logo)
-  const svgIcon = '<svg class="sanctuarys-mark" viewBox="0 0 24 24" aria-hidden="true" style="display:inline-block;vertical-align:-0.18em;width:1.1em;height:1.1em;margin:0 0.1em;"><g><path d="M12 1 L23 12 L12 23 L1 12 Z" fill="#A85537"/><path d="M12 6 L13.5 11 L18 12 L13.5 13 L12 18 L10.5 13 L6 12 L10.5 11 Z" fill="#FAF5EC"/></g></svg>';
+  // Mini logo Sanctuarys inline (taille du texte, garde les proportions)
+  const svgIcon = '<img src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys" aria-hidden="true" class="sanctuarys-inline-logo" style="display:inline-block;vertical-align:-0.3em;height:1.4em;width:auto;margin:0 0.15em;">';
 
   function replaceInNode(node) {
     if (node.nodeType === Node.TEXT_NODE) {
