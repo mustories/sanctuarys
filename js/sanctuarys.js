@@ -35,6 +35,57 @@ const supabasePromise = loadSupabaseModule().then(({ createClient }) => {
   });
 });
 
+// =====================================================
+// Remplacement automatique des etoiles ✦ par le logo Sanctuarys
+// Utilise un SVG inline pour rester net et respecter les couleurs du texte
+// =====================================================
+(function setupLogoStars() {
+  const STAR = '✦'; // ✦
+  const svgIcon = '<img src="/assets/apple-touch-icon.png" alt="✦" aria-hidden="true" class="sanctuarys-star-img" style="display:inline-block;vertical-align:-0.2em;height:1.15em;width:auto;margin:0 0.12em;">';
+
+  function replaceInNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (!node.nodeValue || node.nodeValue.indexOf(STAR) === -1) return;
+      const parent = node.parentNode;
+      if (!parent) return;
+      // Skip inside <script>, <style>, <textarea>, <input>
+      const tag = parent.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA') return;
+      const parts = node.nodeValue.split(STAR);
+      const frag = document.createDocumentFragment();
+      parts.forEach((p, i) => {
+        if (p) frag.appendChild(document.createTextNode(p));
+        if (i < parts.length - 1) {
+          const wrapper = document.createElement('span');
+          wrapper.className = 'sanctuarys-logo-star';
+          wrapper.innerHTML = svgIcon;
+          frag.appendChild(wrapper);
+        }
+      });
+      parent.replaceChild(frag, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const tag = node.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'INPUT') return;
+      // Attribut placeholder / value non touche
+      const kids = Array.from(node.childNodes);
+      kids.forEach(replaceInNode);
+    }
+  }
+
+  function run() {
+    try { replaceInNode(document.body); } catch (err) { console.warn('Star replace failed:', err); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+
+  // Rejoue le remplacement pour contenu ajoute dynamiquement
+  window.SanctuarysStars = { run };
+})();
+
 // Exposer le client dans window pour usage global
 window.Sanctuarys = {
   client: null,

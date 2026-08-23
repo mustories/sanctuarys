@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prendre RDV · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Prendre rendez-vous dans une Sanctuarys. Lecture radiesthésique de l'utérus et Bain Vapeur Vaginal. Créneaux d'1h à 66€.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --rose-pale: #E8C5B6;
+    --rouge-vif: #B22B2B;
+    --vert-succes: #6B8C4A;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--blanc); color: var(--marron-deep); font-family: 'Inter', sans-serif; font-weight: 300; overflow-x: hidden; min-height: 100vh; }
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    padding: 20px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250, 245, 236, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  nav a.logo img { height: 42px; display: block; }
+  nav .back {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--marron-deep); text-transform: uppercase; text-decoration: none;
+    padding: 10px 18px; border: 1px solid var(--terracotta);
+    transition: all 0.3s;
+  }
+  nav .back:hover { background: var(--terracotta); color: var(--blanc); }
+
+  .page {
+    max-width: 780px; margin: 0 auto; padding: 120px 24px 60px;
+  }
+
+  .header {
+    text-align: center; margin-bottom: 40px;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 5px;
+    color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif; font-size: clamp(36px, 5vw, 54px);
+    line-height: 1.05; color: var(--marron-deep); margin-bottom: 18px; font-weight: 400;
+  }
+  h1 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .subtitle {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px;
+    color: var(--marron-soft); max-width: 560px; margin: 0 auto; line-height: 1.65;
+  }
+
+  .steps-bar {
+    display: flex; justify-content: center; gap: 12px; margin: 30px 0 40px;
+  }
+  .step-dot {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    color: var(--marron-soft); text-transform: uppercase;
+  }
+  .step-dot .num {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; background: var(--blanc);
+  }
+  .step-dot.active .num { background: var(--terracotta); border-color: var(--terracotta); color: var(--blanc); }
+  .step-dot.done .num { background: var(--vert-succes); border-color: var(--vert-succes); color: var(--blanc); }
+  .step-dot.active { color: var(--terracotta-deep); }
+  @media (max-width: 640px) { .step-dot span:not(.num) { display: none; } }
+
+  .step-panel {
+    background: var(--blanc-deep); border: 1px solid var(--line);
+    padding: 40px 34px; display: none;
+  }
+  .step-panel.active { display: block; }
+
+  h2 {
+    font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep);
+    font-weight: 400; margin-bottom: 24px;
+  }
+  h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+
+  .sanctuary-list { display: grid; gap: 16px; }
+  .sanctuary-card {
+    background: var(--blanc); border: 1px solid var(--line);
+    padding: 24px 26px; cursor: pointer; transition: all 0.3s;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  }
+  .sanctuary-card:hover:not(.disabled) { border-color: var(--terracotta); transform: translateY(-2px); }
+  .sanctuary-card.selected { border-color: var(--terracotta); background: rgba(200, 112, 77, 0.06); }
+  .sanctuary-card.disabled { opacity: 0.55; cursor: not-allowed; }
+  .sanctuary-card h3 { font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); font-weight: 400; margin-bottom: 4px; }
+  .sanctuary-card h3 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .sanctuary-card p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px; color: var(--marron); }
+  .sanctuary-card .status {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 5px 10px;
+    background: rgba(107, 140, 74, 0.12); color: var(--vert-succes);
+    border: 1px solid var(--vert-succes);
+  }
+  .sanctuary-card.disabled .status {
+    background: rgba(184, 137, 90, 0.15); color: var(--or); border-color: var(--or);
+  }
+
+  .date-picker {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    margin-bottom: 24px;
+  }
+  .date-cell {
+    padding: 12px 6px; text-align: center; cursor: pointer;
+    border: 1px solid var(--line); background: var(--blanc);
+    transition: all 0.2s;
+  }
+  .date-cell:hover:not(.past):not(.closed) { border-color: var(--terracotta); }
+  .date-cell.selected { background: var(--terracotta); color: var(--blanc); border-color: var(--terracotta); }
+  .date-cell.past, .date-cell.closed { opacity: 0.3; cursor: not-allowed; }
+  .date-cell .day-name { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-bottom: 4px; }
+  .date-cell .day-num { font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); }
+  .date-cell.selected .day-name, .date-cell.selected .day-num { color: var(--blanc); }
+
+  .month-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .month-nav button {
+    background: none; border: none; cursor: pointer;
+    padding: 8px 14px; font-size: 20px; color: var(--marron-soft);
+  }
+  .month-label {
+    font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep);
+    text-transform: capitalize;
+  }
+
+  .slots-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  .slot {
+    padding: 14px 8px; text-align: center; cursor: pointer;
+    border: 1px solid var(--line); background: var(--blanc);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--marron-deep); transition: all 0.2s;
+  }
+  .slot:hover:not(.taken) { border-color: var(--terracotta); background: rgba(200, 112, 77, 0.05); }
+  .slot.selected { background: var(--terracotta); color: var(--blanc); border-color: var(--terracotta); }
+  .slot.taken { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+  .no-slots {
+    text-align: center; padding: 30px; font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: var(--marron-soft);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2.5px; color: var(--marron-deep); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 13px 16px;
+    border: 1px solid var(--line); background: var(--blanc);
+    font-family: 'Cormorant Garamond', serif; font-size: 16px;
+    color: var(--marron-deep); font-style: italic;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none; border-color: var(--terracotta);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+
+  .recap {
+    background: var(--blanc); border: 1px solid var(--line);
+    padding: 20px 22px; margin: 20px 0;
+  }
+  .recap-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line-soft); }
+  .recap-row:last-child { border-bottom: none; }
+  .recap-k { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase; }
+  .recap-v { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); text-align: right; }
+
+  .warn {
+    background: rgba(178, 43, 43, 0.06); border: 1px solid rgba(178, 43, 43, 0.18);
+    padding: 14px 18px; margin: 18px 0;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px;
+    color: var(--marron-deep); line-height: 1.55;
+  }
+  .warn strong { font-family: 'JetBrains Mono', monospace; font-style: normal; font-size: 10px; letter-spacing: 2px; color: var(--rouge-vif); text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+  .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+  .btn-back, .btn-next {
+    padding: 14px 26px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; border: none; transition: all 0.3s;
+  }
+  .btn-back { background: transparent; color: var(--marron-deep); border: 1px solid var(--line); }
+  .btn-back:hover { border-color: var(--marron-deep); }
+  .btn-next {
+    background: var(--terracotta); color: var(--blanc);
+    border: 1px solid var(--terracotta);
+  }
+  .btn-next:hover { background: var(--marron-deep); border-color: var(--marron-deep); }
+  .btn-next:disabled { background: var(--marron-soft); border-color: var(--marron-soft); cursor: not-allowed; opacity: 0.6; }
+
+  .error {
+    background: rgba(178, 43, 43, 0.1); color: var(--rouge-vif);
+    padding: 12px 16px; margin-bottom: 16px;
+    font-family: 'Cormorant Garamond', serif; font-size: 14px;
+    display: none;
+  }
+  .error.show { display: block; }
+
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(250, 245, 236, 0.3);
+    border-top-color: var(--blanc); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    text-align: center; padding: 30px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px; color: var(--marron-soft); text-transform: uppercase;
+    border-top: 1px solid var(--line-soft); margin-top: 40px;
+  }
+  footer a { color: var(--terracotta-deep); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <a href="/" class="back">← Accueil</a>
+</nav>
+
+<div class="page">
+  <div class="header">
+    <div class="meta">✦ Réserver mon soin</div>
+    <h1>Ton rendez-vous<br><em>Sanctuarys.</em></h1>
+    <p class="subtitle">Lecture radiesthésique de l'utérus, prescription au Bar à plantes et Bain Vapeur Vaginal. Un créneau d'une heure, 66€, paiement en ligne.</p>
+  </div>
+
+  <div id="fondatriceBanner" style="display:none; background: linear-gradient(135deg, rgba(168, 85, 55, 0.10), rgba(212, 160, 76, 0.10)); border: 1px solid var(--terracotta); padding: 22px 26px; margin-bottom: 30px; text-align: center;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 6px;">✦ Fondatrice détectée</div>
+    <div id="fondatriceMsg" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron-deep); line-height: 1.55;"></div>
+  </div>
+
+  <div class="steps-bar">
+    <div class="step-dot active" data-step="1"><div class="num">1</div><span>Sanctuarys</span></div>
+    <div class="step-dot" data-step="2"><div class="num">2</div><span>Créneau</span></div>
+    <div class="step-dot" data-step="3"><div class="num">3</div><span>Informations</span></div>
+    <div class="step-dot" data-step="4"><div class="num">4</div><span>Paiement</span></div>
+  </div>
+
+  <div class="error" id="globalError"></div>
+
+  <!-- STEP 1 : SANCTUARY -->
+  <div class="step-panel active" id="step1">
+    <h2>Où souhaites-tu <em>être accueillie ?</em></h2>
+    <div class="sanctuary-list" id="sanctuaryList">
+      <div style="text-align:center; padding: 40px; font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--marron-soft);">Chargement des lieux...</div>
+    </div>
+  </div>
+
+  <!-- STEP 2 : DATE + SLOT -->
+  <div class="step-panel" id="step2">
+    <h2>Ton <em>créneau.</em></h2>
+    <div class="month-nav">
+      <button type="button" onclick="shiftWeek(-1)">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button type="button" onclick="shiftWeek(1)">›</button>
+    </div>
+    <div class="date-picker" id="datePicker"></div>
+    <div id="slotSection" style="display:none;">
+      <h3 style="font-family: 'Italiana', serif; font-size: 18px; color: var(--marron-deep); margin: 18px 0 14px; font-weight: 400;">Créneaux disponibles</h3>
+      <div class="slots-grid" id="slotsGrid"></div>
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(1)">← Retour</button>
+      <button class="btn-next" type="button" id="step2Next" onclick="goStep(3)" disabled>Suivant →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 : INFO -->
+  <div class="step-panel" id="step3">
+    <h2>Tes <em>informations.</em></h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prénom *</label>
+        <input type="text" id="fPrenom" required>
+      </div>
+      <div class="form-group">
+        <label>Nom *</label>
+        <input type="text" id="fNom" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email *</label>
+      <input type="email" id="fEmail" required>
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="fPhone" required placeholder="06 ...">
+    </div>
+    <div class="form-group">
+      <label>Ville</label>
+      <input type="text" id="fVille" placeholder="Paris, Marseille, Bruxelles...">
+    </div>
+    <div class="form-group">
+      <label>Ce qui t'amène (optionnel)</label>
+      <textarea id="fNotes" rows="3" placeholder="Quelques mots sur ta situation, ton cycle, ce que tu viens chercher."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Es-tu actuellement en allaitement ?</label>
+      <div style="display: flex; gap: 24px; margin-top: 8px;">
+        <label style="display:flex;align-items:center;gap:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;cursor:pointer;">
+          <input type="radio" name="allaitement" value="non" required style="accent-color:var(--terracotta);"> Non
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;cursor:pointer;">
+          <input type="radio" name="allaitement" value="oui" style="accent-color:var(--terracotta);"> Oui
+        </label>
+      </div>
+    </div>
+    <div class="warn">
+      <strong>À noter</strong>
+      Sanctuarys n'accueille pas les femmes enceintes pour des raisons de sécurité physiologique. En envoyant ce formulaire, tu confirmes ne pas être enceinte. Les allaitantes sont accueillies, indique-le ci-dessus.
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(2)">← Retour</button>
+      <button class="btn-next" type="button" onclick="goStep(4)">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 : RECAP + PAIEMENT -->
+  <div class="step-panel" id="step4">
+    <h2>Récapitulatif <em>et paiement.</em></h2>
+    <div class="recap" id="recap"></div>
+    <div style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.08), rgba(212, 160, 76, 0.08)); border: 1px solid var(--terracotta); padding: 20px 22px; margin: 20px 0; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.65;">
+      En cliquant sur <strong style="font-family:'Italiana',serif;font-weight:normal;font-style:normal;">Payer 66€</strong>, tu seras redirigée vers Stripe pour un règlement sécurisé. Ton créneau est réservé pendant 30 minutes le temps du paiement.
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(3)">← Retour</button>
+      <button class="btn-next" type="button" id="fondatriceBtn" style="display:none; background: var(--or); border-color: var(--or);" onclick="startFondatriceBooking()">Utiliser une séance incluse ✦</button>
+      <button class="btn-next" type="button" id="payBtn" onclick="startPayment()">Payer 66€ ✦</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Sanctuarys · <a href="/">Accueil</a> · <a href="/cgv">CGV</a> · <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a>
+</footer>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+  const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+  const state = {
+    sanctuary: null,
+    weekStart: null,
+    date: null,
+    slotStart: null,
+    fondatrice: null // { email, prenom, nom, sessionsLeft, membershipId, profileId }
+  };
+
+  function goStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.querySelectorAll('.step-dot').forEach(d => {
+      const step = parseInt(d.dataset.step, 10);
+      d.classList.toggle('active', step === n);
+      d.classList.toggle('done', step < n);
+    });
+    if (n === 3) {
+      // Verifier que les etapes precedentes sont completes
+      if (!state.slotStart) { goStep(2); return; }
+    }
+    if (n === 4) {
+      // Verifier informations
+      const prenom = document.getElementById('fPrenom').value.trim();
+      const nom = document.getElementById('fNom').value.trim();
+      const email = document.getElementById('fEmail').value.trim();
+      const phone = document.getElementById('fPhone').value.trim();
+      const allaitement = document.querySelector('input[name="allaitement"]:checked');
+      if (!prenom || !nom || !email || !phone || !allaitement) {
+        showError('Prénom, nom, email, téléphone et réponse allaitement sont obligatoires.');
+        goStep(3);
+        return;
+      }
+      renderRecap();
+      // Si Fondatrice avec sessions restantes : afficher le bouton free
+      const fondatriceBtn = document.getElementById('fondatriceBtn');
+      const payBtn = document.getElementById('payBtn');
+      const matchFondatrice = state.fondatrice && state.fondatrice.email.toLowerCase() === email.toLowerCase() && state.fondatrice.sessionsLeft > 0;
+      if (matchFondatrice) {
+        fondatriceBtn.style.display = 'inline-flex';
+        payBtn.style.display = 'none';
+      } else {
+        fondatriceBtn.style.display = 'none';
+        payBtn.style.display = 'inline-flex';
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('globalError');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 7000);
+  }
+
+  async function loadSanctuaries() {
+    const supa = await Sanctuarys.init();
+    const { data, error } = await supa.from('sanctuaries').select('*').order('ordre');
+    const container = document.getElementById('sanctuaryList');
+    if (error || !data || data.length === 0) {
+      container.innerHTML = '<p style="text-align:center; color: var(--marron-soft); font-style: italic;">Aucun lieu disponible pour le moment.</p>';
+      return;
+    }
+    container.innerHTML = data.map(s => `
+      <div class="sanctuary-card ${s.active ? '' : 'disabled'}" data-id="${s.id}" ${s.active ? 'onclick="chooseSanctuary(this)"' : ''}>
+        <div>
+          <h3>${s.nom}<br><em>${s.ville}${s.pays !== 'France' ? ', ' + s.pays : ''}.</em></h3>
+          <p>${s.description || ''}</p>
+          ${s.adresse ? `<p style="margin-top:6px;font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;letter-spacing:2px;color:var(--marron-soft);text-transform:uppercase;">${s.adresse}${s.code_postal ? ' · ' + s.code_postal : ''}</p>` : ''}
+        </div>
+        <div class="status">${s.active ? '✦ Ouvert' : 'Bientôt'}</div>
+      </div>
+    `).join('');
+  }
+
+  function chooseSanctuary(el) {
+    document.querySelectorAll('.sanctuary-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.sanctuary = { id: el.dataset.id, nom: el.querySelector('h3').textContent.split('.')[0].trim() };
+    setTimeout(() => { initDatePicker(); goStep(2); }, 200);
+  }
+
+  function initDatePicker() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Aligner sur lundi de la semaine
+    const dow = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    state.weekStart = monday;
+    renderDatePicker();
+  }
+
+  function shiftWeek(delta) {
+    const newStart = new Date(state.weekStart);
+    newStart.setDate(newStart.getDate() + delta * 7);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (delta < 0 && newStart < today) return; // pas de semaine passee
+    state.weekStart = newStart;
+    state.date = null;
+    state.slotStart = null;
+    document.getElementById('slotSection').style.display = 'none';
+    document.getElementById('step2Next').disabled = true;
+    renderDatePicker();
+  }
+
+  function renderDatePicker() {
+    const container = document.getElementById('datePicker');
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let cells = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(state.weekStart);
+      d.setDate(d.getDate() + i);
+      const isPast = d < today;
+      const dow = d.getDay();
+      // Sanctuarys ouvert mardi-samedi (dow 2..6). Ferme dimanche(0) et lundi(1).
+      const isClosed = dow === 0 || dow === 1;
+      const iso = d.toISOString().split('T')[0];
+      cells += `<div class="date-cell ${isPast ? 'past' : ''} ${isClosed ? 'closed' : ''}" data-date="${iso}" ${(!isPast && !isClosed) ? `onclick="chooseDate('${iso}', this)"` : ''}>
+        <div class="day-name">${dayNames[i]}</div>
+        <div class="day-num">${d.getDate()}</div>
+      </div>`;
+    }
+    container.innerHTML = cells;
+    const label = state.weekStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    document.getElementById('monthLabel').textContent = label;
+  }
+
+  async function chooseDate(iso, el) {
+    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.date = iso;
+    state.slotStart = null;
+    document.getElementById('step2Next').disabled = true;
+    document.getElementById('slotSection').style.display = 'block';
+    await loadSlots();
+  }
+
+  async function loadSlots() {
+    const grid = document.getElementById('slotsGrid');
+    grid.innerHTML = '<div class="no-slots">Recherche des créneaux...</div>';
+    const supa = await Sanctuarys.init();
+    const { data, error } = await supa.rpc('get_available_slots', {
+      p_sanctuary_id: state.sanctuary.id,
+      p_date: state.date
+    });
+    if (error) {
+      grid.innerHTML = `<div class="no-slots">Erreur : ${error.message}</div>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div class="no-slots">Ce jour est fermé.</div>';
+      return;
+    }
+    // Filtrer les creneaux dans le passe (aujourd'hui + 2h de battement)
+    const cutoff = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    grid.innerHTML = data.map(s => {
+      const start = new Date(s.slot_start);
+      const isPast = start < cutoff;
+      const takenOrPast = !s.available || isPast;
+      const label = start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
+      return `<div class="slot ${takenOrPast ? 'taken' : ''}" ${!takenOrPast ? `onclick="chooseSlot('${s.slot_start}', this)"` : ''} data-start="${s.slot_start}">${label}</div>`;
+    }).join('');
+  }
+
+  function chooseSlot(iso, el) {
+    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    state.slotStart = iso;
+    document.getElementById('step2Next').disabled = false;
+  }
+
+  function renderRecap() {
+    const start = new Date(state.slotStart);
+    const label = start.toLocaleString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
+    });
+    const recap = document.getElementById('recap');
+    const prenom = document.getElementById('fPrenom').value.trim();
+    const nom = document.getElementById('fNom').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    recap.innerHTML = `
+      <div class="recap-row"><div class="recap-k">Lieu</div><div class="recap-v">${state.sanctuary.nom}</div></div>
+      <div class="recap-row"><div class="recap-k">Créneau</div><div class="recap-v">${label}</div></div>
+      <div class="recap-row"><div class="recap-k">Durée</div><div class="recap-v">60 minutes</div></div>
+      <div class="recap-row"><div class="recap-k">Ce qui est prévu</div><div class="recap-v">Lecture radiesthésique de l'utérus + Bain Vapeur Vaginal + prescription plantes</div></div>
+      <div class="recap-row"><div class="recap-k">Nom</div><div class="recap-v">${prenom} ${nom}</div></div>
+      <div class="recap-row"><div class="recap-k">Email</div><div class="recap-v">${email}</div></div>
+      <div class="recap-row"><div class="recap-k">Téléphone</div><div class="recap-v">${phone}</div></div>
+      <div class="recap-row" style="border-top: 2px solid var(--terracotta); padding-top: 12px; margin-top: 6px;"><div class="recap-k" style="font-size:12px;color:var(--terracotta-deep);">Total à payer</div><div class="recap-v" style="font-family:'Italiana',serif;font-style:normal;font-size:22px;color:var(--terracotta-deep);">66,00 €</div></div>
+    `;
+  }
+
+  async function startPayment() {
+    const payBtn = document.getElementById('payBtn');
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<span class="spinner"></span>Redirection...';
+
+    const payload = {
+      sanctuary_id: state.sanctuary.id,
+      start_at: state.slotStart,
+      prenom: document.getElementById('fPrenom').value.trim(),
+      nom: document.getElementById('fNom').value.trim(),
+      email: document.getElementById('fEmail').value.trim().toLowerCase(),
+      phone: document.getElementById('fPhone').value.trim(),
+      ville: document.getElementById('fVille').value.trim() || null,
+      notes: document.getElementById('fNotes').value.trim() || null,
+      allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui'
+    };
+
+    try {
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/rdv-create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || 'Erreur de paiement');
+      if (result.checkout_url) {
+        window.location.href = result.checkout_url;
+      } else {
+        throw new Error('URL de paiement manquante');
+      }
+    } catch (err) {
+      showError('Impossible de créer le paiement : ' + err.message + '. Écris-nous à info@sanctuarys.me');
+      payBtn.disabled = false;
+      payBtn.innerHTML = 'Payer 66€ ✦';
+    }
+  }
+
+  async function detectFondatrice() {
+    try {
+      const supa = await Sanctuarys.init();
+      const { data: sessionData } = await supa.auth.getSession();
+      if (!sessionData?.session) return;
+      const userId = sessionData.session.user.id;
+
+      // Cherche le profil + membership Fondatrice
+      const { data: profile } = await supa.from('profiles').select('id, prenom, nom, email').eq('id', userId).single();
+      if (!profile) return;
+
+      const { data: membership } = await supa
+        .from('memberships')
+        .select('id, sessions_total, sessions_used, status')
+        .eq('member_id', userId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (!membership) return;
+
+      const sessionsLeft = (membership.sessions_total || 0) - (membership.sessions_used || 0);
+      if (sessionsLeft <= 0) return;
+
+      state.fondatrice = {
+        email: profile.email,
+        prenom: profile.prenom,
+        nom: profile.nom,
+        sessionsLeft,
+        membershipId: membership.id,
+        profileId: profile.id
+      };
+
+      // Banniere
+      const banner = document.getElementById('fondatriceBanner');
+      const msg = document.getElementById('fondatriceMsg');
+      msg.innerHTML = `Bonjour <strong style="font-family:'Italiana',serif;font-style:normal;font-weight:400;">${profile.prenom || 'Fondatrice'}</strong>, il te reste <strong style="font-family:'Italiana',serif;font-style:normal;font-weight:400;">${sessionsLeft} séance${sessionsLeft > 1 ? 's' : ''} incluse${sessionsLeft > 1 ? 's' : ''}</strong>. Utilise-la sans payer, au moment que tu choisis.`;
+      banner.style.display = 'block';
+
+      // Prefill formulaire step 3
+      document.getElementById('fPrenom').value = profile.prenom || '';
+      document.getElementById('fNom').value = profile.nom || '';
+      document.getElementById('fEmail').value = profile.email || '';
+    } catch (err) {
+      console.warn('Fondatrice detection failed:', err);
+    }
+  }
+
+  async function startFondatriceBooking() {
+    if (!state.fondatrice) { showError('Impossible de trouver ta session Fondatrice'); return; }
+    const btn = document.getElementById('fondatriceBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Réservation...';
+    try {
+      const supa = await Sanctuarys.init();
+
+      // Cree l'appointment directement en confirmed
+      const { data: appt, error: apptError } = await supa.from('appointments').insert({
+        sanctuary_id: state.sanctuary.id,
+        client_prenom: document.getElementById('fPrenom').value.trim(),
+        client_nom: document.getElementById('fNom').value.trim(),
+        client_email: document.getElementById('fEmail').value.trim().toLowerCase(),
+        client_phone: document.getElementById('fPhone').value.trim(),
+        client_ville: document.getElementById('fVille').value.trim() || null,
+        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Séance Fondatrice incluse - membership ' + state.fondatrice.membershipId + ']',
+        is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
+        start_at: state.slotStart,
+        duration_minutes: 60,
+        price_total_eur: 0,
+        status: 'confirmed',
+        paid_at: new Date().toISOString()
+      }).select().single();
+
+      if (apptError) throw new Error(apptError.message);
+
+      // Increment sessions_used sur le membership
+      const { data: currentM } = await supa.from('memberships').select('sessions_used').eq('id', state.fondatrice.membershipId).single();
+      await supa.from('memberships').update({ sessions_used: (currentM?.sessions_used || 0) + 1 }).eq('id', state.fondatrice.membershipId);
+
+      window.location.href = `/paiement-confirme?appointment_id=${appt.id}&type=fondatrice`;
+    } catch (err) {
+      showError('Impossible de réserver : ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = 'Utiliser une séance incluse ✦';
+    }
+  }
+  window.startFondatriceBooking = startFondatriceBooking;
+
+  loadSanctuaries();
+  detectFondatrice();
+</script>
+</body>
+</html>

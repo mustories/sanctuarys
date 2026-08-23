@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/club", "destination": "/reserver", "permanent": false },
+    { "source": "/inscription", "destination": "/reserver", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",

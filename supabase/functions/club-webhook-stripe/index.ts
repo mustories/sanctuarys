@@ -85,11 +85,91 @@ Deno.serve(async (req) => {
 
     const session = event.data.object
     const signupId = session.metadata?.signup_id
+    const appointmentId = session.metadata?.appointment_id
+    const paymentType = session.metadata?.type
     const prenom = session.metadata?.prenom
     const nom = session.metadata?.nom
     const phone = session.metadata?.phone
     const email = session.customer_email || session.customer_details?.email
 
+    // === RDV public (type=rdv) : confirme l'appointment ===
+    if (paymentType === 'rdv' && appointmentId) {
+      const { data: appt } = await admin
+        .from('appointments')
+        .update({
+          status: 'confirmed',
+          stripe_payment_intent_id: session.payment_intent,
+          paid_at: new Date().toISOString()
+        })
+        .eq('id', appointmentId)
+        .select('*, sanctuary:sanctuaries(nom, ville, adresse, code_postal)')
+        .single()
+
+      // Email de confirmation via Resend
+      if (resendKey && appt) {
+        const startLabel = new Date(appt.start_at).toLocaleString('fr-FR', {
+          timeZone: 'Europe/Paris',
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        })
+        const sanctuaryName = (appt as any).sanctuary?.nom || 'Sanctuarys'
+        const sanctuaryAddr = [
+          (appt as any).sanctuary?.adresse,
+          (appt as any).sanctuary?.code_postal,
+          (appt as any).sanctuary?.ville
+        ].filter(Boolean).join(', ')
+
+        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+body{background:#FAF5EC;font-family:Georgia,serif;color:#2A1810;margin:0;padding:40px 20px}
+.c{max-width:580px;margin:0 auto;background:#FAF5EC;padding:48px;border:1px solid rgba(106,68,35,.18)}
+h1{font-family:'Italiana',Georgia,serif;font-size:34px;color:#2A1810;line-height:1.1;margin:0 0 14px;font-weight:400}
+h1 em{font-style:italic;color:#A85537}
+.meta{font-family:monospace;font-size:10px;letter-spacing:4px;color:#A85537;text-transform:uppercase;margin:0 0 28px}
+p{font-size:16px;line-height:1.85;color:#4A3020;margin:0 0 16px}
+.box{background:#FFFCF5;border:1px solid rgba(106,68,35,.18);padding:22px 26px;margin:22px 0}
+.k{font-family:monospace;font-size:10px;letter-spacing:2.5px;color:#A85537;text-transform:uppercase}
+.v{font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin:4px 0 12px}
+</style></head><body><div class="c">
+<p class="meta">✦ Sanctuarys · RDV confirmé</p>
+<h1>Ton rendez-vous<br><em>est confirmé.</em></h1>
+<p>Chère ${prenom || appt.client_prenom},</p>
+<p>Ton paiement de 66€ a bien été reçu. Nous avons hâte de t'accueillir.</p>
+<div class="box">
+  <div class="k">✦ Quand</div>
+  <div class="v">${startLabel}</div>
+  <div class="k">✦ Où</div>
+  <div class="v">${sanctuaryName}<br><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#6B4423">${sanctuaryAddr || ''}</span></div>
+  <div class="k">✦ Durée</div>
+  <div class="v">60 minutes</div>
+  <div class="k">✦ Ce qui est prévu</div>
+  <div class="v" style="font-size:16px;font-family:Georgia,serif;font-style:normal">Lecture radiesthésique de ton utérus + Bain Vapeur Vaginal, avec composition de plantes personnelle au Bar à plantes.</div>
+</div>
+<p><strong>Prépare-toi</strong> : arrive 5 minutes avant l'heure. Prévois un vêtement ample et confortable. Nous fournissons le linge nécessaire pour le soin.</p>
+<p>Un rappel te sera envoyé 24h avant. Si un empêchement survient, préviens-nous par email au moins 48h à l'avance.</p>
+<p style="font-family:'Italiana',Georgia,serif;font-size:18px;color:#A85537;margin-top:30px">Avec attention,</p>
+<p style="font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin-top:-10px">L'équipe Sanctuarys</p>
+<div style="font-family:monospace;font-size:10px;letter-spacing:3px;color:#6B4423;text-transform:uppercase;margin-top:40px;padding-top:24px;border-top:1px solid rgba(106,68,35,.18);opacity:.7">Sanctuarys · sanctuarys.me · info@sanctuarys.me</div>
+</div></body></html>`
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Sanctuarys <info@sanctuarys.me>',
+            to: (email || appt.client_email).toLowerCase(),
+            subject: 'Ton RDV Sanctuarys est confirmé ✦',
+            html
+          })
+        }).catch((e) => console.error('Resend RDV mail:', e))
+      }
+
+      return json({ received: true, type: 'rdv', appointment_id: appointmentId })
+    }
+
+    // === Fondatrice signup (legacy path) ===
     if (!signupId || !email) {
       console.error('Missing signupId or email in session', session.id)
       return json({ error: 'Données incomplètes' }, 400)
