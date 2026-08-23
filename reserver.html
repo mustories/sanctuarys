@@ -490,6 +490,15 @@
     renderDatePicker();
   }
 
+  // Date calendaire LOCALE (jamais toISOString, qui convertit en UTC et peut
+  // decaler d'un jour selon le fuseau horaire du navigateur)
+  function toLocalISO(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   function renderDatePicker() {
     const container = document.getElementById('datePicker');
     const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -507,7 +516,7 @@
       const dow = d.getDay();
       // Sanctuarys ouvert lundi-samedi (dow 1..6). Ferme dimanche(0).
       const isClosed = dow === 0;
-      const iso = d.toISOString().split('T')[0];
+      const iso = toLocalISO(d);
       cells += `<div class="date-cell ${isPast ? 'past' : ''} ${isClosed ? 'closed' : ''}" data-date="${iso}" ${(!isPast && !isClosed) ? `onclick="chooseDate('${iso}', this)"` : ''}>
         <div class="day-name">${dayNames[i]}</div>
         <div class="day-num">${d.getDate()}</div>
