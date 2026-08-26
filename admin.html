@@ -2059,7 +2059,7 @@
         <div class="breadcrumb">04 / Yoni Social Club · Agenda</div>
         <div>
           <h1 class="page-title">Mon <em>agenda.</em></h1>
-          <p class="page-subtitle">Toutes les séances réservées par les Fondatrices, classées chronologiquement. Clique sur une réservation pour la marquer terminée ou annuler.</p>
+          <p class="page-subtitle">Tout ce qui est réservé, les séances des Fondatrices et les rendez vous du public, dans le même ordre chronologique. Le crochet ne se propose qu'une fois le soin passé, et tout ce qui a été marqué terminé ou annulé peut être rétabli.</p>
         </div>
         <div class="panel-meta">
           <div class="meta-row"><strong>À venir</strong><span id="agendaUpcomingCount">0</span> séances</div>
@@ -4197,29 +4197,107 @@
   }
   window.saveOverride = saveOverride;
 
-  // ============ YONI SOCIAL CLUB : AGENDA ============
+  // ============ AGENDA UNIFIE ============
+  //
+  // Il y avait deux agendas qui s'ignoraient : les seances des Fondatrices
+  // (session_bookings) et les rendez vous du public (appointments). Deux
+  // personnes pouvaient donc reserver le meme creneau sans que rien ne le
+  // signale, et l'ecran n'en montrait qu'une moitie. Les deux sources sont
+  // maintenant lues ensemble et ramenees a une forme commune.
+  //
+  // Le bouton « terminee » a aussi ete revu. Il s'affichait sur toutes les
+  // seances, y compris celles a venir, sans demander confirmation, et une
+  // fois clique il n'existait plus aucun moyen de revenir en arriere : la
+  // seance disparaissait de l'agenda et de l'espace de la Fondatrice. Quatre
+  // rendez vous reels ont ete perdus ainsi. Il ne se propose donc plus avant
+  // l'heure du soin, il demande confirmation, et tout ce qui est tombe peut
+  // etre retabli.
   let ALL_BOOKINGS = [];
+
+  function agendaEstAVenir(b) {
+    return new Date(b.start_at) >= new Date();
+  }
+
+  function agendaActif(b) {
+    return b.status === 'confirmed' || b.status === 'pending_payment';
+  }
 
   async function loadAgendaCount() {
     const supa = await Sanctuarys.init();
-    const { data, count } = await supa
-      .from('session_bookings')
-      .select('id', { count: 'exact', head: true })
-      .gte('start_at', new Date().toISOString())
-      .eq('status', 'confirmed');
+    const maintenant = new Date().toISOString();
+    const [club, publics] = await Promise.all([
+      supa.from('session_bookings').select('id', { count: 'exact', head: true })
+        .gte('start_at', maintenant).eq('status', 'confirmed'),
+      supa.from('appointments').select('id', { count: 'exact', head: true })
+        .gte('start_at', maintenant).in('status', ['confirmed', 'pending_payment'])
+    ]);
     const el = document.getElementById('agendaCount');
-    if (el) el.textContent = count || 0;
+    if (el) el.textContent = (club.count || 0) + (publics.count || 0);
   }
 
   async function loadAgendaPanel() {
     if (!ADMIN_PROFILE) return;
     const supa = await Sanctuarys.init();
-    const { data } = await supa
-      .from('session_bookings')
-      .select('*, treatment_types(name, color_hex), profiles:member_id(prenom, nom, phone, email)')
-      .order('start_at', { ascending: true });
-    ALL_BOOKINGS = data || [];
+    const [club, publics] = await Promise.all([
+      supa.from('session_bookings')
+        .select('*, treatment_types(name, color_hex), profiles:member_id(prenom, nom, phone, email)')
+        .order('start_at', { ascending: true }),
+      supa.from('appointments').select('*').order('start_at', { ascending: true })
+    ]);
+
+    // Une erreur silencieuse vidait l'agenda sans rien dire. On le dit.
+    if (club.error || publics.error) {
+      const l = document.getElementById('agendaList');
+      if (l) l.innerHTML = '<div style="padding:40px;text-align:center;color:#B4553C;font-family:\'Cormorant Garamond\',serif;font-size:17px;">Lecture de l\'agenda impossible : ' + escapeHTML((club.error || publics.error).message) + '</div>';
+      return;
+    }
+
+    const desClub = (club.data || []).map(b => ({
+      id: b.id,
+      source: 'club',
+      table: 'session_bookings',
+      start_at: b.start_at,
+      end_at: b.end_at,
+      status: b.status,
+      prenom: b.profiles?.prenom || '',
+      nom: b.profiles?.nom || '',
+      email: b.profiles?.email || '',
+      phone: b.profiles?.phone || '',
+      soin: b.treatment_types?.name || 'Soin',
+      couleur: b.treatment_types?.color_hex || '#C8704D'
+    }));
+
+    const desPublics = (publics.data || []).map(a => ({
+      id: a.id,
+      source: 'public',
+      table: 'appointments',
+      start_at: a.start_at,
+      end_at: a.start_at ? new Date(new Date(a.start_at).getTime() + (a.duration_minutes || 60) * 60000).toISOString() : null,
+      status: a.status,
+      prenom: a.client_prenom || '',
+      nom: a.client_nom || '',
+      email: a.client_email || '',
+      phone: a.client_phone || '',
+      soin: 'V-Steam · public',
+      couleur: '#8C6A4F'
+    }));
+
+    ALL_BOOKINGS = desClub.concat(desPublics)
+      .sort((x, y) => new Date(x.start_at) - new Date(y.start_at));
     renderAgendaPanel();
+  }
+
+  // Deux rendez vous qui se chevauchent, quelle que soit leur origine.
+  function agendaChevauche(b) {
+    if (!agendaActif(b)) return false;
+    const d1 = new Date(b.start_at).getTime();
+    const f1 = b.end_at ? new Date(b.end_at).getTime() : d1 + 3600000;
+    return ALL_BOOKINGS.some(o => {
+      if (o === b || !agendaActif(o)) return false;
+      const d2 = new Date(o.start_at).getTime();
+      const f2 = o.end_at ? new Date(o.end_at).getTime() : d2 + 3600000;
+      return d1 < f2 && d2 < f1;
+    });
   }
 
   function renderAgendaPanel() {
@@ -4231,10 +4309,8 @@
     const now = new Date();
     let filtered = ALL_BOOKINGS.filter(b => {
       const start = new Date(b.start_at);
-      if (filter === 'upcoming') return start >= now && b.status === 'confirmed';
-      if (filter === 'today') {
-        return start.toDateString() === now.toDateString();
-      }
+      if (filter === 'upcoming') return start >= now && agendaActif(b);
+      if (filter === 'today') return start.toDateString() === now.toDateString();
       if (filter === 'week') {
         const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
         return start >= now && start <= weekEnd;
@@ -4244,70 +4320,94 @@
     });
 
     if (search) {
-      filtered = filtered.filter(b => {
-        const p = b.profiles;
-        const full = ((p?.prenom || '') + ' ' + (p?.nom || '') + ' ' + (p?.email || '')).toLowerCase();
-        return full.includes(search);
-      });
+      filtered = filtered.filter(b => (b.prenom + ' ' + b.nom + ' ' + b.email).toLowerCase().includes(search));
     }
 
-    document.getElementById('agendaUpcomingCount').textContent = ALL_BOOKINGS.filter(b => new Date(b.start_at) >= now && b.status === 'confirmed').length;
+    document.getElementById('agendaUpcomingCount').textContent =
+      ALL_BOOKINGS.filter(b => agendaEstAVenir(b) && agendaActif(b)).length;
 
     if (filtered.length === 0) {
       list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 17px;">Aucune réservation pour ce filtre.</div>';
       return;
     }
 
+    const LIBELLES = {
+      confirmed: 'Confirmée',
+      pending_payment: 'Attente paiement',
+      completed: 'Terminée',
+      cancelled: 'Annulée',
+      no_show: 'No-show',
+      in_progress: 'En cours',
+      refunded: 'Remboursée'
+    };
+
     filtered.forEach(b => {
       const start = new Date(b.start_at);
       const end = b.end_at ? new Date(b.end_at) : null;
-      const p = b.profiles || {};
-      const tt = b.treatment_types || {};
-      const initial = (p.prenom || '·')[0].toUpperCase();
+      const passee = start < now;
+      const initial = (b.prenom || '·')[0].toUpperCase();
       const statusClass = b.status === 'confirmed' ? 'active' : (b.status === 'completed' ? '' : 'inactive');
-      const statusLabel = ({ confirmed: 'Confirmée', completed: 'Terminée', cancelled: 'Annulée', no_show: 'No-show' }[b.status]) || b.status;
+      const statusLabel = LIBELLES[b.status] || b.status;
+
+      let actions = '';
+      if (agendaActif(b)) {
+        // Marquer terminée n'a de sens qu'après l'heure du soin.
+        actions += passee
+          ? `<button class="icon-btn agenda-done" data-id="${b.id}" data-table="${b.table}" title="Marquer terminée">✓</button>`
+          : `<button class="icon-btn" title="Cette séance n'a pas encore eu lieu" disabled style="opacity:.3;cursor:not-allowed;">✓</button>`;
+        actions += `<button class="icon-btn agenda-cancel" data-id="${b.id}" data-table="${b.table}" title="Annuler">×</button>`;
+      } else {
+        actions += `<button class="icon-btn agenda-restore" data-id="${b.id}" data-table="${b.table}" title="Rétablir cette séance">↺</button>`;
+      }
 
       const row = document.createElement('div');
       row.className = 'eleve-row';
-      row.style.cursor = 'pointer';
       row.innerHTML = `
         <div class="eleve-name">
-          <div class="eleve-avatar" style="background: ${tt.color_hex || '#C8704D'}; color: #FAF5EC;">${initial}</div>
+          <div class="eleve-avatar" style="background: ${b.couleur}; color: #FAF5EC;">${initial}</div>
           <div>
-            <div class="name">${escapeHTML(p.prenom || '')} ${escapeHTML(p.nom || '')}</div>
-            <div class="email">${escapeHTML(tt.name || 'Soin')}${p.phone ? ' · ' + escapeHTML(p.phone) : ''}</div>
+            <div class="name">${escapeHTML(b.prenom)} ${escapeHTML(b.nom)}</div>
+            <div class="email">${escapeHTML(b.soin)}${b.phone ? ' · ' + escapeHTML(b.phone) : ''}</div>
           </div>
         </div>
         <div class="eleve-progress">
           <p style="color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 17px;">${start.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
           <p style="color: var(--marron-soft); font-size: 12px; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">${start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}${end ? ' – ' + end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
         </div>
-        <div class="eleve-module"></div>
+        <div class="eleve-module">${agendaChevauche(b) ? '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1px;color:#B4553C;">CHEVAUCHEMENT</span>' : (b.source === 'public' ? '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1px;color:var(--marron-soft);">PUBLIC</span>' : '')}</div>
         <div class="eleve-status ${statusClass}">${statusLabel}</div>
-        <div class="eleve-actions">
-          ${b.status === 'confirmed' ? `<button class="icon-btn agenda-done" data-id="${b.id}" title="Marquer terminée">✓</button><button class="icon-btn agenda-cancel" data-id="${b.id}" title="Annuler">×</button>` : '<button class="icon-btn" title="Voir">→</button>'}
-        </div>
+        <div class="eleve-actions">${actions}</div>
       `;
       list.appendChild(row);
     });
 
+    async function changerStatut(id, table, statut) {
+      const supa = await Sanctuarys.init();
+      const { error } = await supa.from(table).update({ status: statut }).eq('id', id);
+      if (error) { alert('Impossible : ' + error.message); return; }
+      await loadAgendaPanel();
+      await loadAgendaCount();
+    }
+
     list.querySelectorAll('.agenda-done').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const supa = await Sanctuarys.init();
-        await supa.from('session_bookings').update({ status: 'completed' }).eq('id', btn.dataset.id);
-        await loadAgendaPanel();
-        await loadAgendaCount();
+        if (!confirm('Marquer cette séance comme terminée ? Elle sortira de ton agenda et de l\'espace de la cliente.')) return;
+        await changerStatut(btn.dataset.id, btn.dataset.table, 'completed');
       });
     });
     list.querySelectorAll('.agenda-cancel').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (!confirm('Annuler cette séance ? La place sera rendue à la Fondatrice.')) return;
-        const supa = await Sanctuarys.init();
-        await supa.from('session_bookings').update({ status: 'cancelled' }).eq('id', btn.dataset.id);
-        await loadAgendaPanel();
-        await loadAgendaCount();
+        if (!confirm('Annuler cette séance ? La place sera rendue à la cliente.')) return;
+        await changerStatut(btn.dataset.id, btn.dataset.table, 'cancelled');
+      });
+    });
+    list.querySelectorAll('.agenda-restore').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('Rétablir cette séance ? Elle redevient confirmée, chez toi et chez la cliente.')) return;
+        await changerStatut(btn.dataset.id, btn.dataset.table, 'confirmed');
       });
     });
   }
