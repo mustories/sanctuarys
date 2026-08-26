@@ -2298,7 +2298,49 @@ async function confirmBooking() {
   }
   closeBookingModal();
   showToast('Séance réservée ✦');
+  envoyerConfirmationSeance();
   await renderSeances();
+}
+
+// La confirmation par email, tout de suite apres la reservation.
+//
+// Rien ne partait : la Fondatrice reservait, puis n'avait plus aucune trace
+// de son rendez vous, ni le jour, ni l'heure, ni l'adresse. Elles ecrivaient
+// donc sur WhatsApp pour demander si leur creneau existait vraiment, ce
+// qu'un email de trois lignes evite. L'envoi ne bloque pas l'ecran et ne
+// fait jamais echouer une reservation deja enregistree : si l'email ne part
+// pas, la seance reste prise.
+async function envoyerConfirmationSeance() {
+  try {
+    const email = MEMBER?.email;
+    if (!email || !SELECTED_SLOT) return;
+    const d = new Date(SELECTED_SLOT.start);
+    const jour = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const texte = 'Bonjour ' + (MEMBER.prenom || '') + ',\n\n' +
+      'Ta séance est confirmée.\n\n' +
+      jour + ' à ' + heure + '\n' +
+      (SELECTED_SOIN?.name ? SELECTED_SOIN.name + '\n' : '') +
+      'Sanctuarys, 69 rue Traversière, 75012 Paris\n\n' +
+      'Viens dix minutes en avance, et préviens nous si quelque chose change de ton côté.\n\n' +
+      'À très vite,\n' +
+      'L\'équipe Sanctuarys';
+
+    const session = await SUPABASE_CLIENT.auth.getSession();
+    const token = session.data.session?.access_token;
+    if (!token) return;
+    await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/send-email-from-admin', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'send', to: email, subject: 'Ta séance est confirmée ✦', content: texte })
+    });
+  } catch (e) {
+    console.error('confirmation email', e);
+  }
 }
 
 // ===== WELCOME =====

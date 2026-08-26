@@ -4646,6 +4646,8 @@
       AG_GARDIENNES.map(g => '<option value="' + g.id + '"' + (b.gardienne_id === g.id ? ' selected' : '') + '>' + escapeHTML(g.prenom || g.nom || '') + '</option>').join('') +
       '</select></p>' +
       '<div class="actions">' +
+      (b.status === 'pending_payment' ? '<button type="button" id="agPaye">Paiement reçu, confirmer</button>' : '') +
+      (b.status === 'confirmed' ? '<button type="button" id="agMail">Envoyer la confirmation</button>' : '') +
       (agendaActif(b)
         ? '<button type="button" id="agFait"' + (passee ? '' : ' disabled title="Cette séance n\'a pas encore eu lieu"') + '>Marquer terminée</button>' +
           '<button type="button" id="agAnnule">Annuler</button>'
@@ -4658,10 +4660,73 @@
       const supa = await Sanctuarys.init();
       const { error } = await supa.from(b.table).update({ status: statut }).eq('id', b.id);
       if (error) { alert('Impossible : ' + error.message); return; }
+      // Une seance qui redevient confirmee est une seance qui a lieu : la
+      // cliente doit l'apprendre sans que personne ait a y penser.
+      if (statut === 'confirmed') await envoyerConfirmation(true);
       AG_CHOISI = null;
       await loadAgendaPanel();
       await loadAgendaCount();
     }
+
+    // L'email de confirmation.
+    //
+    // Aucune cliente ne recevait quoi que ce soit apres avoir reserve : ni le
+    // jour, ni l'heure, ni l'adresse. Elles ecrivaient donc sur WhatsApp pour
+    // demander si leur rendez vous existait, ce qui est exactement le travail
+    // qu'un email de trois lignes evite.
+    async function envoyerConfirmation(silencieux) {
+      if (!b.email) { if (!silencieux) alert('Cette personne n\'a pas d\'adresse email.'); return; }
+      const d2 = new Date(b.start_at);
+      const jour = d2.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      const heure = d2.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const texte = 'Bonjour ' + (b.prenom || '') + ',\n\n' +
+        'Ton rendez vous est confirmé.\n\n' +
+        jour + ' à ' + heure + '\n' +
+        'Sanctuarys, 69 rue Traversière, 75012 Paris\n\n' +
+        'Viens dix minutes en avance, et préviens nous si quelque chose change de ton côté.\n\n' +
+        'À très vite,\n' +
+        'L\'équipe Sanctuarys';
+
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const bouton = document.getElementById('agMail');
+      if (bouton) { bouton.disabled = true; bouton.textContent = 'Envoi...'; }
+      try {
+        const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/send-email-from-admin', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action: 'send', to: b.email, subject: 'Ton rendez vous est confirmé ✦', content: texte })
+        });
+        const res = await r.json();
+        if (!r.ok) throw new Error(res.error || 'Envoi impossible');
+        if (bouton) bouton.textContent = 'Confirmation envoyée ✦';
+      } catch (e) {
+        if (bouton) { bouton.disabled = false; bouton.textContent = 'Envoyer la confirmation'; }
+        alert('Email impossible : ' + e.message);
+      }
+    }
+
+    const paye = document.getElementById('agPaye');
+    if (paye) paye.addEventListener('click', async () => {
+      if (!confirm('Le paiement est bien arrivé ? Le rendez vous passe en confirmé.')) return;
+      const supa = await Sanctuarys.init();
+      const champs = { status: 'confirmed' };
+      if (b.table === 'appointments') champs.paid_at = new Date().toISOString();
+      const { error } = await supa.from(b.table).update(champs).eq('id', b.id);
+      if (error) { alert('Impossible : ' + error.message); return; }
+      await envoyerConfirmation(true);
+      AG_CHOISI = null;
+      await loadAgendaPanel();
+      await loadAgendaCount();
+    });
+
+    const mail = document.getElementById('agMail');
+    if (mail) mail.addEventListener('click', () => envoyerConfirmation(false));
 
     const choixG = document.getElementById('agGardienne');
     if (choixG) choixG.addEventListener('change', async () => {
