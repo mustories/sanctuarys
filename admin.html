@@ -2059,26 +2059,85 @@
         <div class="breadcrumb">04 / Yoni Social Club · Agenda</div>
         <div>
           <h1 class="page-title">Mon <em>agenda.</em></h1>
-          <p class="page-subtitle">Toutes les séances réservées par les Fondatrices, classées chronologiquement. Clique sur une réservation pour la marquer terminée ou annuler.</p>
+          <p class="page-subtitle">La semaine devant toi, séances des Fondatrices et rendez vous du public sur la même grille. Clique un créneau pour le détail.</p>
         </div>
         <div class="panel-meta">
           <div class="meta-row"><strong>À venir</strong><span id="agendaUpcomingCount">0</span> séances</div>
         </div>
       </div>
 
-      <div class="eleves-toolbar">
-        <input type="text" class="search-box" placeholder="Rechercher par Fondatrice..." id="searchAgenda">
-        <select id="agendaFilter" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--marron); text-transform: uppercase;">
-          <option value="upcoming">À venir</option>
-          <option value="today">Aujourd'hui</option>
-          <option value="week">Cette semaine</option>
-          <option value="past">Passées</option>
-          <option value="all">Toutes</option>
-        </select>
+      <style>
+        .ag-barre { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+        .ag-nav { display:flex; align-items:center; gap:10px; }
+        .ag-nav button { background:var(--blanc); border:1px solid var(--line); padding:9px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron); cursor:pointer; }
+        .ag-nav button:hover { background:var(--creme); }
+        .ag-titre { font-family:'Italiana',serif; font-size:20px; color:var(--marron-deep); min-width:230px; text-align:center; }
+        .ag-vues { display:flex; border:1px solid var(--line); }
+        .ag-vues button { background:var(--blanc); border:0; padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron-soft); cursor:pointer; }
+        .ag-vues button.actif { background:var(--marron-deep); color:var(--creme); }
+        .ag-grille { border:1px solid var(--line); background:var(--blanc); overflow-x:auto; }
+        .ag-entetes { display:grid; grid-template-columns:56px repeat(7,minmax(112px,1fr)); border-bottom:1px solid var(--line); }
+        .ag-entete { padding:10px 6px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron-soft); border-left:1px solid var(--line); }
+        .ag-entete .num { display:block; font-family:'Italiana',serif; font-size:19px; letter-spacing:0; color:var(--marron-deep); margin-top:2px; }
+        .ag-entete.aujourdhui { background:var(--creme); }
+        .ag-entete.aujourdhui .num { color:#B4553C; }
+        .ag-corps { display:grid; grid-template-columns:56px repeat(7,minmax(112px,1fr)); position:relative; }
+        .ag-heures { border-right:1px solid var(--line); }
+        .ag-heure { height:48px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--marron-soft); text-align:right; padding-right:6px; transform:translateY(-6px); }
+        .ag-colonne { position:relative; border-left:1px solid var(--line); }
+        .ag-ligne { height:48px; border-bottom:1px solid rgba(0,0,0,.05); }
+        .ag-ouvert { position:absolute; left:0; right:0; background:rgba(200,112,77,.06); border-top:1px solid rgba(200,112,77,.25); border-bottom:1px solid rgba(200,112,77,.25); pointer-events:none; }
+        .ag-bloc { position:absolute; left:3px; right:3px; border-radius:2px; padding:5px 7px; overflow:hidden; cursor:pointer; border-left:3px solid; }
+        .ag-bloc .qui { font-family:'Cormorant Garamond',serif; font-size:14px; line-height:1.15; color:#fff; }
+        .ag-bloc .quoi { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:.5px; color:rgba(255,255,255,.85); margin-top:2px; }
+        .ag-bloc.attente { background:repeating-linear-gradient(45deg,#C99A3F,#C99A3F 6px,#D8AE5C 6px,#D8AE5C 12px); border-left-color:#A8792A; }
+        .ag-bloc.terminee { background:#CFC3B4; border-left-color:#A79683; }
+        .ag-bloc.annulee { background:#E2D9CE; border-left-color:#BDB0A1; }
+        .ag-bloc.annulee .qui { text-decoration:line-through; color:#8A7C6C; }
+        .ag-bloc.annulee .quoi { color:#8A7C6C; }
+        .ag-bloc.chevauche { outline:2px solid #B4553C; outline-offset:-2px; }
+        .ag-legende { display:flex; flex-wrap:wrap; gap:18px; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--marron-soft); }
+        .ag-legende span { display:flex; align-items:center; gap:7px; }
+        .ag-pastille { width:13px; height:13px; border-radius:2px; display:inline-block; }
+        .ag-vide { padding:40px; text-align:center; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:17px; color:var(--marron-soft); }
+        .ag-detail { margin-top:16px; border:1px solid var(--line); background:var(--blanc); padding:18px 20px; }
+        .ag-detail h3 { font-family:'Italiana',serif; font-size:21px; color:var(--marron-deep); margin:0 0 4px; }
+        .ag-detail p { font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--marron); margin:2px 0; }
+        .ag-detail .actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+        .ag-detail .actions button { background:var(--blanc); border:1px solid var(--line); padding:9px 16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron); cursor:pointer; }
+        .ag-detail .actions button:hover:not(:disabled) { background:var(--creme); }
+        .ag-detail .actions button:disabled { opacity:.35; cursor:not-allowed; }
+      </style>
+
+      <div class="ag-barre">
+        <div class="ag-nav">
+          <button type="button" id="agPrec">←</button>
+          <span class="ag-titre" id="agTitre">—</span>
+          <button type="button" id="agSuiv">→</button>
+          <button type="button" id="agAuj">Cette semaine</button>
+        </div>
+        <div class="ag-vues">
+          <button type="button" id="agVueSemaine" class="actif">Semaine</button>
+          <button type="button" id="agVueListe">Liste</button>
+        </div>
       </div>
 
-      <div class="eleves-list" id="agendaList">
-        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement de l'agenda...</div>
+      <div id="agSemaine"></div>
+      <div id="agDetail"></div>
+      <div id="agGardiennes"></div>
+
+      <div id="agListe" style="display:none;">
+        <div class="eleves-toolbar">
+          <input type="text" class="search-box" placeholder="Rechercher par nom..." id="searchAgenda">
+          <select id="agendaFilter" style="background: var(--blanc); border: 1px solid var(--line); padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--marron); text-transform: uppercase;">
+            <option value="upcoming">À venir</option>
+            <option value="today">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="past">Passées</option>
+            <option value="all">Toutes</option>
+          </select>
+        </div>
+        <div class="eleves-list" id="agendaList"></div>
       </div>
     </div>
 
@@ -4197,32 +4256,496 @@
   }
   window.saveOverride = saveOverride;
 
-  // ============ YONI SOCIAL CLUB : AGENDA ============
+  // ============ AGENDA UNIFIE ============
+  //
+  // Il y avait deux agendas qui s'ignoraient : les seances des Fondatrices
+  // (session_bookings) et les rendez vous du public (appointments). Deux
+  // personnes pouvaient donc reserver le meme creneau sans que rien ne le
+  // signale, et l'ecran n'en montrait qu'une moitie. Les deux sources sont
+  // maintenant lues ensemble et ramenees a une forme commune.
+  //
+  // Le bouton « terminee » a aussi ete revu. Il s'affichait sur toutes les
+  // seances, y compris celles a venir, sans demander confirmation, et une
+  // fois clique il n'existait plus aucun moyen de revenir en arriere : la
+  // seance disparaissait de l'agenda et de l'espace de la Fondatrice. Quatre
+  // rendez vous reels ont ete perdus ainsi. Il ne se propose donc plus avant
+  // l'heure du soin, il demande confirmation, et tout ce qui est tombe peut
+  // etre retabli.
   let ALL_BOOKINGS = [];
+
+  function agendaEstAVenir(b) {
+    return new Date(b.start_at) >= new Date();
+  }
+
+  function agendaActif(b) {
+    return b.status === 'confirmed' || b.status === 'pending_payment';
+  }
 
   async function loadAgendaCount() {
     const supa = await Sanctuarys.init();
-    const { data, count } = await supa
-      .from('session_bookings')
-      .select('id', { count: 'exact', head: true })
-      .gte('start_at', new Date().toISOString())
-      .eq('status', 'confirmed');
+    const maintenant = new Date().toISOString();
+    const [club, publics] = await Promise.all([
+      supa.from('session_bookings').select('id', { count: 'exact', head: true })
+        .gte('start_at', maintenant).eq('status', 'confirmed'),
+      supa.from('appointments').select('id', { count: 'exact', head: true })
+        .gte('start_at', maintenant).in('status', ['confirmed', 'pending_payment'])
+    ]);
     const el = document.getElementById('agendaCount');
-    if (el) el.textContent = count || 0;
+    if (el) el.textContent = (club.count || 0) + (publics.count || 0);
   }
 
   async function loadAgendaPanel() {
     if (!ADMIN_PROFILE) return;
     const supa = await Sanctuarys.init();
-    const { data } = await supa
-      .from('session_bookings')
-      .select('*, treatment_types(name, color_hex), profiles:member_id(prenom, nom, phone, email)')
-      .order('start_at', { ascending: true });
-    ALL_BOOKINGS = data || [];
+    const [club, publics, gard, hrs] = await Promise.all([
+      supa.from('session_bookings')
+        .select('*, treatment_types(name, color_hex), profiles:member_id(prenom, nom, phone, email)')
+        .order('start_at', { ascending: true }),
+      supa.from('appointments').select('*').order('start_at', { ascending: true }),
+      supa.from('gardiennes').select('*').eq('active', true).order('prenom'),
+      // Deux tables d'horaires cohabitent : opening_hours, celle que l'ecran
+      // « Horaires d'ouverture » modifie, et sanctuary_hours, celle que lit
+      // la reservation publique. L'agenda suit la premiere, celle qu'on peut
+      // corriger soi meme, et retombe sur la seconde si elle est vide.
+      supa.from('opening_hours').select('day_of_week, open_time, close_time, active')
+    ]);
+    AG_GARDIENNES = gard.data || [];
+    AG_HORAIRES = hrs.data || [];
+
+    // Une erreur silencieuse vidait l'agenda sans rien dire. On le dit.
+    if (club.error || publics.error) {
+      const l = document.getElementById('agendaList');
+      if (l) l.innerHTML = '<div style="padding:40px;text-align:center;color:#B4553C;font-family:\'Cormorant Garamond\',serif;font-size:17px;">Lecture de l\'agenda impossible : ' + escapeHTML((club.error || publics.error).message) + '</div>';
+      return;
+    }
+
+    const desClub = (club.data || []).map(b => ({
+      id: b.id,
+      source: 'club',
+      table: 'session_bookings',
+      start_at: b.start_at,
+      end_at: b.end_at,
+      status: b.status,
+      prenom: b.profiles?.prenom || '',
+      nom: b.profiles?.nom || '',
+      email: b.profiles?.email || '',
+      phone: b.profiles?.phone || '',
+      soin: b.treatment_types?.name || 'Soin',
+      gardienne_id: b.gardienne_id || null,
+      couleur: b.treatment_types?.color_hex || '#C8704D'
+    }));
+
+    const desPublics = (publics.data || []).map(a => ({
+      id: a.id,
+      source: 'public',
+      table: 'appointments',
+      start_at: a.start_at,
+      end_at: a.start_at ? new Date(new Date(a.start_at).getTime() + (a.duration_minutes || 60) * 60000).toISOString() : null,
+      status: a.status,
+      prenom: a.client_prenom || '',
+      nom: a.client_nom || '',
+      email: a.client_email || '',
+      phone: a.client_phone || '',
+      soin: 'V-Steam · public',
+      gardienne_id: a.gardienne_id || null,
+      couleur: '#8C6A4F'
+    }));
+
+    ALL_BOOKINGS = desClub.concat(desPublics)
+      .sort((x, y) => new Date(x.start_at) - new Date(y.start_at));
     renderAgendaPanel();
   }
 
+  // Deux rendez vous qui se chevauchent, quelle que soit leur origine.
+  function agendaChevauche(b) {
+    if (!agendaActif(b)) return false;
+    const d1 = new Date(b.start_at).getTime();
+    const f1 = b.end_at ? new Date(b.end_at).getTime() : d1 + 3600000;
+    return ALL_BOOKINGS.some(o => {
+      if (o === b || !agendaActif(o)) return false;
+      const d2 = new Date(o.start_at).getTime();
+      const f2 = o.end_at ? new Date(o.end_at).getTime() : d2 + 3600000;
+      return d1 < f2 && d2 < f1;
+    });
+  }
+
+  // La semaine, et la liste en second rideau.
+  //
+  // Une liste de quarante lignes ne dit pas ce qu'est une journee : on y
+  // cherche, on ne la voit pas. La grille rend visibles les trous, les
+  // enchainements trop serres et les doublons, d'un seul regard.
+  // La remuneration d'une gardienne pour une seance faite. Elle recoit la
+  // cliente, mene l'analyse vibratoire, choisit les plantes et donne le soin.
+  const AG_REMU_GARDIENNE = 35;
+  let AG_GARDIENNES = [];
+  let AG_HORAIRES = [];
+  let AG_H_DEBUT = 11;
+  let AG_H_FIN = 20;
+  const AG_COULEURS_GARDIENNE = ['#8E6C88', '#4F7C6A', '#B4553C', '#3F6B8C', '#8C6A4F'];
+  const AG_PX_HEURE = 48;
+  const AG_JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+  let AG_VUE = 'semaine';
+  let AG_LUNDI = agLundiDe(new Date());
+  let AG_CHOISI = null;
+
+  function agLundiDe(d) {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    const jour = (x.getDay() + 6) % 7; // lundi = 0
+    x.setDate(x.getDate() - jour);
+    return x;
+  }
+
+  function agLibelleSemaine(lundi) {
+    const fin = new Date(lundi); fin.setDate(fin.getDate() + 6);
+    const memeMois = lundi.getMonth() === fin.getMonth();
+    const d1 = lundi.toLocaleDateString('fr-FR', memeMois ? { day: 'numeric' } : { day: 'numeric', month: 'long' });
+    const d2 = fin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    return d1 + ' au ' + d2 + ' ' + fin.getFullYear();
+  }
+
+  function agCouleur(b) {
+    if (b.status === 'pending_payment') return null;      // hachure doree
+    if (b.status === 'completed' || b.status === 'cancelled' || b.status === 'no_show') return null;
+    return b.source === 'public' ? '#8C6A4F' : (b.couleur || '#C8704D');
+  }
+
+  function agClasse(b) {
+    if (b.status === 'pending_payment') return 'attente';
+    if (b.status === 'cancelled' || b.status === 'no_show' || b.status === 'refunded') return 'annulee';
+    if (b.status === 'completed') return 'terminee';
+    return '';
+  }
+
   function renderAgendaPanel() {
+    document.getElementById('agTitre').textContent = agLibelleSemaine(AG_LUNDI);
+    document.getElementById('agSemaine').style.display = AG_VUE === 'semaine' ? 'block' : 'none';
+    document.getElementById('agDetail').style.display = AG_VUE === 'semaine' ? 'block' : 'none';
+    document.getElementById('agListe').style.display = AG_VUE === 'liste' ? 'block' : 'none';
+    document.getElementById('agVueSemaine').classList.toggle('actif', AG_VUE === 'semaine');
+    document.getElementById('agVueListe').classList.toggle('actif', AG_VUE === 'liste');
+
+    const now = new Date();
+    document.getElementById('agendaUpcomingCount').textContent =
+      ALL_BOOKINGS.filter(b => agendaEstAVenir(b) && agendaActif(b)).length;
+
+    if (AG_VUE === 'semaine') renderAgendaSemaine();
+    else renderAgendaListe();
+    renderGardiennes();
+  }
+
+  // Les gardiennes, et ce qui leur revient.
+  //
+  // Elles recoivent la cliente, menent l'analyse vibratoire, choisissent les
+  // plantes et donnent le soin. Chaque seance faite leur vaut trente cinq
+  // euros. Ce compte se tient tout seul a partir de l'agenda : personne n'a a
+  // se souvenir de qui a fait quoi en fin de mois.
+  function renderGardiennes() {
+    const hote = document.getElementById('agGardiennes');
+    if (!hote) return;
+
+    const faites = ALL_BOOKINGS.filter(b => b.status === 'completed');
+    const lignes = AG_GARDIENNES.map((g, i) => {
+      const siennes = faites.filter(b => b.gardienne_id === g.id);
+      const couleur = AG_COULEURS_GARDIENNE[i % AG_COULEURS_GARDIENNE.length];
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);">' +
+        '<span style="display:flex;align-items:center;gap:10px;font-family:\'Cormorant Garamond\',serif;font-size:17px;color:var(--marron-deep);">' +
+        '<i style="width:12px;height:12px;border-radius:2px;background:' + couleur + ';display:inline-block;"></i>' +
+        escapeHTML(g.prenom || g.nom || '') + '</span>' +
+        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;letter-spacing:1px;color:var(--marron-soft);">' +
+        siennes.length + ' séance' + (siennes.length > 1 ? 's' : '') + ' faite' + (siennes.length > 1 ? 's' : '') + '</span>' +
+        '<span style="font-family:\'Italiana\',serif;font-size:20px;color:var(--marron-deep);">' +
+        (siennes.length * AG_REMU_GARDIENNE) + ' €</span></div>';
+    }).join('');
+
+    const orphelines = faites.filter(b => !b.gardienne_id).length;
+
+    hote.innerHTML = '<div class="ag-detail" style="margin-top:22px;">' +
+      '<h3>Les gardiennes</h3>' +
+      '<p style="color:var(--marron-soft);font-size:15px;">Analyse vibratoire, choix des plantes et soin sur place. ' + AG_REMU_GARDIENNE + ' € par séance faite.</p>' +
+      (lignes || '<p style="font-style:italic;color:var(--marron-soft);">Aucune gardienne enregistrée pour l\'instant.</p>') +
+      (orphelines > 0 ? '<p style="color:#B4553C;margin-top:10px;">' + orphelines + ' séance' + (orphelines > 1 ? 's faites ne sont' : ' faite n\'est') + ' rattachée' + (orphelines > 1 ? 's' : '') + ' à personne. Ouvre la séance et choisis la gardienne pour qu\'elle soit payée.</p>' : '') +
+      '<div class="actions"><input type="text" id="agNouvelleG" placeholder="Prénom de la gardienne" style="background:var(--blanc);border:1px solid var(--line);padding:9px 12px;font-family:\'Cormorant Garamond\',serif;font-size:15px;color:var(--marron);min-width:210px;">' +
+      '<button type="button" id="agAjouteG">Ajouter</button></div></div>';
+
+    const bouton = document.getElementById('agAjouteG');
+    if (bouton) bouton.addEventListener('click', async () => {
+      const nom = (document.getElementById('agNouvelleG').value || '').trim();
+      if (!nom) return;
+      const supa = await Sanctuarys.init();
+      const { data: lieux } = await supa.from('sanctuaries').select('id').limit(1);
+      const { error } = await supa.from('gardiennes').insert({ prenom: nom, sanctuary_id: lieux && lieux[0] ? lieux[0].id : null });
+      if (error) { alert('Impossible : ' + error.message); return; }
+      await loadAgendaPanel();
+    });
+  }
+
+  function agCouleurGardienne(id) {
+    const i = AG_GARDIENNES.findIndex(g => g.id === id);
+    return i < 0 ? null : AG_COULEURS_GARDIENNE[i % AG_COULEURS_GARDIENNE.length];
+  }
+
+  function agNomGardienne(id) {
+    const g = AG_GARDIENNES.find(x => x.id === id);
+    return g ? (g.prenom || g.nom || '') : '';
+  }
+
+  // Les heures affichees suivent les heures d'ouverture reelles, avec une
+  // heure de marge de chaque cote. Montrer minuit a huit heures du matin sur
+  // un lieu ouvert de midi a dix neuf heures, c'est faire defiler du vide.
+  function agBornes() {
+    const actives = (AG_HORAIRES || []).filter(h => h.active !== false);
+    if (actives.length === 0) { AG_H_DEBUT = 8; AG_H_FIN = 21; return; }
+    let min = 24, max = 0;
+    actives.forEach(h => {
+      min = Math.min(min, parseInt(String(h.open_time).slice(0, 2), 10));
+      max = Math.max(max, Math.ceil(parseInt(String(h.close_time).slice(0, 2), 10) + (parseInt(String(h.close_time).slice(3, 5), 10) > 0 ? 1 : 0)));
+    });
+    AG_H_DEBUT = Math.max(0, min - 1);
+    AG_H_FIN = Math.min(24, max + 1);
+  }
+
+  function agOuverture(jourDeLaSemaine) {
+    const h = (AG_HORAIRES || []).find(x => x.day_of_week === jourDeLaSemaine && x.active !== false);
+    if (!h) return null;
+    return {
+      debut: parseInt(String(h.open_time).slice(0, 2), 10) * 60 + parseInt(String(h.open_time).slice(3, 5), 10),
+      fin: parseInt(String(h.close_time).slice(0, 2), 10) * 60 + parseInt(String(h.close_time).slice(3, 5), 10)
+    };
+  }
+
+  function renderAgendaSemaine() {
+    agBornes();
+    const hote = document.getElementById('agSemaine');
+    const fin = new Date(AG_LUNDI); fin.setDate(fin.getDate() + 7);
+    const dedans = ALL_BOOKINGS.filter(b => {
+      const d = new Date(b.start_at);
+      return d >= AG_LUNDI && d < fin;
+    });
+
+    const aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
+    let entetes = '<div class="ag-entetes"><div class="ag-entete"></div>';
+    for (let k = 0; k < 7; k++) {
+      const j = new Date(AG_LUNDI); j.setDate(j.getDate() + k);
+      const cest = j.getTime() === aujourdhui.getTime();
+      entetes += '<div class="ag-entete' + (cest ? ' aujourdhui' : '') + '">' +
+        AG_JOURS[k].slice(0, 3) + '<span class="num">' + j.getDate() + '</span></div>';
+    }
+    entetes += '</div>';
+
+    let heures = '<div class="ag-heures">';
+    for (let h = AG_H_DEBUT; h < AG_H_FIN; h++) heures += '<div class="ag-heure">' + h + 'h</div>';
+    heures += '</div>';
+
+    let colonnes = '';
+    for (let k = 0; k < 7; k++) {
+      const j = new Date(AG_LUNDI); j.setDate(j.getDate() + k);
+      const finJ = new Date(j); finJ.setDate(finJ.getDate() + 1);
+      let lignes = '';
+      for (let h = AG_H_DEBUT; h < AG_H_FIN; h++) lignes += '<div class="ag-ligne"></div>';
+
+      // La plage ouverte est peinte en clair : ce qui est en dehors n'est pas
+      // une case libre, c'est un jour ferme.
+      const ouv = agOuverture(j.getDay());
+      if (ouv) {
+        const hautOuv = Math.max(0, (ouv.debut - AG_H_DEBUT * 60) / 60 * AG_PX_HEURE);
+        const hauteurOuv = Math.max(0, (ouv.fin - ouv.debut) / 60 * AG_PX_HEURE);
+        lignes += '<div class="ag-ouvert" style="top:' + hautOuv + 'px;height:' + hauteurOuv + 'px;"></div>';
+      }
+
+      const duJour = dedans.filter(b => {
+        const d = new Date(b.start_at);
+        return d >= j && d < finJ;
+      });
+
+      // Deux rendez vous au meme creneau se cachaient l'un l'autre, ce qui
+      // rendait invisible exactement ce qu'on cherche a voir. Chacun prend
+      // donc sa colonne quand ils se chevauchent.
+      const evts = duJour.map(b => {
+        const d = new Date(b.start_at);
+        const f = b.end_at ? new Date(b.end_at) : new Date(d.getTime() + 3600000);
+        return { b: b, d: d, f: f };
+      }).sort((x, y) => x.d - y.d);
+
+      const finsDeVoie = [];
+      evts.forEach(e => {
+        let voie = finsDeVoie.findIndex(fin => fin <= e.d.getTime());
+        if (voie < 0) { finsDeVoie.push(e.f.getTime()); voie = finsDeVoie.length - 1; }
+        else finsDeVoie[voie] = e.f.getTime();
+        e.voie = voie;
+      });
+      const voies = Math.max(1, finsDeVoie.length);
+
+      let blocs = '';
+      evts.forEach(e => {
+        const b = e.b, d = e.d, f = e.f;
+        const debutMin = d.getHours() * 60 + d.getMinutes() - AG_H_DEBUT * 60;
+        const duree = Math.max(30, (f - d) / 60000);
+        const haut = Math.max(0, debutMin / 60 * AG_PX_HEURE);
+        const hauteur = Math.max(26, duree / 60 * AG_PX_HEURE - 2);
+        const largeur = 100 / voies;
+        const couleur = agCouleur(b);
+        const classe = agClasse(b);
+        blocs += '<div class="ag-bloc ' + classe + (agendaChevauche(b) ? ' chevauche' : '') + '"' +
+          ' data-id="' + b.id + '" data-table="' + b.table + '"' +
+          ' style="top:' + haut + 'px;height:' + hauteur + 'px;' +
+          'left:calc(' + (e.voie * largeur) + '% + 3px);width:calc(' + largeur + '% - 6px);right:auto;' +
+          (couleur ? 'background:' + couleur + ';' : '') +
+          (agCouleurGardienne(b.gardienne_id) ? 'border-left-color:' + agCouleurGardienne(b.gardienne_id) + ';border-left-width:5px;' : (couleur ? 'border-left-color:rgba(0,0,0,.25);' : '')) + '">' +
+          '<div class="qui">' + escapeHTML(b.prenom || '') + ' ' + escapeHTML((b.nom || '').slice(0, 12)) + '</div>' +
+          '<div class="quoi">' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
+          (b.gardienne_id ? ' · ' + escapeHTML(agNomGardienne(b.gardienne_id).split(' ')[0]) : (b.source === 'public' ? ' · public' : '')) +
+          '</div></div>';
+      });
+
+      colonnes += '<div class="ag-colonne">' + lignes + blocs + '</div>';
+    }
+
+    hote.innerHTML = '<div class="ag-grille">' + entetes + '<div class="ag-corps">' + heures + colonnes + '</div></div>' +
+      (dedans.length === 0 ? '<div class="ag-vide">Aucun rendez vous cette semaine.</div>' : '') +
+      '<div class="ag-legende">' +
+      '<span><i class="ag-pastille" style="background:#C8704D"></i>Fondatrice confirmée</span>' +
+      '<span><i class="ag-pastille" style="background:#8C6A4F"></i>Public confirmé</span>' +
+      '<span><i class="ag-pastille" style="background:repeating-linear-gradient(45deg,#C99A3F,#C99A3F 4px,#D8AE5C 4px,#D8AE5C 8px)"></i>Attente de paiement</span>' +
+      '<span><i class="ag-pastille" style="background:#CFC3B4"></i>Terminée</span>' +
+      '<span><i class="ag-pastille" style="background:#E2D9CE"></i>Annulée</span>' +
+      '<span><i class="ag-pastille" style="background:transparent;outline:2px solid #B4553C;outline-offset:-2px"></i>Chevauchement</span>' +
+      '</div>';
+
+    hote.querySelectorAll('.ag-bloc').forEach(el => {
+      el.addEventListener('click', () => {
+        AG_CHOISI = ALL_BOOKINGS.find(x => String(x.id) === el.dataset.id) || null;
+        renderAgendaDetail();
+      });
+    });
+    renderAgendaDetail();
+  }
+
+  function renderAgendaDetail() {
+    const hote = document.getElementById('agDetail');
+    const b = AG_CHOISI;
+    if (!b) { hote.innerHTML = ''; return; }
+    const d = new Date(b.start_at);
+    const f = b.end_at ? new Date(b.end_at) : null;
+    const passee = d < new Date();
+    const LIB = { confirmed: 'Confirmée', pending_payment: 'En attente de paiement', completed: 'Terminée', cancelled: 'Annulée', no_show: 'No-show', in_progress: 'En cours', refunded: 'Remboursée' };
+
+    hote.innerHTML = '<div class="ag-detail">' +
+      '<h3>' + escapeHTML(b.prenom || '') + ' ' + escapeHTML(b.nom || '') + '</h3>' +
+      '<p>' + d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · ' +
+      d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
+      (f ? ' à ' + f.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '') + '</p>' +
+      '<p>' + escapeHTML(b.soin || '') + ' · ' + (LIB[b.status] || b.status) +
+      (b.source === 'public' ? ' · rendez vous public' : ' · Fondatrice') + '</p>' +
+      (b.phone ? '<p>' + escapeHTML(b.phone) + '</p>' : '') +
+      (b.email ? '<p>' + escapeHTML(b.email) + '</p>' : '') +
+      (agendaChevauche(b) ? '<p style="color:#B4553C;">Ce créneau en chevauche un autre.</p>' : '') +
+      '<p style="margin-top:10px;"><label style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--marron-soft);display:block;margin-bottom:5px;">Gardienne</label>' +
+      '<select id="agGardienne" style="background:var(--blanc);border:1px solid var(--line);padding:9px 12px;font-family:\'Cormorant Garamond\',serif;font-size:15px;color:var(--marron);min-width:200px;">' +
+      '<option value="">Personne pour l\'instant</option>' +
+      AG_GARDIENNES.map(g => '<option value="' + g.id + '"' + (b.gardienne_id === g.id ? ' selected' : '') + '>' + escapeHTML(g.prenom || g.nom || '') + '</option>').join('') +
+      '</select></p>' +
+      '<div class="actions">' +
+      (b.status === 'pending_payment' ? '<button type="button" id="agPaye">Paiement reçu, confirmer</button>' : '') +
+      (b.status === 'confirmed' ? '<button type="button" id="agMail">Envoyer la confirmation</button>' : '') +
+      (agendaActif(b)
+        ? '<button type="button" id="agFait"' + (passee ? '' : ' disabled title="Cette séance n\'a pas encore eu lieu"') + '>Marquer terminée</button>' +
+          '<button type="button" id="agAnnule">Annuler</button>'
+        : '<button type="button" id="agRetablit">Rétablir</button>') +
+      '<button type="button" id="agFerme">Fermer</button>' +
+      '</div></div>';
+
+    async function changer(statut, question) {
+      if (!confirm(question)) return;
+      const supa = await Sanctuarys.init();
+      const { error } = await supa.from(b.table).update({ status: statut }).eq('id', b.id);
+      if (error) { alert('Impossible : ' + error.message); return; }
+      // Une seance qui redevient confirmee est une seance qui a lieu : la
+      // cliente doit l'apprendre sans que personne ait a y penser.
+      if (statut === 'confirmed') await envoyerConfirmation(true);
+      AG_CHOISI = null;
+      await loadAgendaPanel();
+      await loadAgendaCount();
+    }
+
+    // L'email de confirmation.
+    //
+    // Aucune cliente ne recevait quoi que ce soit apres avoir reserve : ni le
+    // jour, ni l'heure, ni l'adresse. Elles ecrivaient donc sur WhatsApp pour
+    // demander si leur rendez vous existait, ce qui est exactement le travail
+    // qu'un email de trois lignes evite.
+    async function envoyerConfirmation(silencieux) {
+      if (!b.email) { if (!silencieux) alert('Cette personne n\'a pas d\'adresse email.'); return; }
+      const d2 = new Date(b.start_at);
+      const jour = d2.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      const heure = d2.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const texte = 'Bonjour ' + (b.prenom || '') + ',\n\n' +
+        'Ton rendez vous est confirmé.\n\n' +
+        jour + ' à ' + heure + '\n' +
+        'Sanctuarys, 69 rue Traversière, 75012 Paris\n\n' +
+        'Viens dix minutes en avance, et préviens nous si quelque chose change de ton côté.\n\n' +
+        'À très vite,\n' +
+        'L\'équipe Sanctuarys';
+
+      const supa = await Sanctuarys.init();
+      const session = await supa.auth.getSession();
+      const token = session.data.session?.access_token;
+      const bouton = document.getElementById('agMail');
+      if (bouton) { bouton.disabled = true; bouton.textContent = 'Envoi...'; }
+      try {
+        const r = await fetch('https://hcmcforwphmqrauqltqp.supabase.co/functions/v1/send-email-from-admin', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'apikey': 'sb_publishable_rhyF6UXo5j4zlEH1ponGTQ_VQwb9A2t',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action: 'send', to: b.email, subject: 'Ton rendez vous est confirmé ✦', content: texte })
+        });
+        const res = await r.json();
+        if (!r.ok) throw new Error(res.error || 'Envoi impossible');
+        if (bouton) bouton.textContent = 'Confirmation envoyée ✦';
+      } catch (e) {
+        if (bouton) { bouton.disabled = false; bouton.textContent = 'Envoyer la confirmation'; }
+        alert('Email impossible : ' + e.message);
+      }
+    }
+
+    const paye = document.getElementById('agPaye');
+    if (paye) paye.addEventListener('click', async () => {
+      if (!confirm('Le paiement est bien arrivé ? Le rendez vous passe en confirmé.')) return;
+      const supa = await Sanctuarys.init();
+      const champs = { status: 'confirmed' };
+      if (b.table === 'appointments') champs.paid_at = new Date().toISOString();
+      const { error } = await supa.from(b.table).update(champs).eq('id', b.id);
+      if (error) { alert('Impossible : ' + error.message); return; }
+      await envoyerConfirmation(true);
+      AG_CHOISI = null;
+      await loadAgendaPanel();
+      await loadAgendaCount();
+    });
+
+    const mail = document.getElementById('agMail');
+    if (mail) mail.addEventListener('click', () => envoyerConfirmation(false));
+
+    const choixG = document.getElementById('agGardienne');
+    if (choixG) choixG.addEventListener('change', async () => {
+      const supa = await Sanctuarys.init();
+      const { error } = await supa.from(b.table).update({ gardienne_id: choixG.value || null }).eq('id', b.id);
+      if (error) { alert('Impossible : ' + error.message); return; }
+      await loadAgendaPanel();
+    });
+
+    const fait = document.getElementById('agFait');
+    if (fait) fait.addEventListener('click', () => changer('completed', 'Marquer cette séance comme terminée ? Elle sortira de ton agenda et de l\'espace de la cliente.'));
+    const annule = document.getElementById('agAnnule');
+    if (annule) annule.addEventListener('click', () => changer('cancelled', 'Annuler cette séance ? La place sera rendue à la cliente.'));
+    const retablit = document.getElementById('agRetablit');
+    if (retablit) retablit.addEventListener('click', () => changer('confirmed', 'Rétablir cette séance ? Elle redevient confirmée, chez toi et chez la cliente.'));
+    document.getElementById('agFerme').addEventListener('click', () => { AG_CHOISI = null; renderAgendaDetail(); });
+  }
+
+  function renderAgendaListe() {
     const list = document.getElementById('agendaList');
     const filter = document.getElementById('agendaFilter').value;
     const search = (document.getElementById('searchAgenda').value || '').toLowerCase().trim();
@@ -4231,10 +4754,8 @@
     const now = new Date();
     let filtered = ALL_BOOKINGS.filter(b => {
       const start = new Date(b.start_at);
-      if (filter === 'upcoming') return start >= now && b.status === 'confirmed';
-      if (filter === 'today') {
-        return start.toDateString() === now.toDateString();
-      }
+      if (filter === 'upcoming') return start >= now && agendaActif(b);
+      if (filter === 'today') return start.toDateString() === now.toDateString();
       if (filter === 'week') {
         const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
         return start >= now && start <= weekEnd;
@@ -4244,74 +4765,61 @@
     });
 
     if (search) {
-      filtered = filtered.filter(b => {
-        const p = b.profiles;
-        const full = ((p?.prenom || '') + ' ' + (p?.nom || '') + ' ' + (p?.email || '')).toLowerCase();
-        return full.includes(search);
-      });
+      filtered = filtered.filter(b => (b.prenom + ' ' + b.nom + ' ' + b.email).toLowerCase().includes(search));
     }
-
-    document.getElementById('agendaUpcomingCount').textContent = ALL_BOOKINGS.filter(b => new Date(b.start_at) >= now && b.status === 'confirmed').length;
 
     if (filtered.length === 0) {
-      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 17px;">Aucune réservation pour ce filtre.</div>';
+      list.innerHTML = '<div class="ag-vide">Aucune réservation pour ce filtre.</div>';
       return;
     }
+
+    const LIBELLES = { confirmed: 'Confirmée', pending_payment: 'Attente paiement', completed: 'Terminée', cancelled: 'Annulée', no_show: 'No-show', in_progress: 'En cours', refunded: 'Remboursée' };
 
     filtered.forEach(b => {
       const start = new Date(b.start_at);
       const end = b.end_at ? new Date(b.end_at) : null;
-      const p = b.profiles || {};
-      const tt = b.treatment_types || {};
-      const initial = (p.prenom || '·')[0].toUpperCase();
       const statusClass = b.status === 'confirmed' ? 'active' : (b.status === 'completed' ? '' : 'inactive');
-      const statusLabel = ({ confirmed: 'Confirmée', completed: 'Terminée', cancelled: 'Annulée', no_show: 'No-show' }[b.status]) || b.status;
-
       const row = document.createElement('div');
       row.className = 'eleve-row';
       row.style.cursor = 'pointer';
       row.innerHTML = `
         <div class="eleve-name">
-          <div class="eleve-avatar" style="background: ${tt.color_hex || '#C8704D'}; color: #FAF5EC;">${initial}</div>
+          <div class="eleve-avatar" style="background: ${b.couleur}; color: #FAF5EC;">${(b.prenom || '·')[0].toUpperCase()}</div>
           <div>
-            <div class="name">${escapeHTML(p.prenom || '')} ${escapeHTML(p.nom || '')}</div>
-            <div class="email">${escapeHTML(tt.name || 'Soin')}${p.phone ? ' · ' + escapeHTML(p.phone) : ''}</div>
+            <div class="name">${escapeHTML(b.prenom)} ${escapeHTML(b.nom)}</div>
+            <div class="email">${escapeHTML(b.soin)}${b.phone ? ' · ' + escapeHTML(b.phone) : ''}</div>
           </div>
         </div>
         <div class="eleve-progress">
           <p style="color: var(--marron-deep); font-family: 'Italiana', serif; font-size: 17px;">${start.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
           <p style="color: var(--marron-soft); font-size: 12px; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">${start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}${end ? ' – ' + end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
         </div>
-        <div class="eleve-module"></div>
-        <div class="eleve-status ${statusClass}">${statusLabel}</div>
-        <div class="eleve-actions">
-          ${b.status === 'confirmed' ? `<button class="icon-btn agenda-done" data-id="${b.id}" title="Marquer terminée">✓</button><button class="icon-btn agenda-cancel" data-id="${b.id}" title="Annuler">×</button>` : '<button class="icon-btn" title="Voir">→</button>'}
-        </div>
+        <div class="eleve-module">${agendaChevauche(b) ? '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1px;color:#B4553C;">CHEVAUCHEMENT</span>' : (b.source === 'public' ? '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:1px;color:var(--marron-soft);">PUBLIC</span>' : '')}</div>
+        <div class="eleve-status ${statusClass}">${LIBELLES[b.status] || b.status}</div>
+        <div class="eleve-actions"><button class="icon-btn" title="Voir">→</button></div>
       `;
+      row.addEventListener('click', () => {
+        AG_CHOISI = b;
+        AG_LUNDI = agLundiDe(start);
+        AG_VUE = 'semaine';
+        renderAgendaPanel();
+        document.getElementById('agDetail').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       list.appendChild(row);
-    });
-
-    list.querySelectorAll('.agenda-done').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const supa = await Sanctuarys.init();
-        await supa.from('session_bookings').update({ status: 'completed' }).eq('id', btn.dataset.id);
-        await loadAgendaPanel();
-        await loadAgendaCount();
-      });
-    });
-    list.querySelectorAll('.agenda-cancel').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (!confirm('Annuler cette séance ? La place sera rendue à la Fondatrice.')) return;
-        const supa = await Sanctuarys.init();
-        await supa.from('session_bookings').update({ status: 'cancelled' }).eq('id', btn.dataset.id);
-        await loadAgendaPanel();
-        await loadAgendaCount();
-      });
     });
   }
 
+  document.getElementById('agPrec').addEventListener('click', () => {
+    AG_LUNDI = new Date(AG_LUNDI.getTime() - 7 * 86400000); AG_CHOISI = null; renderAgendaPanel();
+  });
+  document.getElementById('agSuiv').addEventListener('click', () => {
+    AG_LUNDI = new Date(AG_LUNDI.getTime() + 7 * 86400000); AG_CHOISI = null; renderAgendaPanel();
+  });
+  document.getElementById('agAuj').addEventListener('click', () => {
+    AG_LUNDI = agLundiDe(new Date()); AG_CHOISI = null; renderAgendaPanel();
+  });
+  document.getElementById('agVueSemaine').addEventListener('click', () => { AG_VUE = 'semaine'; renderAgendaPanel(); });
+  document.getElementById('agVueListe').addEventListener('click', () => { AG_VUE = 'liste'; renderAgendaPanel(); });
   document.getElementById('searchAgenda').addEventListener('input', renderAgendaPanel);
   document.getElementById('agendaFilter').addEventListener('change', renderAgendaPanel);
 
