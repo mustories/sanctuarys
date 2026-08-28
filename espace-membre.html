@@ -78,6 +78,68 @@
     text-transform: uppercase;
   }
 
+  /* ===== Login gate ===== */
+  .login-gate {
+    position: fixed; inset: 0; z-index: 9500;
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.25), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.15), transparent 55%),
+      var(--blanc);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .login-card { max-width: 440px; width: 100%; text-align: center; }
+  .login-logo { width: 150px; max-width: 60%; height: auto; display: block; margin: 0 auto 32px; opacity: 0.9; }
+  .login-greeting { font-family: 'Fraunces', serif; font-style: italic; font-size: 18px; color: var(--terracotta-deep); margin-bottom: 12px; }
+  .login-title { font-family: 'Marcellus', serif; font-size: 36px; color: var(--marron-deep); margin-bottom: 12px; line-height: 1.15; }
+  .login-title em { font-family: 'Fraunces', serif; font-style: italic; color: var(--terracotta); }
+  .login-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--marron-soft); margin-bottom: 40px; opacity: 0.75; }
+  .login-form { display: flex; flex-direction: column; gap: 14px; }
+  .login-input {
+    width: 100%; padding: 18px 22px;
+    background: var(--blanc-card);
+    border: 1px solid var(--line);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; text-align: center; letter-spacing: 1px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .login-input:focus { outline: none; border-color: var(--terracotta); background: var(--blanc); }
+  .login-input::placeholder { color: var(--marron-soft); opacity: 0.45; }
+  .login-btn {
+    padding: 18px 30px;
+    background: var(--terracotta);
+    color: var(--blanc);
+    border: 1px solid var(--terracotta);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .login-btn:hover { background: var(--terracotta-deep); border-color: var(--terracotta-deep); }
+  .login-btn:disabled { opacity: 0.6; cursor: default; }
+  .login-error {
+    color: var(--rouge-vif);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 6px;
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .login-error.show { opacity: 1; }
+  .login-footer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--marron-soft);
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-top: 24px;
+  }
+
   /* ===== Header ===== */
   header {
     position: sticky; top: 0; z-index: 100;
@@ -917,6 +979,25 @@
 </head>
 <body>
 
+<!-- ============== LOGIN GATE ============== -->
+<div class="login-gate" id="loginGate">
+  <div class="login-card">
+    <img class="login-logo" src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys">
+    <div class="login-greeting">Bienvenue dans ton espace</div>
+    <h1 class="login-title">Mon<br><em>Temple.</em></h1>
+    <div class="login-sub">Connexion à ton espace membre</div>
+
+    <form class="login-form" id="loginForm">
+      <input type="email" class="login-input" id="loginEmail" placeholder="Ton email" autocomplete="email" required>
+      <input type="password" class="login-input" id="loginPassword" placeholder="Ton mot de passe" autocomplete="current-password" required>
+      <button type="submit" class="login-btn" id="loginBtn"><span>Entrer ✦</span></button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+
+    <div class="login-footer">Ton espace est strictement personnel</div>
+  </div>
+</div>
+
 <!-- ============== LOADING ============== -->
 <div id="loading">
   <img src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys">
@@ -1199,59 +1280,97 @@ async function init() {
     SUPABASE_CLIENT = await Sanctuarys.init();
     const session = (await SUPABASE_CLIENT.auth.getSession()).data.session;
     if (!session) {
-      window.location.href = '/index.html';
+      document.getElementById('loading').style.display = 'none';
+      showLoginGate();
       return;
     }
-    const user = session.user;
-
-    const { data: profile } = await SUPABASE_CLIENT
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (!profile || (profile.role !== 'membre' && profile.role !== 'admin')) {
-      showToast('Cet espace est réservé aux Fondatrices', 'error');
-      setTimeout(() => window.location.href = '/index.html', 2000);
-      return;
-    }
-    MEMBER = profile;
-
-    const { data: membership } = await SUPABASE_CLIENT
-      .from('memberships')
-      .select('*')
-      .eq('member_id', user.id)
-      .order('started_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    MEMBERSHIP = membership;
-
-    document.getElementById('header').style.display = 'flex';
-    document.getElementById('hero').style.display = 'block';
-    document.getElementById('panels').style.display = 'grid';
-    document.getElementById('loading').style.display = 'none';
-
-    renderHero();
-    if (!MEMBER.welcomed_at) {
-      document.getElementById('welcomeGuide').style.display = 'block';
-    }
-
-    await Promise.all([
-      loadTreatments(),
-      renderCycle(),
-      renderSeances(),
-      renderSoinsRecus(),
-      renderJournal(),
-      renderEvents(),
-      renderReferral(),
-      renderPoint()
-    ]);
-
+    await loadMemberSpace(session);
   } catch (err) {
     console.error('init error:', err);
+    document.getElementById('loading').style.display = 'flex';
     document.getElementById('loading').innerHTML = `<div style="text-align:center; max-width:400px;"><img src="/assets/sanctuarys-logo-1.png" style="width:90px; margin-bottom:20px;"><p style="font-family:'Fraunces',serif;font-style:normal;color:var(--marron);">Le Temple n'est pas encore accessible. Erreur : ${err.message}</p></div>`;
   }
 }
+
+async function loadMemberSpace(session) {
+  const user = session.user;
+
+  const { data: profile } = await SUPABASE_CLIENT
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!profile || (profile.role !== 'membre' && profile.role !== 'admin')) {
+    document.getElementById('loading').style.display = 'none';
+    showToast('Cet espace est réservé aux Fondatrices', 'error');
+    setTimeout(() => window.location.href = '/index.html', 2000);
+    return;
+  }
+  MEMBER = profile;
+
+  const { data: membership } = await SUPABASE_CLIENT
+    .from('memberships')
+    .select('*')
+    .eq('member_id', user.id)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  MEMBERSHIP = membership;
+
+  hideLoginGate();
+  document.getElementById('header').style.display = 'flex';
+  document.getElementById('hero').style.display = 'block';
+  document.getElementById('panels').style.display = 'grid';
+  document.getElementById('loading').style.display = 'none';
+
+  renderHero();
+  if (!MEMBER.welcomed_at) {
+    document.getElementById('welcomeGuide').style.display = 'block';
+  }
+
+  await Promise.all([
+    loadTreatments(),
+    renderCycle(),
+    renderSeances(),
+    renderSoinsRecus(),
+    renderJournal(),
+    renderEvents(),
+    renderReferral(),
+    renderPoint()
+  ]);
+}
+
+function showLoginGate() {
+  document.getElementById('loginGate').style.display = 'flex';
+  setTimeout(() => document.getElementById('loginEmail')?.focus(), 100);
+}
+
+function hideLoginGate() {
+  document.getElementById('loginGate').style.display = 'none';
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  err.classList.remove('show');
+  btn.disabled = true;
+  try {
+    const result = await Sanctuarys.signIn(email, password);
+    document.getElementById('loading').style.display = 'flex';
+    await loadMemberSpace(result.session);
+  } catch (ex) {
+    err.textContent = 'Email ou mot de passe incorrect.';
+    err.classList.add('show');
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 function renderHero() {
   const prenom = MEMBER.prenom || 'Fondatrice';
