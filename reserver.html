@@ -325,10 +325,6 @@
       <input type="tel" id="fPhone" required placeholder="06 ...">
     </div>
     <div class="form-group">
-      <label>Ville</label>
-      <input type="text" id="fVille" placeholder="Paris, Marseille, Bruxelles...">
-    </div>
-    <div class="form-group">
       <label>Ce qui t'amène (optionnel)</label>
       <textarea id="fNotes" rows="3" placeholder="Quelques mots sur ta situation, ton cycle, ce que tu viens chercher."></textarea>
     </div>
@@ -606,7 +602,7 @@
       nom: document.getElementById('fNom').value.trim(),
       email: document.getElementById('fEmail').value.trim().toLowerCase(),
       phone: document.getElementById('fPhone').value.trim(),
-      ville: document.getElementById('fVille').value.trim() || null,
+      ville: null,
       notes: document.getElementById('fNotes').value.trim() || null,
       allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui'
     };
@@ -693,7 +689,7 @@
         client_nom: document.getElementById('fNom').value.trim(),
         client_email: document.getElementById('fEmail').value.trim().toLowerCase(),
         client_phone: document.getElementById('fPhone').value.trim(),
-        client_ville: document.getElementById('fVille').value.trim() || null,
+        client_ville: null,
         client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Séance Fondatrice incluse - membership ' + state.fondatrice.membershipId + ']',
         is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
         start_at: state.slotStart,
