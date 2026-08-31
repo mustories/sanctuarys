@@ -267,6 +267,11 @@
     <div id="fondatriceMsg" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron-deep); line-height: 1.55;"></div>
   </div>
 
+  <div id="whatsappBanner" style="display:none; background: linear-gradient(135deg, rgba(168, 85, 55, 0.10), rgba(212, 160, 76, 0.10)); border: 1px solid var(--terracotta); padding: 22px 26px; margin-bottom: 30px; text-align: center;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 6px;">✦ Paiement déjà reçu</div>
+    <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--marron-deep); line-height: 1.55;">Ton règlement a déjà été reçu par Princesse. Choisis simplement ton créneau ci-dessous, aucun paiement en ligne n'est nécessaire.</div>
+  </div>
+
   <div class="steps-bar">
     <div class="step-dot active" data-step="1"><div class="num">1</div><span>Sanctuarys</span></div>
     <div class="step-dot" data-step="2"><div class="num">2</div><span>Créneau</span></div>
@@ -353,12 +358,13 @@
   <div class="step-panel" id="step4">
     <h2>Récapitulatif <em>et paiement.</em></h2>
     <div class="recap" id="recap"></div>
-    <div style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.08), rgba(212, 160, 76, 0.08)); border: 1px solid var(--terracotta); padding: 20px 22px; margin: 20px 0; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.65;">
+    <div id="paymentInfoBox" style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.08), rgba(212, 160, 76, 0.08)); border: 1px solid var(--terracotta); padding: 20px 22px; margin: 20px 0; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.65;">
       En cliquant sur <strong style="font-family:'Italiana',serif;font-weight:normal;font-style:normal;">Payer 66€</strong>, tu seras redirigée vers Stripe pour un règlement sécurisé. Ton créneau est réservé pendant 30 minutes le temps du paiement.
     </div>
     <div class="actions">
       <button class="btn-back" type="button" onclick="goStep(3)">← Retour</button>
       <button class="btn-next" type="button" id="fondatriceBtn" style="display:none; background: var(--or); border-color: var(--or);" onclick="startFondatriceBooking()">Utiliser une séance incluse ✦</button>
+      <button class="btn-next" type="button" id="whatsappBtn" style="display:none; background: var(--or); border-color: var(--or);" onclick="startWhatsappBooking()">Confirmer le rendez-vous ✦</button>
       <button class="btn-next" type="button" id="payBtn" onclick="startPayment()">Payer 66€ ✦</button>
     </div>
   </div>
@@ -375,7 +381,8 @@
     weekStart: null,
     date: null,
     slotStart: null,
-    fondatrice: null // { email, prenom, nom, sessionsLeft, membershipId, profileId }
+    fondatrice: null, // { email, prenom, nom, sessionsLeft, membershipId, profileId }
+    whatsappMode: new URLSearchParams(window.location.search).get('whatsapp') === '1'
   };
 
   function goStep(n) {
@@ -405,13 +412,22 @@
       renderRecap();
       // Si Fondatrice avec sessions restantes : afficher le bouton free
       const fondatriceBtn = document.getElementById('fondatriceBtn');
+      const whatsappBtn = document.getElementById('whatsappBtn');
       const payBtn = document.getElementById('payBtn');
+      const paymentInfoBox = document.getElementById('paymentInfoBox');
       const matchFondatrice = state.fondatrice && state.fondatrice.email.toLowerCase() === email.toLowerCase() && state.fondatrice.sessionsLeft > 0;
       if (matchFondatrice) {
         fondatriceBtn.style.display = 'inline-flex';
+        whatsappBtn.style.display = 'none';
         payBtn.style.display = 'none';
+      } else if (state.whatsappMode) {
+        fondatriceBtn.style.display = 'none';
+        whatsappBtn.style.display = 'inline-flex';
+        payBtn.style.display = 'none';
+        paymentInfoBox.innerHTML = 'Ton règlement a déjà été reçu par Princesse. En cliquant sur <strong style="font-family:\'Italiana\',serif;font-weight:normal;font-style:normal;">Confirmer le rendez-vous</strong>, ton créneau est réservé immédiatement, sans paiement en ligne.';
       } else {
         fondatriceBtn.style.display = 'none';
+        whatsappBtn.style.display = 'none';
         payBtn.style.display = 'inline-flex';
       }
     }
@@ -714,8 +730,48 @@
   }
   window.startFondatriceBooking = startFondatriceBooking;
 
+  function detectWhatsapp() {
+    if (!state.whatsappMode) return;
+    document.getElementById('whatsappBanner').style.display = 'block';
+  }
+
+  async function startWhatsappBooking() {
+    const btn = document.getElementById('whatsappBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Réservation...';
+    try {
+      const supa = await Sanctuarys.init();
+
+      const { data: appt, error: apptError } = await supa.from('appointments').insert({
+        sanctuary_id: state.sanctuary.id,
+        client_prenom: document.getElementById('fPrenom').value.trim(),
+        client_nom: document.getElementById('fNom').value.trim(),
+        client_email: document.getElementById('fEmail').value.trim().toLowerCase(),
+        client_phone: document.getElementById('fPhone').value.trim(),
+        client_ville: null,
+        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Réservé via WhatsApp - payé par PayPal]',
+        is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
+        start_at: state.slotStart,
+        duration_minutes: 60,
+        price_total_eur: 66,
+        status: 'confirmed',
+        paid_at: new Date().toISOString()
+      }).select().single();
+
+      if (apptError) throw new Error(apptError.message);
+
+      window.location.href = `/paiement-confirme?appointment_id=${appt.id}&type=whatsapp`;
+    } catch (err) {
+      showError('Impossible de réserver : ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = 'Confirmer le rendez-vous ✦';
+    }
+  }
+  window.startWhatsappBooking = startWhatsappBooking;
+
   loadSanctuaries();
   detectFondatrice();
+  detectWhatsapp();
 </script>
 </body>
 </html>
