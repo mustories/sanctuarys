@@ -1142,6 +1142,17 @@
     <div id="soinsContent"></div>
   </div>
 
+  <!-- Panel 3bis: Bilans radiesthésiques -->
+  <div class="panel" id="panel-bilans">
+    <div class="panel-header">
+      <div>
+        <div class="panel-num">03bis / Lecture</div>
+        <h2>Mes <em>bilans.</em></h2>
+      </div>
+    </div>
+    <div id="bilansContent"></div>
+  </div>
+
   <!-- Panel 4: Journal -->
   <div class="panel" id="panel-journal">
     <div class="panel-header">
@@ -1334,6 +1345,7 @@ async function loadMemberSpace(session) {
     renderCycle(),
     renderSeances(),
     renderSoinsRecus(),
+    renderBilans(),
     renderJournal(),
     renderEvents(),
     renderReferral(),
@@ -1763,6 +1775,70 @@ async function renderSoinsRecus() {
     `;
   });
   container.innerHTML = html;
+}
+
+// ===== BILANS RADIESTHÉSIQUES =====
+async function renderBilans() {
+  const container = document.getElementById('bilansContent');
+  const email = (MEMBER.email || '').toLowerCase();
+  if (!email) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="symbol">○</div>
+        <p>Aucun bilan pour l'instant.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const { data: bilans } = await SUPABASE_CLIENT
+    .from('bilans')
+    .select('*')
+    .ilike('client_email', email)
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  if (!bilans || bilans.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="symbol">○</div>
+        <p>Aucun bilan pour l'instant. Après ta lecture radiesthésique, il apparaîtra ici.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  bilans.forEach((b, i) => {
+    const date = new Date(b.created_at);
+    const elements = Array.isArray(b.elements_choisis) ? b.elements_choisis.join(', ') : '';
+    const detailId = `bilanDetail${i}`;
+    html += `
+      <div class="soin-row" style="align-items:flex-start; cursor:pointer;" onclick="toggleBilanDetail('${detailId}')">
+        <div class="soin-day">
+          <div class="soin-day-num">${date.getDate()}</div>
+          <div class="soin-day-mois">${date.toLocaleDateString('fr-FR', { month: 'short' })}</div>
+        </div>
+        <div style="flex:1;">
+          <div class="soin-name">Bilan radiesthésique</div>
+          <div class="soin-report-preview">Utérus ${b.etat_uterus_pct}% · Réceptivité ${b.etat_receptivite_pct}%${elements ? ' · ' + escapeHtml(elements) : ''}</div>
+          <div id="${detailId}" hidden style="margin-top:14px; font-family:'Cormorant Garamond',serif; font-size:15px; line-height:1.75; color:var(--marron-deep);">
+            ${b.analyse_chiffres ? `<p style="margin-bottom:12px;"><strong style="font-family:'Italiana',serif; font-weight:normal; color:var(--terracotta-deep);">Ce que révèlent ces chiffres</strong><br>${escapeHtml(b.analyse_chiffres)}</p>` : ''}
+            ${b.vibration_energetique ? `<p style="margin-bottom:12px;"><strong style="font-family:'Italiana',serif; font-weight:normal; color:var(--terracotta-deep);">La vibration de tes alliés</strong><br>${escapeHtml(b.vibration_energetique)}</p>` : ''}
+            ${b.bienfaits_physiologiques ? `<p style="margin-bottom:12px;"><strong style="font-family:'Italiana',serif; font-weight:normal; color:var(--terracotta-deep);">Bienfaits, focus féminin</strong><br>${escapeHtml(b.bienfaits_physiologiques)}</p>` : ''}
+            ${b.resume_final ? `<p style="margin-bottom:12px;"><strong style="font-family:'Italiana',serif; font-weight:normal; color:var(--terracotta-deep);">Ce que vise cette séance</strong><br>${escapeHtml(b.resume_final)}</p>` : ''}
+            ${b.avis_medical ? `<p style="font-size:13px; font-style:italic; color:var(--marron-soft); border-left:2px solid var(--terracotta); padding-left:10px;">${escapeHtml(b.avis_medical)}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function toggleBilanDetail(id) {
+  const el = document.getElementById(id);
+  if (el) el.hidden = !el.hidden;
 }
 
 // ===== JOURNAL =====

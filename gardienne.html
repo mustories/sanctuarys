@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace des gardiennes · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<meta name="theme-color" content="#C8704D">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F2EBDD;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --or-pale: #E8C57A;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.25), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.18), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 50px 20px 100px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .brand .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .brand h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 400;
+    color: var(--marron-deep);
+  }
+  .brand h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 36px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 20px 60px rgba(74, 48, 32, 0.08);
+  }
+
+  label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    margin-bottom: 8px;
+  }
+  input[type="text"], input[type="password"], input[type="email"], textarea, select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    background: var(--blanc-deep);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--terracotta); }
+
+  .field { margin-bottom: 22px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border: 1px solid var(--terracotta-deep);
+    background: var(--terracotta);
+    color: var(--blanc);
+    font-family: 'Italiana', serif;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--terracotta-deep); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.full { width: 100%; }
+  .btn.secondary {
+    background: transparent;
+    color: var(--marron-deep);
+    border-color: var(--line);
+  }
+  .btn.secondary:hover { border-color: var(--terracotta); }
+
+  .error {
+    color: #A83737;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    margin-top: 12px;
+  }
+
+  .result-row {
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .result-row:hover { border-color: var(--terracotta); background: var(--blanc-deep); }
+  .result-row .name { font-size: 17px; color: var(--marron-deep); }
+  .result-row .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--marron-soft); text-transform: uppercase; margin-top: 4px; }
+
+  .client-card {
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 20px 22px;
+    margin-bottom: 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .client-card .name { font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep); }
+  .client-card .meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--terracotta-deep); text-transform: uppercase; margin-top: 4px; }
+
+  .slider-block { margin-bottom: 28px; }
+  .slider-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .slider-head .lbl { font-family: 'Italiana', serif; font-size: 17px; color: var(--marron-deep); }
+  .slider-head .val { font-family: 'Italiana', serif; font-size: 26px; color: var(--terracotta-deep); }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--line);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    cursor: pointer;
+    border: 2px solid var(--blanc);
+    box-shadow: 0 2px 8px rgba(168, 85, 55, 0.4);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    cursor: pointer;
+    border: 2px solid var(--blanc);
+  }
+
+  .grimoire-cat { margin-bottom: 20px; }
+  .grimoire-cat h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 10px;
+  }
+  .grimoire-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+  .grimoire-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--marron);
+    transition: all 0.15s;
+  }
+  .grimoire-item.active {
+    border-color: var(--terracotta);
+    background: var(--terracotta-pale);
+    background: rgba(200, 112, 77, 0.12);
+    color: var(--marron-deep);
+  }
+  .grimoire-item input { display: none; }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-frame { text-align: center; padding: 20px 0; }
+  .success-frame .symbol { font-size: 40px; color: var(--terracotta-deep); margin-bottom: 16px; }
+  .success-frame h2 { font-family: 'Italiana', serif; font-size: 26px; margin-bottom: 14px; }
+  .success-frame p { font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.7; color: var(--marron); margin-bottom: 22px; }
+
+  .actions-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .actions-row .btn { flex: 1; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="meta">✦ Sanctuarys</div>
+    <h1>Espace des <em>gardiennes.</em></h1>
+  </div>
+
+  <!-- ÉTAPE 0 : mot de passe -->
+  <div class="card" id="gate">
+    <div class="field">
+      <label for="gatePassword">Mot de passe partagé</label>
+      <input type="password" id="gatePassword" placeholder="••••••••" autocomplete="off">
+    </div>
+    <button class="btn full" onclick="unlockGate()">Entrer ✦</button>
+    <div class="error" id="gateError" hidden></div>
+  </div>
+
+  <!-- ÉTAPE 1 : recherche du rendez-vous -->
+  <div class="card" id="searchCard" hidden>
+    <label for="searchInput">Chercher la cliente (prénom, nom ou email)</label>
+    <div class="field" style="display:flex; gap:10px;">
+      <input type="text" id="searchInput" placeholder="ex. Camille ou camille@mail.com">
+      <button class="btn" style="white-space:nowrap;" onclick="searchAppointments()">Chercher</button>
+    </div>
+    <div id="searchResults"></div>
+    <div class="error" id="searchError" hidden></div>
+  </div>
+
+  <!-- ÉTAPE 2 : formulaire du bilan -->
+  <div class="card" id="bilanCard" hidden>
+    <div class="client-card">
+      <div>
+        <div class="name" id="clientName"></div>
+        <div class="meta" id="clientMeta"></div>
+      </div>
+      <button class="btn secondary" onclick="resetToSearch()" style="font-size:13px; padding:8px 14px;">Changer ✦</button>
+    </div>
+
+    <div class="field">
+      <label for="gardienneSelect">Gardienne</label>
+      <select id="gardienneSelect">
+        <option value="Charlotte">Charlotte</option>
+        <option value="Manthyta">Manthyta</option>
+      </select>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-head">
+        <span class="lbl">État de l'utérus</span>
+        <span class="val" id="uterusVal">50%</span>
+      </div>
+      <input type="range" id="uterusSlider" min="0" max="100" value="50" oninput="document.getElementById('uterusVal').textContent = this.value + '%'">
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-head">
+        <span class="lbl">État de réceptivité</span>
+        <span class="val" id="receptiviteVal">50%</span>
+      </div>
+      <input type="range" id="receptiviteSlider" min="0" max="100" value="50" oninput="document.getElementById('receptiviteVal').textContent = this.value + '%'">
+    </div>
+
+    <div class="field">
+      <label>Alliés végétaux du grimoire</label>
+      <div id="grimoireContainer"></div>
+    </div>
+
+    <div class="field">
+      <label for="notesGardienne">Observation de la gardienne (optionnel, aide l'IA à rédiger)</label>
+      <textarea id="notesGardienne" placeholder="Ce que tu as ressenti, observé, capté pendant la lecture..."></textarea>
+    </div>
+
+    <button class="btn full" id="submitBtn" onclick="submitBilan()">Générer et expédier le bilan ✦</button>
+    <div class="error" id="bilanError" hidden></div>
+  </div>
+
+  <!-- ÉTAPE 3 : succès -->
+  <div class="card success-frame" id="successCard" hidden>
+    <div class="symbol">✦</div>
+    <h2>Bilan expédié.</h2>
+    <p id="successText"></p>
+    <div class="actions-row">
+      <button class="btn full" onclick="resetToSearch()">Nouveau bilan ✦</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/sanctuarys.js"></script>
+<script>
+const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+
+const GRIMOIRE = {
+  "Plantes & racines": [
+    "Achillée millefeuille", "Angélique", "Armoise", "Ashwagandha", "Bardane",
+    "Camomille matricaire", "Chardon-Marie", "Citronnelle", "Corossol (feuilles)",
+    "Damiana", "Framboisier (feuilles)", "Hamamélis", "Hibiscus",
+    "Hysope africaine", "Maca", "Mélisse", "Rose (boutons / pétales)",
+    "Rue", "Sauge", "Sel gemme", "Souci (calendula)", "Spiruline", "Vigne rouge"
+  ],
+  "Encens & résines": [
+    "Benjoin rouge", "Sang-dragon", "Oliban", "Myrrhe",
+    "Encens de Vénus (mélange maison)", "Encens Purity (mélange maison)"
+  ]
+};
+
+let GARDIENNE_PASSWORD = '';
+let SELECTED_APPOINTMENT = null;
+let SUPA = null;
+
+function unlockGate() {
+  const pwd = document.getElementById('gatePassword').value.trim();
+  if (!pwd) {
+    document.getElementById('gateError').textContent = 'Entre le mot de passe.';
+    document.getElementById('gateError').hidden = false;
+    return;
+  }
+  GARDIENNE_PASSWORD = pwd;
+  try { sessionStorage.setItem('gardienne_pwd', pwd); } catch (e) {}
+  document.getElementById('gate').hidden = true;
+  document.getElementById('searchCard').hidden = false;
+  renderGrimoire();
+}
+
+async function searchAppointments() {
+  const q = document.getElementById('searchInput').value.trim();
+  const errEl = document.getElementById('searchError');
+  const resultsEl = document.getElementById('searchResults');
+  errEl.hidden = true;
+  resultsEl.innerHTML = '';
+  if (!q) return;
+
+  if (!SUPA) SUPA = await Sanctuarys.init();
+
+  const { data, error } = await SUPA
+    .from('appointments')
+    .select('id, client_prenom, client_nom, client_email, start_at, status, sanctuaries(nom)')
+    .or(`client_prenom.ilike.%${q}%,client_nom.ilike.%${q}%,client_email.ilike.%${q}%`)
+    .in('status', ['confirmed', 'completed', 'in_progress'])
+    .order('start_at', { ascending: false })
+    .limit(20);
+
+  if (error) {
+    errEl.textContent = 'Erreur de recherche : ' + error.message;
+    errEl.hidden = false;
+    return;
+  }
+  if (!data || data.length === 0) {
+    resultsEl.innerHTML = '<p style="font-family:\'Cormorant Garamond\',serif; font-style:italic; color:var(--marron-soft); margin-top:14px;">Aucun rendez-vous trouvé.</p>';
+    return;
+  }
+
+  data.forEach(appt => {
+    const d = new Date(appt.start_at);
+    const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const div = document.createElement('div');
+    div.className = 'result-row';
+    div.innerHTML = `
+      <div class="name">${escapeHtml(appt.client_prenom)} ${escapeHtml(appt.client_nom || '')}</div>
+      <div class="sub">${dateStr} · ${escapeHtml(appt.sanctuaries?.nom || 'Sanctuarys')} · ${escapeHtml(appt.client_email)}</div>
+    `;
+    div.onclick = () => selectAppointment(appt);
+    resultsEl.appendChild(div);
+  });
+}
+
+function selectAppointment(appt) {
+  SELECTED_APPOINTMENT = appt;
+  document.getElementById('clientName').textContent = `${appt.client_prenom} ${appt.client_nom || ''}`;
+  const d = new Date(appt.start_at);
+  document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} · ${appt.client_email}`;
+  document.getElementById('searchCard').hidden = true;
+  document.getElementById('bilanCard').hidden = false;
+  document.getElementById('successCard').hidden = true;
+}
+
+function resetToSearch() {
+  SELECTED_APPOINTMENT = null;
+  document.getElementById('bilanCard').hidden = true;
+  document.getElementById('successCard').hidden = true;
+  document.getElementById('searchCard').hidden = false;
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+  document.getElementById('uterusSlider').value = 50;
+  document.getElementById('receptiviteSlider').value = 50;
+  document.getElementById('uterusVal').textContent = '50%';
+  document.getElementById('receptiviteVal').textContent = '50%';
+  document.getElementById('notesGardienne').value = '';
+  document.querySelectorAll('.grimoire-item.active').forEach(el => {
+    el.classList.remove('active');
+    el.querySelector('input').checked = false;
+  });
+}
+
+function renderGrimoire() {
+  const container = document.getElementById('grimoireContainer');
+  let html = '';
+  Object.entries(GRIMOIRE).forEach(([cat, items]) => {
+    html += `<div class="grimoire-cat"><h4>${cat}</h4><div class="grimoire-grid">`;
+    items.forEach(item => {
+      html += `
+        <label class="grimoire-item" onclick="event.currentTarget.classList.toggle('active')">
+          <input type="checkbox" value="${escapeHtml(item)}">
+          <span>${escapeHtml(item)}</span>
+        </label>
+      `;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+async function submitBilan() {
+  const errEl = document.getElementById('bilanError');
+  errEl.hidden = true;
+
+  if (!SELECTED_APPOINTMENT) {
+    errEl.textContent = 'Sélectionne d\'abord un rendez-vous.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const chosen = Array.from(document.querySelectorAll('.grimoire-item input:checked')).map(el => el.value);
+  if (chosen.length === 0) {
+    errEl.textContent = 'Choisis au moins un allié végétal.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Rédaction en cours...';
+
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/create-bilan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mot_de_passe: GARDIENNE_PASSWORD,
+        appointment_id: SELECTED_APPOINTMENT.id,
+        etat_uterus_pct: parseInt(document.getElementById('uterusSlider').value, 10),
+        etat_receptivite_pct: parseInt(document.getElementById('receptiviteSlider').value, 10),
+        elements_choisis: chosen,
+        notes_gardienne: document.getElementById('notesGardienne').value.trim() || null,
+        created_by: document.getElementById('gardienneSelect').value
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) {
+      if (resp.status === 401) {
+        try { sessionStorage.removeItem('gardienne_pwd'); } catch (e) {}
+        GARDIENNE_PASSWORD = '';
+      }
+      throw new Error(result.error || 'Erreur inattendue');
+    }
+
+    document.getElementById('bilanCard').hidden = true;
+    document.getElementById('successCard').hidden = false;
+    document.getElementById('successText').textContent =
+      `Le bilan de ${SELECTED_APPOINTMENT.client_prenom} a été envoyé à ${SELECTED_APPOINTMENT.client_email} et apparaît désormais dans son espace membre.`;
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'envoyer le bilan : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Générer et expédier le bilan ✦';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Restaure le mot de passe déjà entré pendant cette session de navigation
+(function restoreGate() {
+  try {
+    const saved = sessionStorage.getItem('gardienne_pwd');
+    if (saved) {
+      GARDIENNE_PASSWORD = saved;
+      document.getElementById('gate').hidden = true;
+      document.getElementById('searchCard').hidden = false;
+      renderGrimoire();
+    }
+  } catch (e) {}
+})();
+
+document.getElementById('searchInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') searchAppointments();
+});
+document.getElementById('gatePassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') unlockGate();
+});
+</script>
+
+</body>
+</html>
