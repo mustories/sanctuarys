@@ -24,6 +24,7 @@
     --or: #D4A04C;
     --or-pale: #E8C57A;
     --line: rgba(106, 68, 35, 0.18);
+    --vert: #4F7C6A;
   }
   body {
     background:
@@ -36,7 +37,7 @@
     min-height: 100vh;
     padding: 50px 20px 100px;
   }
-  .wrap { max-width: 680px; margin: 0 auto; }
+  .wrap { max-width: 760px; margin: 0 auto; }
   .brand {
     text-align: center;
     margin-bottom: 40px;
@@ -78,7 +79,7 @@
     color: var(--marron-soft);
     margin-bottom: 8px;
   }
-  input[type="text"], input[type="password"], input[type="email"], textarea, select {
+  input[type="text"], input[type="password"], input[type="email"], input[type="tel"], input[type="date"], input[type="time"], textarea, select {
     width: 100%;
     padding: 13px 14px;
     border: 1px solid var(--line);
@@ -92,6 +93,8 @@
   input:focus, textarea:focus, select:focus { outline: none; border-color: var(--terracotta); }
 
   .field { margin-bottom: 22px; }
+  .field-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .field-row .field { flex: 1; min-width: 160px; }
 
   .btn {
     display: inline-flex;
@@ -126,6 +129,34 @@
     margin-top: 12px;
   }
 
+  .agenda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .agenda-header h2 {
+    font-family: 'Italiana', serif;
+    font-size: 24px;
+    color: var(--marron-deep);
+    font-weight: 400;
+  }
+  .agenda-search { margin-bottom: 20px; }
+
+  .day-group { margin-bottom: 22px; }
+  .day-group h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+
   .result-row {
     padding: 14px 16px;
     border: 1px solid var(--line);
@@ -133,10 +164,22 @@
     cursor: pointer;
     transition: all 0.15s;
     font-family: 'Cormorant Garamond', serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
   }
   .result-row:hover { border-color: var(--terracotta); background: var(--blanc-deep); }
   .result-row .name { font-size: 17px; color: var(--marron-deep); }
   .result-row .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--marron-soft); text-transform: uppercase; margin-top: 4px; }
+  .result-row .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--vert);
+    white-space: nowrap;
+  }
 
   .client-card {
     background: var(--blanc-deep);
@@ -210,7 +253,6 @@
   }
   .grimoire-item.active {
     border-color: var(--terracotta);
-    background: var(--terracotta-pale);
     background: rgba(200, 112, 77, 0.12);
     color: var(--marron-deep);
   }
@@ -234,6 +276,13 @@
   .actions-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
   .actions-row .btn { flex: 1; }
 
+  .empty-note {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--marron-soft);
+    padding: 10px 0;
+  }
+
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -255,15 +304,61 @@
     <div class="error" id="gateError" hidden></div>
   </div>
 
-  <!-- ÉTAPE 1 : recherche du rendez-vous -->
-  <div class="card" id="searchCard" hidden>
-    <label for="searchInput">Chercher la cliente (prénom, nom ou email)</label>
-    <div class="field" style="display:flex; gap:10px;">
-      <input type="text" id="searchInput" placeholder="ex. Camille ou camille@mail.com">
-      <button class="btn" style="white-space:nowrap;" onclick="searchAppointments()">Chercher</button>
+  <!-- ÉTAPE 1 : agenda -->
+  <div class="card" id="agendaCard" hidden>
+    <div class="agenda-header">
+      <h2>Ton <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">agenda.</em></h2>
+      <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBooking()">+ Nouveau rendez-vous</button>
     </div>
-    <div id="searchResults"></div>
-    <div class="error" id="searchError" hidden></div>
+    <div class="field agenda-search">
+      <input type="text" id="agendaFilter" placeholder="Filtrer par prénom, nom ou email..." oninput="renderAgendaList()">
+    </div>
+    <div id="agendaList"></div>
+    <div class="error" id="agendaError" hidden></div>
+  </div>
+
+  <!-- Formulaire rendez-vous manuel -->
+  <div class="card" id="manualCard" hidden>
+    <h2 style="font-family:'Italiana',serif; font-size:22px; margin-bottom:20px;">Nouveau rendez-vous</h2>
+    <div class="field-row">
+      <div class="field">
+        <label for="mPrenom">Prénom</label>
+        <input type="text" id="mPrenom">
+      </div>
+      <div class="field">
+        <label for="mNom">Nom</label>
+        <input type="text" id="mNom">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="mEmail">Email</label>
+        <input type="email" id="mEmail">
+      </div>
+      <div class="field">
+        <label for="mPhone">Téléphone</label>
+        <input type="tel" id="mPhone">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="mDate">Date</label>
+        <input type="date" id="mDate">
+      </div>
+      <div class="field">
+        <label for="mHeure">Heure</label>
+        <input type="time" id="mHeure">
+      </div>
+    </div>
+    <div class="field">
+      <label for="mGardienne">Gardienne</label>
+      <select id="mGardienne"></select>
+    </div>
+    <div class="actions-row">
+      <button class="btn secondary" onclick="closeManualBooking()">Annuler</button>
+      <button class="btn" id="manualSubmitBtn" onclick="submitManualBooking()">Créer le rendez-vous ✦</button>
+    </div>
+    <div class="error" id="manualError" hidden></div>
   </div>
 
   <!-- ÉTAPE 2 : formulaire du bilan -->
@@ -273,15 +368,12 @@
         <div class="name" id="clientName"></div>
         <div class="meta" id="clientMeta"></div>
       </div>
-      <button class="btn secondary" onclick="resetToSearch()" style="font-size:13px; padding:8px 14px;">Changer ✦</button>
+      <button class="btn secondary" onclick="resetToAgenda()" style="font-size:13px; padding:8px 14px;">← Agenda</button>
     </div>
 
     <div class="field">
       <label for="gardienneSelect">Gardienne</label>
-      <select id="gardienneSelect">
-        <option value="Charlotte">Charlotte</option>
-        <option value="Manthyta">Manthyta</option>
-      </select>
+      <select id="gardienneSelect"></select>
     </div>
 
     <div class="slider-block">
@@ -320,14 +412,15 @@
     <h2>Bilan expédié.</h2>
     <p id="successText"></p>
     <div class="actions-row">
-      <button class="btn full" onclick="resetToSearch()">Nouveau bilan ✦</button>
+      <button class="btn full" onclick="resetToAgenda()">Retour à l'agenda ✦</button>
     </div>
   </div>
 </div>
 
 <script src="js/sanctuarys.js"></script>
 <script>
-const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+// Declare de facon independante pour ne jamais dependre du chargement de js/sanctuarys.js
+const GARDIENNE_SUPABASE_URL = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL) ? SUPABASE_URL : 'https://hcmcforwphmqrauqltqp.supabase.co';
 
 const GRIMOIRE = {
   "Plantes & racines": [
@@ -344,8 +437,9 @@ const GRIMOIRE = {
 };
 
 let GARDIENNE_PASSWORD = '';
-let SELECTED_APPOINTMENT = null;
-let SUPA = null;
+let AGENDA_BOOKINGS = [];
+let AGENDA_GARDIENNES = [];
+let SELECTED_BOOKING = null;
 
 function unlockGate() {
   const pwd = document.getElementById('gatePassword').value.trim();
@@ -357,69 +451,118 @@ function unlockGate() {
   GARDIENNE_PASSWORD = pwd;
   try { sessionStorage.setItem('gardienne_pwd', pwd); } catch (e) {}
   document.getElementById('gate').hidden = true;
-  document.getElementById('searchCard').hidden = false;
+  document.getElementById('agendaCard').hidden = false;
   renderGrimoire();
+  loadAgenda();
 }
 
-async function searchAppointments() {
-  const q = document.getElementById('searchInput').value.trim();
-  const errEl = document.getElementById('searchError');
-  const resultsEl = document.getElementById('searchResults');
+async function loadAgenda() {
+  const errEl = document.getElementById('agendaError');
+  const listEl = document.getElementById('agendaList');
   errEl.hidden = true;
-  resultsEl.innerHTML = '';
-  if (!q) return;
-
-  if (!SUPA) SUPA = await Sanctuarys.init();
-
-  const { data, error } = await SUPA
-    .from('appointments')
-    .select('id, client_prenom, client_nom, client_email, start_at, status, sanctuaries(nom)')
-    .or(`client_prenom.ilike.%${q}%,client_nom.ilike.%${q}%,client_email.ilike.%${q}%`)
-    .in('status', ['confirmed', 'completed', 'in_progress'])
-    .order('start_at', { ascending: false })
-    .limit(20);
-
-  if (error) {
-    errEl.textContent = 'Erreur de recherche : ' + error.message;
+  listEl.innerHTML = '<p class="empty-note">Chargement de l\'agenda...</p>';
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-agenda`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD })
+    });
+    const result = await resp.json();
+    if (!resp.ok) {
+      if (resp.status === 401) {
+        try { sessionStorage.removeItem('gardienne_pwd'); } catch (e) {}
+        GARDIENNE_PASSWORD = '';
+        document.getElementById('agendaCard').hidden = true;
+        document.getElementById('gate').hidden = false;
+        document.getElementById('gateError').textContent = 'Mot de passe incorrect.';
+        document.getElementById('gateError').hidden = false;
+        return;
+      }
+      throw new Error(result.error || 'Erreur inattendue');
+    }
+    AGENDA_BOOKINGS = result.bookings || [];
+    AGENDA_GARDIENNES = result.gardiennes || [];
+    populateGardienneSelects();
+    renderAgendaList();
+  } catch (err) {
+    errEl.textContent = 'Impossible de charger l\'agenda : ' + err.message;
     errEl.hidden = false;
-    return;
+    listEl.innerHTML = '';
   }
-  if (!data || data.length === 0) {
-    resultsEl.innerHTML = '<p style="font-family:\'Cormorant Garamond\',serif; font-style:italic; color:var(--marron-soft); margin-top:14px;">Aucun rendez-vous trouvé.</p>';
-    return;
-  }
-
-  data.forEach(appt => {
-    const d = new Date(appt.start_at);
-    const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const div = document.createElement('div');
-    div.className = 'result-row';
-    div.innerHTML = `
-      <div class="name">${escapeHtml(appt.client_prenom)} ${escapeHtml(appt.client_nom || '')}</div>
-      <div class="sub">${dateStr} · ${escapeHtml(appt.sanctuaries?.nom || 'Sanctuarys')} · ${escapeHtml(appt.client_email)}</div>
-    `;
-    div.onclick = () => selectAppointment(appt);
-    resultsEl.appendChild(div);
-  });
 }
 
-function selectAppointment(appt) {
-  SELECTED_APPOINTMENT = appt;
-  document.getElementById('clientName').textContent = `${appt.client_prenom} ${appt.client_nom || ''}`;
-  const d = new Date(appt.start_at);
-  document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} · ${appt.client_email}`;
-  document.getElementById('searchCard').hidden = true;
+function populateGardienneSelects() {
+  const options = AGENDA_GARDIENNES.length
+    ? AGENDA_GARDIENNES.map(g => `<option value="${g.id}">${escapeHtml(g.prenom)}</option>`).join('')
+    : '<option value="">Charlotte</option><option value="">Manthyta</option>';
+  document.getElementById('gardienneSelect').innerHTML = options;
+  document.getElementById('mGardienne').innerHTML = '<option value="">Non assignée</option>' + options;
+}
+
+function renderAgendaList() {
+  const filter = (document.getElementById('agendaFilter').value || '').trim().toLowerCase();
+  const listEl = document.getElementById('agendaList');
+
+  const filtered = AGENDA_BOOKINGS.filter(b => {
+    if (!filter) return true;
+    const hay = `${b.prenom} ${b.nom} ${b.email}`.toLowerCase();
+    return hay.includes(filter);
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<p class="empty-note">Aucun rendez-vous trouvé.</p>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(b => {
+    const d = new Date(b.start_at);
+    const key = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(b);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([dayLabel, items]) => {
+    html += `<div class="day-group"><h3>${dayLabel}</h3>`;
+    items.forEach(b => {
+      const d = new Date(b.start_at);
+      const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const badge = b.a_deja_un_bilan ? '<span class="badge">✦ Bilan envoyé</span>' : '';
+      html += `
+        <div class="result-row" onclick='selectBookingByKey("${b.source}", "${b.id}")'>
+          <div>
+            <div class="name">${heure} · ${escapeHtml(b.prenom)} ${escapeHtml(b.nom || '')}</div>
+            <div class="sub">${escapeHtml(b.soin)} · ${escapeHtml(b.email)}</div>
+          </div>
+          ${badge}
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+function selectBookingByKey(source, id) {
+  const booking = AGENDA_BOOKINGS.find(b => b.source === source && String(b.id) === String(id));
+  if (!booking) return;
+  SELECTED_BOOKING = booking;
+  document.getElementById('clientName').textContent = `${booking.prenom} ${booking.nom || ''}`;
+  const d = new Date(booking.start_at);
+  document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${booking.email}`;
+  document.getElementById('agendaCard').hidden = true;
+  document.getElementById('manualCard').hidden = true;
   document.getElementById('bilanCard').hidden = false;
   document.getElementById('successCard').hidden = true;
 }
 
-function resetToSearch() {
-  SELECTED_APPOINTMENT = null;
+function resetToAgenda() {
+  SELECTED_BOOKING = null;
   document.getElementById('bilanCard').hidden = true;
   document.getElementById('successCard').hidden = true;
-  document.getElementById('searchCard').hidden = false;
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '';
+  document.getElementById('manualCard').hidden = true;
+  document.getElementById('agendaCard').hidden = false;
   document.getElementById('uterusSlider').value = 50;
   document.getElementById('receptiviteSlider').value = 50;
   document.getElementById('uterusVal').textContent = '50%';
@@ -429,6 +572,72 @@ function resetToSearch() {
     el.classList.remove('active');
     el.querySelector('input').checked = false;
   });
+  loadAgenda();
+}
+
+function openManualBooking() {
+  document.getElementById('agendaCard').hidden = true;
+  document.getElementById('manualCard').hidden = false;
+  document.getElementById('manualError').hidden = true;
+  const today = new Date();
+  document.getElementById('mDate').value = today.toISOString().slice(0, 10);
+}
+
+function closeManualBooking() {
+  document.getElementById('manualCard').hidden = true;
+  document.getElementById('agendaCard').hidden = false;
+}
+
+async function submitManualBooking() {
+  const errEl = document.getElementById('manualError');
+  errEl.hidden = true;
+
+  const prenom = document.getElementById('mPrenom').value.trim();
+  const email = document.getElementById('mEmail').value.trim();
+  const date = document.getElementById('mDate').value;
+  const heure = document.getElementById('mHeure').value;
+
+  if (!prenom || !email || !date || !heure) {
+    errEl.textContent = 'Prénom, email, date et heure sont requis.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const startAt = new Date(`${date}T${heure}:00`);
+  const btn = document.getElementById('manualSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Création...';
+
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/create-manual-appointment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mot_de_passe: GARDIENNE_PASSWORD,
+        client_prenom: prenom,
+        client_nom: document.getElementById('mNom').value.trim() || null,
+        client_email: email,
+        client_phone: document.getElementById('mPhone').value.trim() || null,
+        start_at: startAt.toISOString(),
+        gardienne_id: document.getElementById('mGardienne').value || null
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+
+    document.getElementById('mPrenom').value = '';
+    document.getElementById('mNom').value = '';
+    document.getElementById('mEmail').value = '';
+    document.getElementById('mPhone').value = '';
+    closeManualBooking();
+    loadAgenda();
+  } catch (err) {
+    errEl.textContent = 'Impossible de créer le rendez-vous : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Créer le rendez-vous ✦';
+  }
 }
 
 function renderGrimoire() {
@@ -453,8 +662,8 @@ async function submitBilan() {
   const errEl = document.getElementById('bilanError');
   errEl.hidden = true;
 
-  if (!SELECTED_APPOINTMENT) {
-    errEl.textContent = 'Sélectionne d\'abord un rendez-vous.';
+  if (!SELECTED_BOOKING) {
+    errEl.textContent = 'Sélectionne d\'abord un rendez-vous dans l\'agenda.';
     errEl.hidden = false;
     return;
   }
@@ -471,18 +680,22 @@ async function submitBilan() {
   btn.innerHTML = '<span class="spinner"></span> Rédaction en cours...';
 
   try {
-    const resp = await fetch(`${SUPABASE_URL}/functions/v1/create-bilan`, {
+    const payload = {
+      mot_de_passe: GARDIENNE_PASSWORD,
+      source: SELECTED_BOOKING.source,
+      etat_uterus_pct: parseInt(document.getElementById('uterusSlider').value, 10),
+      etat_receptivite_pct: parseInt(document.getElementById('receptiviteSlider').value, 10),
+      elements_choisis: chosen,
+      notes_gardienne: document.getElementById('notesGardienne').value.trim() || null,
+      gardienne_id: document.getElementById('gardienneSelect').value || null
+    };
+    if (SELECTED_BOOKING.source === 'club') payload.session_booking_id = SELECTED_BOOKING.id;
+    else payload.appointment_id = SELECTED_BOOKING.id;
+
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/create-bilan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mot_de_passe: GARDIENNE_PASSWORD,
-        appointment_id: SELECTED_APPOINTMENT.id,
-        etat_uterus_pct: parseInt(document.getElementById('uterusSlider').value, 10),
-        etat_receptivite_pct: parseInt(document.getElementById('receptiviteSlider').value, 10),
-        elements_choisis: chosen,
-        notes_gardienne: document.getElementById('notesGardienne').value.trim() || null,
-        created_by: document.getElementById('gardienneSelect').value
-      })
+      body: JSON.stringify(payload)
     });
     const result = await resp.json();
     if (!resp.ok) {
@@ -496,7 +709,8 @@ async function submitBilan() {
     document.getElementById('bilanCard').hidden = true;
     document.getElementById('successCard').hidden = false;
     document.getElementById('successText').textContent =
-      `Le bilan de ${SELECTED_APPOINTMENT.client_prenom} a été envoyé à ${SELECTED_APPOINTMENT.client_email} et apparaît désormais dans son espace membre.`;
+      `Le bilan de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` +
+      (result.account_created ? `, avec un lien pour créer son espace membre.` : ` et apparaît dans son espace membre.`);
   } catch (err) {
     errEl.textContent = 'Impossible d\'envoyer le bilan : ' + err.message;
     errEl.hidden = false;
@@ -517,15 +731,13 @@ function escapeHtml(s) {
     if (saved) {
       GARDIENNE_PASSWORD = saved;
       document.getElementById('gate').hidden = true;
-      document.getElementById('searchCard').hidden = false;
+      document.getElementById('agendaCard').hidden = false;
       renderGrimoire();
+      loadAgenda();
     }
   } catch (e) {}
 })();
 
-document.getElementById('searchInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') searchAppointments();
-});
 document.getElementById('gatePassword').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') unlockGate();
 });

@@ -3,8 +3,10 @@
 // Espace de Charlotte et Manthyta (gardiennes sur place)
 // Recoit un bilan radiesthesique (etat uterus %, etat
 // receptivite %, allies vegetaux choisis dans le grimoire),
-// fait rediger l'analyse par Claude, l'enregistre et
-// l'expedie a la cliente par email + espace membre.
+// fait rediger l'analyse par Claude, l'enregistre, expedie
+// a la cliente par email + espace membre, et cree
+// automatiquement l'espace membre des clientes qui n'en ont
+// pas encore (typiquement les rendez vous pris via WhatsApp).
 // =====================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -67,18 +69,24 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const {
       mot_de_passe,
+      source, // 'public' (appointments) ou 'club' (session_bookings)
       appointment_id,
+      session_booking_id,
+      gardienne_id,
       etat_uterus_pct,
       etat_receptivite_pct,
       elements_choisis,
-      notes_gardienne,
-      created_by
+      notes_gardienne
     } = body
 
     if (mot_de_passe !== gardiennePassword) {
       return json({ error: 'Mot de passe incorrect' }, 401)
     }
-    if (!appointment_id) return json({ error: 'appointment_id requis' }, 400)
+    if (source !== 'club' && source !== 'public') {
+      return json({ error: 'source invalide' }, 400)
+    }
+    if (source === 'public' && !appointment_id) return json({ error: 'appointment_id requis' }, 400)
+    if (source === 'club' && !session_booking_id) return json({ error: 'session_booking_id requis' }, 400)
     if (etat_uterus_pct === undefined || etat_receptivite_pct === undefined) {
       return json({ error: 'Les deux pourcentages sont requis' }, 400)
     }
@@ -90,21 +98,118 @@ Deno.serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false }
     })
 
-    const { data: appointment, error: apptError } = await admin
-      .from('appointments')
-      .select('id, client_prenom, client_nom, client_email, start_at, sanctuary_id, sanctuaries(nom)')
-      .eq('id', appointment_id)
-      .single()
+    let clientPrenom = ''
+    let clientNom: string | null = null
+    let clientEmail = ''
+    let clientProfileId: string | null = null
+    let sanctuaryName = 'Sanctuarys'
+    let appointment: any = null
+    let sessionBooking: any = null
 
-    if (apptError || !appointment) {
-      return json({ error: 'Rendez-vous introuvable' }, 404)
+    if (source === 'public') {
+      const { data: appt, error: apptError } = await admin
+        .from('appointments')
+        .select('id, client_prenom, client_nom, client_email, client_profile_id, start_at, sanctuary_id, sanctuaries(nom)')
+        .eq('id', appointment_id)
+        .single()
+
+      if (apptError || !appt) return json({ error: 'Rendez-vous introuvable' }, 404)
+      appointment = appt
+      clientPrenom = appt.client_prenom
+      clientNom = appt.client_nom
+      clientEmail = (appt.client_email || '').toLowerCase()
+      clientProfileId = appt.client_profile_id || null
+      sanctuaryName = (appt as any).sanctuaries?.nom || 'Sanctuarys'
+    } else {
+      const { data: sb, error: sbError } = await admin
+        .from('session_bookings')
+        .select('id, member_id, start_at, profiles:member_id(prenom, nom, email)')
+        .eq('id', session_booking_id)
+        .single()
+
+      if (sbError || !sb) return json({ error: 'Séance introuvable' }, 404)
+      sessionBooking = sb
+      const p: any = (sb as any).profiles || {}
+      clientPrenom = p.prenom || ''
+      clientNom = p.nom || null
+      clientEmail = (p.email || '').toLowerCase()
+      clientProfileId = sb.member_id || null
+      sanctuaryName = 'Sanctuarys'
     }
+
+    if (!clientEmail) return json({ error: 'Email de la cliente introuvable' }, 400)
 
     const uterusPct = Math.max(0, Math.min(100, Math.round(etat_uterus_pct)))
     const receptivitePct = Math.max(0, Math.min(100, Math.round(etat_receptivite_pct)))
     const elementsList = elements_choisis.join(', ')
 
-    const userMessage = `CLIENTE : ${appointment.client_prenom}
+    // ===== Auto-creation de l'espace membre pour les clientes qui n'en ont pas encore =====
+    // (typiquement les rendez vous pris via WhatsApp, sans paiement Stripe et donc
+    // sans passage par le webhook qui cree habituellement le compte)
+    let clientAccessLink: string | null = null
+    if (source === 'public') {
+      try {
+        if (clientProfileId) {
+          const { data: magicData } = await admin.auth.admin.generateLink({
+            type: 'magiclink',
+            email: clientEmail,
+            options: { redirectTo: 'https://sanctuarys.me/espace-membre' }
+          })
+          clientAccessLink = magicData?.properties?.action_link || null
+        } else {
+          const { data: existingProfile } = await admin
+            .from('profiles')
+            .select('id, role')
+            .eq('email', clientEmail)
+            .maybeSingle()
+
+          if (existingProfile) {
+            clientProfileId = existingProfile.id
+            if (!['admin', 'formatrice', 'membre'].includes(existingProfile.role)) {
+              await admin.from('profiles').update({ role: 'membre' }).eq('id', clientProfileId)
+            }
+            const { data: magicData } = await admin.auth.admin.generateLink({
+              type: 'magiclink',
+              email: clientEmail,
+              options: { redirectTo: 'https://sanctuarys.me/espace-membre' }
+            })
+            clientAccessLink = magicData?.properties?.action_link || null
+          } else {
+            const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+              type: 'invite',
+              email: clientEmail,
+              options: {
+                redirectTo: 'https://sanctuarys.me/espace-membre',
+                data: { prenom: clientPrenom, nom: clientNom, role_intended: 'membre' }
+              }
+            })
+            if (linkError) {
+              console.error('create-bilan generateLink error:', linkError)
+            } else {
+              clientProfileId = linkData.user?.id || null
+              clientAccessLink = linkData.properties?.action_link || null
+              if (clientProfileId) {
+                await admin.from('profiles').update({
+                  role: 'membre',
+                  prenom: clientPrenom || undefined,
+                  nom: clientNom || undefined,
+                  email: clientEmail
+                }).eq('id', clientProfileId)
+              }
+            }
+          }
+
+          if (clientProfileId && appointment) {
+            await admin.from('appointments').update({ client_profile_id: clientProfileId }).eq('id', appointment.id)
+          }
+        }
+      } catch (accountErr) {
+        // Ne bloque jamais la creation du bilan si la creation de compte echoue
+        console.error('create-bilan auto-account error:', accountErr)
+      }
+    }
+
+    const userMessage = `CLIENTE : ${clientPrenom}
 ÉTAT DE L'UTÉRUS : ${uterusPct}%
 ÉTAT DE RÉCEPTIVITÉ : ${receptivitePct}%
 ALLIÉS VÉGÉTAUX ET ENCENS CHOISIS : ${elementsList}
@@ -156,10 +261,12 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
     const { data: saved, error: saveError } = await admin
       .from('bilans')
       .insert({
-        appointment_id: appointment.id,
-        client_prenom: appointment.client_prenom,
-        client_nom: appointment.client_nom,
-        client_email: appointment.client_email,
+        appointment_id: source === 'public' ? appointment_id : null,
+        session_booking_id: source === 'club' ? session_booking_id : null,
+        gardienne_id: gardienne_id || null,
+        client_prenom: clientPrenom,
+        client_nom: clientNom,
+        client_email: clientEmail,
         etat_uterus_pct: uterusPct,
         etat_receptivite_pct: receptivitePct,
         elements_choisis,
@@ -169,7 +276,6 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
         bienfaits_physiologiques,
         avis_medical,
         resume_final,
-        created_by: created_by || null,
         generated_by: 'sonnet-4-6'
       })
       .select()
@@ -180,11 +286,17 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
     }
 
     // ===== Email a la cliente =====
-    const sanctuaryName = (appointment as any).sanctuaries?.nom || 'Sanctuarys'
     const paragraphs = [
-      `Chère ${escapeHtml(appointment.client_prenom)},`,
+      `Chère ${escapeHtml(clientPrenom)},`,
       `Voici le bilan de ta lecture radiesthésique réalisée au ${escapeHtml(sanctuaryName)}.`
     ]
+
+    const accessBlock = clientAccessLink
+      ? `<div class="section-title">Ton espace t'attend</div>
+  <p>Ce bilan est aussi enregistré dans ton espace personnel Sanctuarys, avec ton calendrier de cycle et le suivi de tes prescriptions au Bar à plantes.</p>
+  <a class="cta" href="${clientAccessLink}">Accéder à mon espace ✦</a>
+  <p style="font-size:13px;color:#6B4423;font-style:italic;">Si le bouton ne s'affiche pas, copie ce lien : <a href="${clientAccessLink}" style="color:#A85537;word-break:break-all;">${clientAccessLink}</a></p>`
+      : `<a class="cta" href="https://sanctuarys.me/espace-membre.html">Retrouver ce bilan dans mon espace ✦</a>`
 
     const emailHtml = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
@@ -200,7 +312,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
 .section-title { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #A85537; text-transform: uppercase; margin: 28px 0 10px; }
 .elements { font-style: italic; color: #6B4423; }
 .avis { background: #F2EBDD; border-left: 3px solid #C8704D; padding: 16px 20px; font-size: 14px; font-style: italic; color: #6B4423; margin-top: 28px; }
-.cta { display: inline-block; margin-top: 28px; padding: 14px 28px; background: #C8704D; color: #FAF5EC !important; text-decoration: none; font-family: Georgia, serif; }
+.cta { display: inline-block; margin-top: 12px; padding: 14px 28px; background: #C8704D; color: #FAF5EC !important; text-decoration: none; font-family: Georgia, serif; }
 .signature { font-family: Georgia, serif; font-size: 18px; color: #A85537; margin-top: 32px; }
 .signature-name { font-size: 20px; color: #2A1810; margin-top: -10px; }
 .footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
@@ -232,7 +344,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
 
   <div class="avis">${escapeHtml(avis_medical)}</div>
 
-  <a class="cta" href="https://sanctuarys.me/espace-membre.html">Retrouver ce bilan dans mon espace ✦</a>
+  ${accessBlock}
 
   <p class="signature">Avec attention,</p>
   <p class="signature-name">L'équipe Sanctuarys</p>
@@ -248,7 +360,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
       },
       body: JSON.stringify({
         from: 'Sanctuarys <info@sanctuarys.me>',
-        to: appointment.client_email.toLowerCase(),
+        to: clientEmail,
         subject: 'Ton bilan radiesthésique · Sanctuarys',
         html: emailHtml,
         reply_to: 'info@sanctuarys.me'
@@ -258,13 +370,12 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
     if (!resendResp.ok) {
       const errTxt = await resendResp.text()
       console.error('Resend error:', errTxt)
-      // Le bilan est deja enregistre et visible dans l'espace membre meme si l'email echoue
       return json({ success: true, bilan: saved, email_error: errTxt }, 200)
     }
 
     await admin.from('bilans').update({ sent_at: new Date().toISOString() }).eq('id', saved.id)
 
-    return json({ success: true, bilan: { ...saved, sent_at: new Date().toISOString() } })
+    return json({ success: true, bilan: { ...saved, sent_at: new Date().toISOString() }, account_created: !!clientAccessLink })
   } catch (err: any) {
     console.error('create-bilan error:', err)
     return json({ error: err.message || 'Erreur inattendue' }, 500)
