@@ -647,8 +647,8 @@ function renderGrimoire() {
     html += `<div class="grimoire-cat"><h4>${cat}</h4><div class="grimoire-grid">`;
     items.forEach(item => {
       html += `
-        <label class="grimoire-item" onclick="event.currentTarget.classList.toggle('active')">
-          <input type="checkbox" value="${escapeHtml(item)}">
+        <label class="grimoire-item">
+          <input type="checkbox" value="${escapeHtml(item)}" onchange="this.closest('.grimoire-item').classList.toggle('active', this.checked)">
           <span>${escapeHtml(item)}</span>
         </label>
       `;
