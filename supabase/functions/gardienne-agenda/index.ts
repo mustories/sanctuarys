@@ -6,6 +6,10 @@
 // Protege par le mot de passe partage, lecture via service role car
 // les seances Fondatrices (session_bookings) ne sont pas lisibles
 // en anonyme (RLS reservee au membre + admin).
+// Accepte optionnellement since / until (ISO) pour l'historique :
+// sans ces parametres, fenetre par defaut -3 jours / +30 jours.
+// Renvoie aussi le contenu complet du bilan deja soumis (pas
+// seulement un booleen) pour permettre de le relire.
 // =====================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -33,37 +37,38 @@ Deno.serve(async (req) => {
     const gardiennePassword = Deno.env.get('GARDIENNE_PASSWORD')
     if (!gardiennePassword) return json({ error: 'GARDIENNE_PASSWORD non configurée' }, 500)
 
-    const { mot_de_passe } = await req.json()
+    const body = await req.json()
+    const { mot_de_passe, since: sinceOverride, until: untilOverride } = body
     if (mot_de_passe !== gardiennePassword) return json({ error: 'Mot de passe incorrect' }, 401)
 
     const admin = createClient(supabaseUrl, serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     })
 
-    const since = new Date(Date.now() - 3 * 86400000).toISOString()
-    const until = new Date(Date.now() + 30 * 86400000).toISOString()
+    const since = sinceOverride || new Date(Date.now() - 3 * 86400000).toISOString()
+    const until = untilOverride || new Date(Date.now() + 30 * 86400000).toISOString()
 
     const [club, publics, gard, bilans] = await Promise.all([
       admin.from('session_bookings')
-        .select('id, start_at, end_at, status, gardienne_id, treatment_types(name), profiles:member_id(prenom, nom, phone, email)')
+        .select('id, start_at, end_at, status, gardienne_id, retard_count, sanction_montant, treatment_types(name), profiles:member_id(id, prenom, nom, phone, email)')
         .gte('start_at', since).lte('start_at', until)
         .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
       admin.from('appointments')
-        .select('id, start_at, duration_minutes, status, gardienne_id, client_prenom, client_nom, client_email, client_phone')
+        .select('id, start_at, duration_minutes, status, gardienne_id, retard_count, sanction_montant, client_prenom, client_nom, client_email, client_phone, client_profile_id')
         .gte('start_at', since).lte('start_at', until)
         .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
       admin.from('gardiennes').select('id, prenom').eq('active', true).order('prenom'),
-      admin.from('bilans').select('appointment_id, session_booking_id, created_at')
+      admin.from('bilans').select('*')
     ])
 
     if (club.error || publics.error) {
       return json({ error: (club.error || publics.error)?.message || 'Lecture agenda impossible' }, 500)
     }
 
-    const bilanApptIds = new Set((bilans.data || []).filter(b => b.appointment_id).map(b => b.appointment_id))
-    const bilanBookingIds = new Set((bilans.data || []).filter(b => b.session_booking_id).map(b => b.session_booking_id))
+    const bilansByAppt = new Map((bilans.data || []).filter((b: any) => b.appointment_id).map((b: any) => [b.appointment_id, b]))
+    const bilansByBooking = new Map((bilans.data || []).filter((b: any) => b.session_booking_id).map((b: any) => [b.session_booking_id, b]))
 
     const desClub = (club.data || []).map((b: any) => ({
       source: 'club',
@@ -75,9 +80,13 @@ Deno.serve(async (req) => {
       nom: b.profiles?.nom || '',
       email: b.profiles?.email || '',
       phone: b.profiles?.phone || '',
+      profile_id: b.profiles?.id || null,
       soin: b.treatment_types?.name || 'Soin',
       gardienne_id: b.gardienne_id || null,
-      a_deja_un_bilan: bilanBookingIds.has(b.id)
+      retard_count: b.retard_count || 0,
+      sanction_montant: b.sanction_montant || 0,
+      a_deja_un_bilan: bilansByBooking.has(b.id),
+      bilan: bilansByBooking.get(b.id) || null
     }))
 
     const desPublics = (publics.data || []).map((a: any) => ({
@@ -90,14 +99,18 @@ Deno.serve(async (req) => {
       nom: a.client_nom || '',
       email: a.client_email || '',
       phone: a.client_phone || '',
+      profile_id: a.client_profile_id || null,
       soin: 'V-Steam · rendez vous public',
       gardienne_id: a.gardienne_id || null,
-      a_deja_un_bilan: bilanApptIds.has(a.id)
+      retard_count: a.retard_count || 0,
+      sanction_montant: a.sanction_montant || 0,
+      a_deja_un_bilan: bilansByAppt.has(a.id),
+      bilan: bilansByAppt.get(a.id) || null
     }))
 
     const bookings = desClub.concat(desPublics).sort((x, y) => new Date(x.start_at).getTime() - new Date(y.start_at).getTime())
 
-    return json({ success: true, bookings, gardiennes: gard.data || [] })
+    return json({ success: true, bookings, gardiennes: gard.data || [], since, until })
   } catch (err: any) {
     console.error('gardienne-agenda error:', err)
     return json({ error: err.message || 'Erreur inattendue' }, 500)

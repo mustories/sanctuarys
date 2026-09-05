@@ -172,14 +172,16 @@
   .result-row:hover { border-color: var(--terracotta); background: var(--blanc-deep); }
   .result-row .name { font-size: 17px; color: var(--marron-deep); }
   .result-row .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--marron-soft); text-transform: uppercase; margin-top: 4px; }
-  .result-row .badge {
+  .badge {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
     letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--vert);
     white-space: nowrap;
+    padding: 3px 7px;
   }
+  .badge.badge-retard, .badge.badge-noshow, .badge.badge-sanction { padding: 3px 7px; }
 
   .client-card {
     background: var(--blanc-deep);
@@ -283,6 +285,114 @@
     padding: 10px 0;
   }
 
+  .tabbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { border-color: var(--terracotta); color: var(--marron-deep); }
+  .tab-btn.active { background: var(--terracotta); border-color: var(--terracotta-deep); color: var(--blanc); }
+  #quiSuisJe { margin-left: auto; max-width: 180px; }
+
+  .period-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .period-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 7px 12px;
+    cursor: pointer;
+  }
+  .period-btn.active { background: var(--terracotta-pale); border-color: var(--terracotta); color: var(--marron-deep); }
+
+  .badge-retard { background: #f2d9a8; color: #6b4a12; }
+  .badge-noshow { background: #eecfcf; color: #7a1f1f; }
+  .badge-sanction { background: #e8c57a; color: #4a3020; }
+
+  .rdv-detail-block { margin-bottom: 18px; }
+  .rdv-detail-block .lbl-mini {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 8px;
+  }
+  .action-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .action-grid .btn { font-size: 13px; padding: 10px 16px; }
+
+  .bilan-view-section { margin-bottom: 20px; }
+  .bilan-view-section .lbl-mini {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 8px;
+  }
+  .bilan-view-section p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--marron);
+  }
+  .jauge-pair { display: flex; gap: 14px; margin-bottom: 20px; }
+  .jauge-mini { flex: 1; background: var(--blanc-deep); border: 1px solid var(--line); padding: 14px; text-align: center; }
+  .jauge-mini .pct { font-family: 'Italiana', serif; font-size: 26px; color: var(--terracotta-deep); }
+  .jauge-mini .lab { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--marron-soft); margin-top: 4px; }
+
+  .note-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--marron);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    white-space: pre-wrap;
+  }
+  .note-line:last-child { border-bottom: none; }
+
+  .cliente-row {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    transition: all 0.15s;
+  }
+  .cliente-row:hover { border-color: var(--terracotta); background: var(--blanc-deep); }
+  .cliente-row .name { font-size: 16px; color: var(--marron-deep); }
+  .cliente-row .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--marron-soft); text-transform: uppercase; margin-top: 3px; }
+
+  .mini-history-row {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    margin-bottom: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -304,8 +414,16 @@
     <div class="error" id="gateError" hidden></div>
   </div>
 
+  <!-- BARRE D'ONGLETS -->
+  <div class="tabbar" id="tabbar" hidden>
+    <button class="tab-btn active" data-tab="agenda" onclick="switchTab('agenda')">Agenda</button>
+    <button class="tab-btn" data-tab="historique" onclick="switchTab('historique')">Historique</button>
+    <button class="tab-btn" data-tab="clientes" onclick="switchTab('clientes')">Clientes</button>
+    <select id="quiSuisJe"></select>
+  </div>
+
   <!-- ÉTAPE 1 : agenda -->
-  <div class="card" id="agendaCard" hidden>
+  <div class="card tab-panel" data-tab="agenda" id="agendaCard" hidden>
     <div class="agenda-header">
       <h2>Ton <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">agenda.</em></h2>
       <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBooking()">+ Nouveau rendez-vous</button>
@@ -315,6 +433,149 @@
     </div>
     <div id="agendaList"></div>
     <div class="error" id="agendaError" hidden></div>
+  </div>
+
+  <!-- HISTORIQUE : tous les rendez vous passes -->
+  <div class="card tab-panel" data-tab="historique" id="historiqueCard" hidden>
+    <div class="agenda-header">
+      <h2>Ton <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">historique.</em></h2>
+    </div>
+    <div class="period-row">
+      <button class="period-btn" data-period="30" onclick="loadHistorique(30)">30 jours</button>
+      <button class="period-btn" data-period="90" onclick="loadHistorique(90)">90 jours</button>
+      <button class="period-btn active" data-period="365" onclick="loadHistorique(365)">1 an</button>
+    </div>
+    <div class="field agenda-search">
+      <input type="text" id="historiqueFilter" placeholder="Filtrer par prénom, nom ou email..." oninput="renderHistoriqueList()">
+    </div>
+    <div id="historiqueList"></div>
+    <div class="error" id="historiqueError" hidden></div>
+  </div>
+
+  <!-- CLIENTES : annuaire + recherche -->
+  <div class="card tab-panel" data-tab="clientes" id="clientesCard" hidden>
+    <div class="agenda-header">
+      <h2>Les <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">clientes.</em></h2>
+    </div>
+    <div class="field agenda-search">
+      <input type="text" id="clientesSearch" placeholder="Cherche par prénom, nom, email ou téléphone..." oninput="searchClientes()">
+    </div>
+    <div id="clientesResults"></div>
+    <div class="error" id="clientesError" hidden></div>
+  </div>
+
+  <!-- FICHE CLIENTE : "espace client" -->
+  <div class="card" id="clientDetailCard" hidden>
+    <div class="client-card">
+      <div>
+        <div class="name" id="cdName"></div>
+        <div class="meta" id="cdMeta"></div>
+      </div>
+      <button class="btn secondary" onclick="closeClientDetail()" style="font-size:13px; padding:8px 14px;">← Clientes</button>
+    </div>
+
+    <div class="rdv-detail-block">
+      <div class="lbl-mini">Historique des rendez vous et séances</div>
+      <div id="cdHistory"></div>
+    </div>
+
+    <div class="rdv-detail-block">
+      <div class="lbl-mini">Bilans déjà réalisés</div>
+      <div id="cdBilans"></div>
+    </div>
+
+    <div class="rdv-detail-block">
+      <div class="lbl-mini">Notes de la gardienne</div>
+      <div id="cdNotes"></div>
+      <div class="field" style="margin-top:14px;">
+        <textarea id="cdNoteInput" placeholder="Ajoute un élément à noter sur cette cliente..."></textarea>
+      </div>
+      <button class="btn" id="cdNoteBtn" onclick="addClientNote()">Ajouter la note ✦</button>
+    </div>
+    <div class="error" id="clientDetailError" hidden></div>
+  </div>
+
+  <!-- DETAIL D'UN RENDEZ VOUS : bilan, modification, retard, absence -->
+  <div class="card" id="rdvCard" hidden>
+    <div class="client-card">
+      <div>
+        <div class="name" id="rdvName"></div>
+        <div class="meta" id="rdvMeta"></div>
+      </div>
+      <button class="btn secondary" onclick="closeRdvDetail()" style="font-size:13px; padding:8px 14px;">← Retour</button>
+    </div>
+
+    <div class="rdv-detail-block" id="rdvEditBlock" hidden>
+      <div class="lbl-mini">Modifier le rendez vous</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="rdvEditDate">Date</label>
+          <input type="date" id="rdvEditDate">
+        </div>
+        <div class="field">
+          <label for="rdvEditHeure">Heure</label>
+          <input type="time" id="rdvEditHeure">
+        </div>
+      </div>
+      <div class="field">
+        <label for="rdvEditStatut">Statut</label>
+        <select id="rdvEditStatut">
+          <option value="confirmed">Confirmé</option>
+          <option value="pending_payment">Paiement en attente</option>
+          <option value="completed">Terminé</option>
+          <option value="no_show">Absence (no show)</option>
+          <option value="cancelled">Annulé</option>
+        </select>
+      </div>
+      <button class="btn" id="rdvEditSaveBtn" onclick="saveRdvEdit()">Enregistrer les modifications ✦</button>
+    </div>
+
+    <div class="action-grid">
+      <button class="btn" id="rdvBilanBtn" onclick="goToBilanFromRdv()"></button>
+      <button class="btn secondary" onclick="toggleRdvEdit()">Modifier le rendez vous</button>
+      <button class="btn secondary" onclick="markRetard()">Marquer un retard</button>
+      <button class="btn secondary" onclick="markNoShow()">Marquer une absence</button>
+    </div>
+    <div class="error" id="rdvDetailError" hidden></div>
+  </div>
+
+  <!-- LECTURE D'UN BILAN DEJA ENVOYE -->
+  <div class="card" id="bilanViewCard" hidden>
+    <div class="client-card">
+      <div>
+        <div class="name" id="bvName"></div>
+        <div class="meta" id="bvMeta"></div>
+      </div>
+      <button class="btn secondary" onclick="closeBilanView()" style="font-size:13px; padding:8px 14px;">← Retour</button>
+    </div>
+    <div class="jauge-pair">
+      <div class="jauge-mini"><div class="pct" id="bvUterus"></div><div class="lab">État de l'utérus</div></div>
+      <div class="jauge-mini"><div class="pct" id="bvReceptivite"></div><div class="lab">État de réceptivité</div></div>
+    </div>
+    <div class="bilan-view-section">
+      <div class="lbl-mini">Alliés choisis</div>
+      <p id="bvElements"></p>
+    </div>
+    <div class="bilan-view-section">
+      <div class="lbl-mini">Ce que révèlent ces chiffres</div>
+      <p id="bvAnalyse"></p>
+    </div>
+    <div class="bilan-view-section">
+      <div class="lbl-mini">La vibration des alliés</div>
+      <p id="bvVibration"></p>
+    </div>
+    <div class="bilan-view-section">
+      <div class="lbl-mini">Bienfaits</div>
+      <p id="bvBienfaits"></p>
+    </div>
+    <div class="bilan-view-section">
+      <div class="lbl-mini">Ce que vise cette séance</div>
+      <p id="bvResume"></p>
+    </div>
+    <div class="bilan-view-section" id="bvNotesBlock" hidden>
+      <div class="lbl-mini">Observation de la gardienne</div>
+      <p id="bvNotesGardienne"></p>
+    </div>
   </div>
 
   <!-- Formulaire rendez-vous manuel -->
@@ -438,8 +699,14 @@ const GRIMOIRE = {
 
 let GARDIENNE_PASSWORD = '';
 let AGENDA_BOOKINGS = [];
+let HISTORIQUE_BOOKINGS = [];
 let AGENDA_GARDIENNES = [];
 let SELECTED_BOOKING = null;
+let SELECTED_BOOKING_ORIGIN = 'agenda';
+let CURRENT_TAB = 'agenda';
+let CLIENTE_RESULTS = [];
+let CURRENT_CLIENT = null;
+let CLIENT_DETAIL_ORIGIN = 'clientes';
 
 function unlockGate() {
   const pwd = document.getElementById('gatePassword').value.trim();
@@ -451,9 +718,31 @@ function unlockGate() {
   GARDIENNE_PASSWORD = pwd;
   try { sessionStorage.setItem('gardienne_pwd', pwd); } catch (e) {}
   document.getElementById('gate').hidden = true;
+  document.getElementById('tabbar').hidden = false;
   document.getElementById('agendaCard').hidden = false;
   renderGrimoire();
   loadAgenda();
+}
+
+function switchTab(tab) {
+  CURRENT_TAB = tab;
+  document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = (el.dataset.tab !== tab); });
+  document.querySelectorAll('.tab-btn').forEach(el => { el.classList.toggle('active', el.dataset.tab === tab); });
+  ['manualCard', 'rdvCard', 'bilanCard', 'bilanViewCard', 'successCard', 'clientDetailCard'].forEach(id => {
+    document.getElementById(id).hidden = true;
+  });
+  if (tab === 'historique' && HISTORIQUE_BOOKINGS.length === 0) loadHistorique(365);
+}
+
+function currentGardienneId() {
+  const el = document.getElementById('quiSuisJe');
+  return el && el.value ? el.value : '';
+}
+
+function currentGardienneName() {
+  const el = document.getElementById('quiSuisJe');
+  if (!el || el.selectedIndex < 0) return 'Gardienne';
+  return el.options[el.selectedIndex].textContent || 'Gardienne';
 }
 
 async function loadAgenda() {
@@ -497,7 +786,24 @@ function populateGardienneSelects() {
     : '<option value="">Charlotte</option><option value="">Manthyta</option>';
   document.getElementById('gardienneSelect').innerHTML = options;
   document.getElementById('mGardienne').innerHTML = '<option value="">Non assignée</option>' + options;
+
+  const quiSelect = document.getElementById('quiSuisJe');
+  const previous = quiSelect.value;
+  quiSelect.innerHTML = options;
+  let saved = '';
+  try { saved = sessionStorage.getItem('gardienne_qui') || ''; } catch (e) {}
+  if (previous && Array.from(quiSelect.options).some(o => o.value === previous)) {
+    quiSelect.value = previous;
+  } else if (saved && Array.from(quiSelect.options).some(o => o.value === saved)) {
+    quiSelect.value = saved;
+  }
+  document.getElementById('gardienneSelect').value = quiSelect.value;
 }
+
+document.getElementById('quiSuisJe').addEventListener('change', function () {
+  try { sessionStorage.setItem('gardienne_qui', this.value); } catch (e) {}
+  document.getElementById('gardienneSelect').value = this.value;
+});
 
 function renderAgendaList() {
   const filter = (document.getElementById('agendaFilter').value || '').trim().toLowerCase();
@@ -526,38 +832,223 @@ function renderAgendaList() {
   Object.entries(groups).forEach(([dayLabel, items]) => {
     html += `<div class="day-group"><h3>${dayLabel}</h3>`;
     items.forEach(b => {
-      const d = new Date(b.start_at);
-      const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      const badge = b.a_deja_un_bilan ? '<span class="badge">✦ Bilan envoyé</span>' : '';
-      const statutBadge = b.status === 'pending_payment'
-        ? '<span class="badge" style="background:#f2d9a8;color:#6b4a12">⏳ Paiement en attente</span>'
-        : (b.status === 'cancelled' ? '<span class="badge" style="background:#eecfcf;color:#7a1f1f">Annulé</span>' : '');
-      html += `
-        <div class="result-row" onclick='selectBookingByKey("${b.source}", "${b.id}")'>
-          <div>
-            <div class="name">${heure} · ${escapeHtml(b.prenom)} ${escapeHtml(b.nom || '')}</div>
-            <div class="sub">${escapeHtml(b.soin)} · ${escapeHtml(b.email)}</div>
-          </div>
-          ${statutBadge}${badge}
-        </div>
-      `;
+      html += renderBookingRow(b, 'agenda');
     });
     html += `</div>`;
   });
   listEl.innerHTML = html;
 }
 
-function selectBookingByKey(source, id) {
-  const booking = AGENDA_BOOKINGS.find(b => b.source === source && String(b.id) === String(id));
+function renderBookingRow(b, origin) {
+  const d = new Date(b.start_at);
+  const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const dateLabel = origin === 'historique' ? d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ' · ' : '';
+  const badge = b.a_deja_un_bilan ? '<span class="badge">✦ Bilan envoyé</span>' : '';
+  let statutBadge = '';
+  if (b.status === 'pending_payment') statutBadge = '<span class="badge badge-retard">⏳ Paiement en attente</span>';
+  else if (b.status === 'cancelled') statutBadge = '<span class="badge badge-noshow">Annulé</span>';
+  else if (b.status === 'no_show') statutBadge = '<span class="badge badge-noshow">Absence</span>';
+  const retardBadge = (b.retard_count || 0) > 0 ? `<span class="badge badge-retard">${b.retard_count} retard${b.retard_count > 1 ? 's' : ''}</span>` : '';
+  const sanctionBadge = (b.sanction_montant || 0) > 0 ? `<span class="badge badge-sanction">+${b.sanction_montant}€</span>` : '';
+  return `
+        <div class="result-row" onclick='selectBookingByKey("${b.source}", "${b.id}", "${origin}")'>
+          <div>
+            <div class="name">${dateLabel}${heure} · ${escapeHtml(b.prenom)} ${escapeHtml(b.nom || '')}</div>
+            <div class="sub">${escapeHtml(b.soin)} · ${escapeHtml(b.email)}</div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">${statutBadge}${retardBadge}${sanctionBadge}${badge}</div>
+        </div>
+      `;
+}
+
+function selectBookingByKey(source, id, origin) {
+  origin = origin || 'agenda';
+  const pool = origin === 'historique' ? HISTORIQUE_BOOKINGS : AGENDA_BOOKINGS;
+  const booking = pool.find(b => b.source === source && String(b.id) === String(id));
   if (!booking) return;
   SELECTED_BOOKING = booking;
-  document.getElementById('clientName').textContent = `${booking.prenom} ${booking.nom || ''}`;
-  const d = new Date(booking.start_at);
-  document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${booking.email}`;
-  document.getElementById('agendaCard').hidden = true;
+  SELECTED_BOOKING_ORIGIN = origin;
+  openRdvDetail();
+}
+
+function openRdvDetail() {
+  const b = SELECTED_BOOKING;
+  if (!b) return;
+  document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
   document.getElementById('manualCard').hidden = true;
-  document.getElementById('bilanCard').hidden = false;
+  document.getElementById('bilanCard').hidden = true;
+  document.getElementById('bilanViewCard').hidden = true;
   document.getElementById('successCard').hidden = true;
+  document.getElementById('clientDetailCard').hidden = true;
+  document.getElementById('rdvDetailError').hidden = true;
+  document.getElementById('rdvEditBlock').hidden = true;
+
+  document.getElementById('rdvName').textContent = `${b.prenom} ${b.nom || ''}`;
+  const d = new Date(b.start_at);
+  let meta = `${d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${b.soin} · ${b.email}`;
+  if ((b.retard_count || 0) > 0) meta += ` · ${b.retard_count} retard${b.retard_count > 1 ? 's' : ''}`;
+  if ((b.sanction_montant || 0) > 0) meta += ` · sanction ${b.sanction_montant}€`;
+  document.getElementById('rdvMeta').textContent = meta;
+
+  const bilanBtn = document.getElementById('rdvBilanBtn');
+  bilanBtn.textContent = b.a_deja_un_bilan ? 'Voir le bilan ✦' : 'Faire le bilan ✦';
+
+  document.getElementById('rdvEditDate').value = d.toISOString().slice(0, 10);
+  document.getElementById('rdvEditHeure').value = d.toTimeString().slice(0, 5);
+  document.getElementById('rdvEditStatut').value = b.status || 'confirmed';
+
+  document.getElementById('rdvCard').hidden = false;
+}
+
+function closeRdvDetail() {
+  document.getElementById('rdvCard').hidden = true;
+  switchTab(SELECTED_BOOKING_ORIGIN || 'agenda');
+}
+
+function toggleRdvEdit() {
+  const block = document.getElementById('rdvEditBlock');
+  block.hidden = !block.hidden;
+}
+
+async function saveRdvEdit() {
+  const b = SELECTED_BOOKING;
+  if (!b) return;
+  const errEl = document.getElementById('rdvDetailError');
+  errEl.hidden = true;
+  const date = document.getElementById('rdvEditDate').value;
+  const heure = document.getElementById('rdvEditHeure').value;
+  const statut = document.getElementById('rdvEditStatut').value;
+  if (!date || !heure) {
+    errEl.textContent = 'Date et heure requises.';
+    errEl.hidden = false;
+    return;
+  }
+  const startAt = new Date(`${date}T${heure}:00`);
+  const btn = document.getElementById('rdvEditSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enregistrement...';
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mot_de_passe: GARDIENNE_PASSWORD,
+        action: 'update_rdv',
+        source: b.source,
+        id: b.id,
+        patch: { start_at: startAt.toISOString(), status: statut }
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    b.start_at = startAt.toISOString();
+    b.status = statut;
+    document.getElementById('rdvEditBlock').hidden = true;
+    openRdvDetail();
+    loadAgenda();
+    HISTORIQUE_BOOKINGS = [];
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'enregistrer : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Enregistrer les modifications ✦';
+  }
+}
+
+async function markRetard() {
+  const b = SELECTED_BOOKING;
+  if (!b) return;
+  const errEl = document.getElementById('rdvDetailError');
+  errEl.hidden = true;
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, action: 'mark_retard', source: b.source, id: b.id })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    b.retard_count = result.retard_count;
+    b.sanction_montant = result.sanction_montant;
+    openRdvDetail();
+    loadAgenda();
+    HISTORIQUE_BOOKINGS = [];
+  } catch (err) {
+    errEl.textContent = 'Impossible de marquer le retard : ' + err.message;
+    errEl.hidden = false;
+  }
+}
+
+async function markNoShow() {
+  const b = SELECTED_BOOKING;
+  if (!b) return;
+  if (!confirm(`Marquer ${b.prenom} comme absente ? Aucun bilan ni remboursement ne sera associé à ce rendez vous.`)) return;
+  const errEl = document.getElementById('rdvDetailError');
+  errEl.hidden = true;
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, action: 'mark_no_show', source: b.source, id: b.id })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    b.status = 'no_show';
+    openRdvDetail();
+    loadAgenda();
+    HISTORIQUE_BOOKINGS = [];
+  } catch (err) {
+    errEl.textContent = 'Impossible de marquer l\'absence : ' + err.message;
+    errEl.hidden = false;
+  }
+}
+
+function goToBilanFromRdv() {
+  const b = SELECTED_BOOKING;
+  if (!b) return;
+  if (b.a_deja_un_bilan && b.bilan) {
+    openBilanView(b.bilan);
+    return;
+  }
+  document.getElementById('clientName').textContent = `${b.prenom} ${b.nom || ''}`;
+  const d = new Date(b.start_at);
+  document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${b.email}`;
+  document.getElementById('rdvCard').hidden = true;
+  document.getElementById('bilanCard').hidden = false;
+}
+
+function openBilanView(bilan) {
+  document.getElementById('rdvCard').hidden = true;
+  document.getElementById('clientDetailCard').hidden = true;
+  document.getElementById('bvName').textContent = `${bilan.client_prenom || ''} ${bilan.client_nom || ''}`;
+  document.getElementById('bvMeta').textContent = `${bilan.client_email || ''} · ${new Date(bilan.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  document.getElementById('bvUterus').textContent = (bilan.etat_uterus_pct != null ? bilan.etat_uterus_pct : '—') + '%';
+  document.getElementById('bvReceptivite').textContent = (bilan.etat_receptivite_pct != null ? bilan.etat_receptivite_pct : '—') + '%';
+  document.getElementById('bvElements').textContent = Array.isArray(bilan.elements_choisis) ? bilan.elements_choisis.join(', ') : (bilan.elements_choisis || '');
+  document.getElementById('bvAnalyse').textContent = bilan.analyse_chiffres || '';
+  document.getElementById('bvVibration').textContent = bilan.vibration_energetique || '';
+  document.getElementById('bvBienfaits').textContent = bilan.bienfaits_physiologiques || '';
+  document.getElementById('bvResume').textContent = bilan.resume_final || '';
+  const notesBlock = document.getElementById('bvNotesBlock');
+  if (bilan.notes_gardienne) {
+    notesBlock.hidden = false;
+    document.getElementById('bvNotesGardienne').textContent = bilan.notes_gardienne;
+  } else {
+    notesBlock.hidden = true;
+  }
+  document.getElementById('bilanViewCard').hidden = false;
+}
+
+function closeBilanView() {
+  document.getElementById('bilanViewCard').hidden = true;
+  if (CURRENT_CLIENT) {
+    document.getElementById('clientDetailCard').hidden = false;
+  } else if (SELECTED_BOOKING) {
+    openRdvDetail();
+  } else {
+    switchTab(CURRENT_TAB);
+  }
 }
 
 function resetToAgenda() {
@@ -565,7 +1056,7 @@ function resetToAgenda() {
   document.getElementById('bilanCard').hidden = true;
   document.getElementById('successCard').hidden = true;
   document.getElementById('manualCard').hidden = true;
-  document.getElementById('agendaCard').hidden = false;
+  document.getElementById('rdvCard').hidden = true;
   document.getElementById('uterusSlider').value = 50;
   document.getElementById('receptiviteSlider').value = 50;
   document.getElementById('uterusVal').textContent = '50%';
@@ -576,6 +1067,225 @@ function resetToAgenda() {
     el.querySelector('input').checked = false;
   });
   loadAgenda();
+  HISTORIQUE_BOOKINGS = [];
+  switchTab(SELECTED_BOOKING_ORIGIN || 'agenda');
+}
+
+async function loadHistorique(days) {
+  document.querySelectorAll('.period-btn').forEach(el => el.classList.toggle('active', String(days) === el.dataset.period));
+  const errEl = document.getElementById('historiqueError');
+  const listEl = document.getElementById('historiqueList');
+  errEl.hidden = true;
+  listEl.innerHTML = '<p class="empty-note">Chargement de l\'historique...</p>';
+  try {
+    const since = new Date(Date.now() - days * 86400000).toISOString();
+    const until = new Date(Date.now() + 86400000).toISOString();
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-agenda`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, since, until })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    HISTORIQUE_BOOKINGS = (result.bookings || []).slice().reverse();
+    renderHistoriqueList();
+  } catch (err) {
+    errEl.textContent = 'Impossible de charger l\'historique : ' + err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = '';
+  }
+}
+
+function renderHistoriqueList() {
+  const filter = (document.getElementById('historiqueFilter').value || '').trim().toLowerCase();
+  const listEl = document.getElementById('historiqueList');
+
+  const filtered = HISTORIQUE_BOOKINGS.filter(b => {
+    if (!filter) return true;
+    const hay = `${b.prenom} ${b.nom} ${b.email}`.toLowerCase();
+    return hay.includes(filter);
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<p class="empty-note">Aucun rendez-vous trouvé sur cette période.</p>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(b => {
+    const d = new Date(b.start_at);
+    const key = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(b);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([label, items]) => {
+    html += `<div class="day-group"><h3>${label}</h3>`;
+    items.forEach(b => { html += renderBookingRow(b, 'historique'); });
+    html += `</div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+let clientesSearchTimer = null;
+function searchClientes() {
+  clearTimeout(clientesSearchTimer);
+  clientesSearchTimer = setTimeout(runClientesSearch, 300);
+}
+
+async function runClientesSearch() {
+  const q = (document.getElementById('clientesSearch').value || '').trim();
+  const errEl = document.getElementById('clientesError');
+  const resultsEl = document.getElementById('clientesResults');
+  errEl.hidden = true;
+  if (q.length < 2) {
+    resultsEl.innerHTML = '<p class="empty-note">Tape au moins 2 lettres pour chercher une cliente.</p>';
+    return;
+  }
+  resultsEl.innerHTML = '<p class="empty-note">Recherche...</p>';
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, action: 'search', q })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    CLIENTE_RESULTS = result.results || [];
+    renderClienteResults();
+  } catch (err) {
+    errEl.textContent = 'Recherche impossible : ' + err.message;
+    errEl.hidden = false;
+    resultsEl.innerHTML = '';
+  }
+}
+
+function renderClienteResults() {
+  const resultsEl = document.getElementById('clientesResults');
+  if (CLIENTE_RESULTS.length === 0) {
+    resultsEl.innerHTML = '<p class="empty-note">Aucune cliente trouvée.</p>';
+    return;
+  }
+  resultsEl.innerHTML = CLIENTE_RESULTS.map((c, i) => `
+    <div class="cliente-row" onclick="openClientDetail(${i})">
+      <div class="name">${escapeHtml(c.prenom)} ${escapeHtml(c.nom || '')}</div>
+      <div class="sub">${escapeHtml(c.email)}${c.phone ? ' · ' + escapeHtml(c.phone) : ''} · ${c.type === 'profile' ? 'espace membre' : 'invitée'}</div>
+    </div>
+  `).join('');
+}
+
+async function openClientDetail(index) {
+  const c = CLIENTE_RESULTS[index];
+  if (!c) return;
+  CURRENT_CLIENT = c;
+  CLIENT_DETAIL_ORIGIN = CURRENT_TAB;
+  document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
+  document.getElementById('cdName').textContent = `${c.prenom} ${c.nom || ''}`;
+  document.getElementById('cdMeta').textContent = `${c.email}${c.phone ? ' · ' + c.phone : ''}`;
+  document.getElementById('cdHistory').innerHTML = '<p class="empty-note">Chargement...</p>';
+  document.getElementById('cdBilans').innerHTML = '';
+  document.getElementById('cdNotes').innerHTML = '';
+  document.getElementById('clientDetailError').hidden = true;
+  document.getElementById('clientDetailCard').hidden = false;
+
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, action: 'detail', profile_id: c.profile_id || undefined, email: c.email })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+
+    CURRENT_CLIENT.profile = result.profile;
+    CURRENT_CLIENT.appointments = result.appointments || [];
+    CURRENT_CLIENT.session_bookings = result.session_bookings || [];
+    CURRENT_CLIENT.bilans = result.bilans || [];
+
+    const historyItems = [
+      ...CURRENT_CLIENT.appointments.map(a => ({ ...a, kind: 'V-Steam' })),
+      ...CURRENT_CLIENT.session_bookings.map(s => ({ ...s, kind: s.treatment_types?.name || 'Séance' }))
+    ].sort((x, y) => new Date(y.start_at) - new Date(x.start_at));
+
+    document.getElementById('cdHistory').innerHTML = historyItems.length
+      ? historyItems.map(h => {
+          const d = new Date(h.start_at);
+          const retard = (h.retard_count || 0) > 0 ? ` · ${h.retard_count} retard${h.retard_count > 1 ? 's' : ''}` : '';
+          const sanction = (h.sanction_montant || 0) > 0 ? ` · sanction ${h.sanction_montant}€` : '';
+          return `<div class="mini-history-row"><span>${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} · ${escapeHtml(h.kind)}</span><span class="sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;color:var(--marron-soft);">${escapeHtml(h.status || '')}${retard}${sanction}</span></div>`;
+        }).join('')
+      : '<p class="empty-note">Aucun rendez-vous enregistré.</p>';
+
+    document.getElementById('cdBilans').innerHTML = CURRENT_CLIENT.bilans.length
+      ? CURRENT_CLIENT.bilans.map((b, i) => `<div class="mini-history-row" style="cursor:pointer;" onclick="openBilanView(CURRENT_CLIENT.bilans[${i}])"><span>${new Date(b.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span><span class="badge">✦ Voir le bilan</span></div>`).join('')
+      : '<p class="empty-note">Aucun bilan pour le moment.</p>';
+
+    renderClientNotes();
+  } catch (err) {
+    document.getElementById('clientDetailError').textContent = 'Impossible de charger la fiche : ' + err.message;
+    document.getElementById('clientDetailError').hidden = false;
+    document.getElementById('cdHistory').innerHTML = '';
+  }
+}
+
+function renderClientNotes() {
+  const note = CURRENT_CLIENT.profile?.internal_note || '';
+  const notesEl = document.getElementById('cdNotes');
+  if (!note.trim()) {
+    notesEl.innerHTML = '<p class="empty-note">Aucune note pour le moment.</p>';
+    return;
+  }
+  notesEl.innerHTML = note.split('\n').filter(l => l.trim()).map(l => `<div class="note-line">${escapeHtml(l)}</div>`).join('');
+}
+
+async function addClientNote() {
+  const errEl = document.getElementById('clientDetailError');
+  errEl.hidden = true;
+  const text = document.getElementById('cdNoteInput').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('cdNoteBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enregistrement...';
+  try {
+    const payload = {
+      mot_de_passe: GARDIENNE_PASSWORD,
+      action: 'add_note',
+      note_text: text,
+      gardienne_prenom: currentGardienneName()
+    };
+    if (CURRENT_CLIENT.profile_id) {
+      payload.profile_id = CURRENT_CLIENT.profile_id;
+    } else if (CURRENT_CLIENT.appointments && CURRENT_CLIENT.appointments.length) {
+      payload.appointment_id = CURRENT_CLIENT.appointments[0].id;
+    } else {
+      throw new Error('Cette cliente n\'a pas encore de rendez vous ni d\'espace membre pour y accrocher une note.');
+    }
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-clientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    if (!CURRENT_CLIENT.profile) CURRENT_CLIENT.profile = {};
+    CURRENT_CLIENT.profile.internal_note = result.internal_note || CURRENT_CLIENT.profile.internal_note;
+    document.getElementById('cdNoteInput').value = '';
+    if (result.internal_note !== undefined) renderClientNotes();
+    else document.getElementById('cdNotes').innerHTML += `<div class="note-line">${escapeHtml('[' + new Date().toLocaleDateString('fr-FR') + '] ' + text)}</div>`;
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'ajouter la note : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Ajouter la note ✦';
+  }
+}
+
+function closeClientDetail() {
+  document.getElementById('clientDetailCard').hidden = true;
+  CURRENT_CLIENT = null;
+  switchTab(CLIENT_DETAIL_ORIGIN || 'clientes');
 }
 
 function openManualBooking() {
@@ -734,6 +1444,7 @@ function escapeHtml(s) {
     if (saved) {
       GARDIENNE_PASSWORD = saved;
       document.getElementById('gate').hidden = true;
+      document.getElementById('tabbar').hidden = false;
       document.getElementById('agendaCard').hidden = false;
       renderGrimoire();
       loadAgenda();

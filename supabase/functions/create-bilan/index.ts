@@ -285,6 +285,22 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
       return json({ error: `Sauvegarde impossible : ${saveError.message}` }, 500)
     }
 
+    // ===== Attribution automatique du rendez vous a la gardienne =====
+    // Des qu'une gardienne redige le bilan d'une cliente, le rendez vous
+    // lui est automatiquement attribue, meme s'il n'avait pas ete assigne
+    // au moment de la prise de rendez vous.
+    if (gardienne_id) {
+      try {
+        if (source === 'public' && appointment_id) {
+          await admin.from('appointments').update({ gardienne_id }).eq('id', appointment_id)
+        } else if (source === 'club' && session_booking_id) {
+          await admin.from('session_bookings').update({ gardienne_id }).eq('id', session_booking_id)
+        }
+      } catch (attribErr) {
+        console.error('create-bilan attribution gardienne error:', attribErr)
+      }
+    }
+
     // ===== Email a la cliente =====
     const paragraphs = [
       `Chère ${escapeHtml(clientPrenom)},`,
