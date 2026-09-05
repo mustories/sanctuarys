@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livre d'or · Sanctuarys</title>
+<meta name="description" content="Ce que les femmes ressentent apres leur passage au Temple Sanctuarys : gynecologie naturelle et fertilite, Paris 12e.">
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<meta name="theme-color" content="#C8704D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --beige: #ECDCC2;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #D4A04C;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.2), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.15), transparent 55%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+  header {
+    text-align: center;
+    padding: 70px 20px 40px;
+  }
+  header .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 400;
+    margin-bottom: 18px;
+  }
+  header h1 em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+  header p.subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-style: italic;
+    color: var(--marron-soft);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  header a.back {
+    display: inline-block;
+    margin-top: 26px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 3px;
+  }
+  header a.back:hover { color: var(--terracotta-deep); border-color: var(--terracotta); }
+
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 20px 100px;
+    columns: 3 320px;
+    column-gap: 24px;
+  }
+  @media (max-width: 700px) {
+    .grid { columns: 1 320px; }
+  }
+  .temoignage {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 28px 26px;
+    margin-bottom: 24px;
+    break-inside: avoid;
+    box-shadow: 0 16px 40px rgba(74, 48, 32, 0.06);
+  }
+  .temoignage .ressenti-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 14px;
+  }
+  .temoignage p.texte {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--marron);
+    margin-bottom: 16px;
+  }
+  .temoignage .signature {
+    font-family: 'Italiana', serif;
+    font-size: 16px;
+    color: var(--terracotta-deep);
+  }
+  .temoignage .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    margin-top: 4px;
+  }
+  .empty-note {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--marron-soft);
+    padding: 60px 20px;
+  }
+  .quote-mark {
+    font-family: 'Italiana', serif;
+    font-size: 34px;
+    color: var(--terracotta-pale);
+    display: block;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="meta">✦ Sanctuarys</div>
+  <h1>Le livre <em>d'or.</em></h1>
+  <p class="subtitle">Ce que les femmes ressentent après leur passage au Temple, dans leurs propres mots.</p>
+  <a class="back" href="/">← Retour au site</a>
+</header>
+
+<div class="grid" id="grid">
+  <p class="empty-note">Chargement des témoignages...</p>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+
+const RESSENTI_LABELS = {
+  radieuse: '✨ Radieuse',
+  apaisee: '🌿 Apaisée',
+  neutre: '🌤️ Neutre',
+  a_ameliorer: '🌧️ En chemin'
+};
+
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function loadAvis() {
+  const grid = document.getElementById('grid');
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/avis-liste`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+
+    const avis = result.avis || [];
+    if (avis.length === 0) {
+      grid.innerHTML = '<p class="empty-note">Les premiers témoignages arrivent bientôt.</p>';
+      return;
+    }
+
+    grid.innerHTML = avis.map(a => {
+      const d = new Date(a.created_at);
+      const tag = RESSENTI_LABELS[a.ressenti] || '';
+      return `
+        <div class="temoignage">
+          ${tag ? `<div class="ressenti-tag">${tag}</div>` : ''}
+          <span class="quote-mark">"</span>
+          <p class="texte">${escapeHtml(a.avis_text)}</p>
+          <div class="signature">${escapeHtml(a.client_prenom || 'Une cliente')}</div>
+          <div class="date">${d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    grid.innerHTML = '<p class="empty-note">Impossible de charger les témoignages pour le moment.</p>';
+  }
+}
+
+loadAvis();
+</script>
+
+</body>
+</html>

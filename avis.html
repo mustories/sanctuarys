@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comment te sens tu · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<meta name="theme-color" content="#C8704D">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --marron-deep: #2A1810;
+    --marron: #4A3020;
+    --marron-soft: #6B4423;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --or: #D4A04C;
+    --line: rgba(106, 68, 35, 0.18);
+  }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(232, 176, 153, 0.25), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(212, 160, 76, 0.18), transparent 50%),
+      var(--blanc);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 60px 20px 100px;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .brand { text-align: center; margin-bottom: 36px; }
+  .brand .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--terracotta-deep);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .brand h1 {
+    font-family: 'Italiana', serif;
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 400;
+  }
+  .card {
+    background: var(--blanc);
+    border: 1px solid var(--line);
+    padding: 36px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 20px 60px rgba(74, 48, 32, 0.08);
+  }
+  .card p.intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--marron);
+    margin-bottom: 26px;
+  }
+  .ressenti-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .ressenti-btn {
+    padding: 20px 14px;
+    border: 1px solid var(--line);
+    background: var(--blanc-deep);
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--marron-deep);
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .ressenti-btn:hover { border-color: var(--terracotta); background: rgba(200,112,77,0.1); }
+  .ressenti-btn .emoji { font-size: 26px; display: block; margin-bottom: 8px; }
+  .ressenti-btn.selected { border-color: var(--terracotta); background: rgba(200,112,77,0.16); }
+
+  textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    background: var(--blanc-deep);
+    color: var(--marron-deep);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    resize: vertical;
+    min-height: 110px;
+    margin-top: 8px;
+  }
+  textarea:focus { outline: none; border-color: var(--terracotta); }
+  label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+    margin-bottom: 4px;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--marron);
+    cursor: pointer;
+  }
+  .checkbox-row input { margin-top: 4px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border: 1px solid var(--terracotta-deep);
+    background: var(--terracotta);
+    color: var(--blanc);
+    font-family: 'Italiana', serif;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .btn:hover { background: var(--terracotta-deep); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .symbol { font-size: 36px; color: var(--terracotta-deep); text-align: center; margin-bottom: 14px; }
+  .success h2 { font-family: 'Italiana', serif; font-size: 24px; text-align: center; margin-bottom: 12px; }
+  .success p { font-family: 'Cormorant Garamond', serif; font-size: 17px; text-align: center; color: var(--marron); line-height: 1.7; }
+  .error { color: #A83737; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; margin-top: 12px; text-align: center; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <div class="meta">✦ Sanctuarys</div>
+    <h1>Comment te sens tu ?</h1>
+  </div>
+
+  <div class="card" id="loadingCard">
+    <p class="intro">Chargement...</p>
+  </div>
+
+  <div class="card" id="ressentiCard" hidden>
+    <p class="intro" id="introText"></p>
+    <div class="ressenti-grid">
+      <div class="ressenti-btn" data-val="radieuse" onclick="chooseRessenti('radieuse')"><span class="emoji">✨</span>Radieuse</div>
+      <div class="ressenti-btn" data-val="apaisee" onclick="chooseRessenti('apaisee')"><span class="emoji">🌿</span>Apaisée</div>
+      <div class="ressenti-btn" data-val="neutre" onclick="chooseRessenti('neutre')"><span class="emoji">🌤️</span>Neutre</div>
+      <div class="ressenti-btn" data-val="a_ameliorer" onclick="chooseRessenti('a_ameliorer')"><span class="emoji">🌧️</span>À améliorer</div>
+    </div>
+    <div class="error" id="ressentiError" hidden></div>
+  </div>
+
+  <div class="card" id="avisCard" hidden>
+    <p class="intro">Merci pour ta réponse. Si tu le souhaites, partage ton expérience : elle pourra être publiée sur notre livre d'or pour encourager d'autres femmes.</p>
+    <label for="avisText">Ton avis (optionnel)</label>
+    <textarea id="avisText" placeholder="Ce que cette séance t'a apporté..."></textarea>
+    <label class="checkbox-row" for="publierCheck">
+      <input type="checkbox" id="publierCheck">
+      <span>J'autorise Sanctuarys à publier cet avis sur le site, avec mon prénom uniquement.</span>
+    </label>
+    <button class="btn" id="avisBtn" onclick="submitAvis()">Envoyer ✦</button>
+    <div class="error" id="avisError" hidden></div>
+  </div>
+
+  <div class="card success" id="successCard" hidden>
+    <div class="symbol">✦</div>
+    <h2>Merci du fond du cœur.</h2>
+    <p>Ta parole compte pour nous, et pour toutes les femmes qui franchiront à leur tour le seuil du Temple.</p>
+  </div>
+
+  <div class="card" id="errorCard" hidden>
+    <p class="error" id="globalError" style="margin-top:0;"></p>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hcmcforwphmqrauqltqp.supabase.co';
+const params = new URLSearchParams(window.location.search);
+const TOKEN = params.get('token');
+let PRENOM = '';
+
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function init() {
+  if (!TOKEN) {
+    showGlobalError('Ce lien est incomplet.');
+    return;
+  }
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/avis-feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get', token: TOKEN })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+
+    PRENOM = result.client_prenom || 'Toi';
+    document.getElementById('loadingCard').hidden = true;
+
+    if (result.avis_text || result.ressenti) {
+      document.getElementById('successCard').hidden = false;
+      document.querySelector('#successCard p').textContent = 'Ta réponse a déjà été enregistrée. Merci encore pour ta confiance.';
+      return;
+    }
+
+    document.getElementById('introText').textContent = `${PRENOM}, depuis ta séance au Temple, comment te sens tu ?`;
+    document.getElementById('ressentiCard').hidden = false;
+  } catch (err) {
+    showGlobalError('Impossible de charger cette page : ' + err.message);
+  }
+}
+
+function showGlobalError(msg) {
+  document.getElementById('loadingCard').hidden = true;
+  document.getElementById('errorCard').hidden = false;
+  document.getElementById('globalError').textContent = msg;
+}
+
+async function chooseRessenti(val) {
+  document.querySelectorAll('.ressenti-btn').forEach(el => el.classList.toggle('selected', el.dataset.val === val));
+  const errEl = document.getElementById('ressentiError');
+  errEl.hidden = true;
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/avis-feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'ressenti', token: TOKEN, ressenti: val })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    document.getElementById('ressentiCard').hidden = true;
+    document.getElementById('avisCard').hidden = false;
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'enregistrer ta réponse : ' + err.message;
+    errEl.hidden = false;
+  }
+}
+
+async function submitAvis() {
+  const errEl = document.getElementById('avisError');
+  errEl.hidden = true;
+  const btn = document.getElementById('avisBtn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi...';
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/avis-feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'avis',
+        token: TOKEN,
+        avis_text: document.getElementById('avisText').value.trim(),
+        publier: document.getElementById('publierCheck').checked
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    document.getElementById('avisCard').hidden = true;
+    document.getElementById('successCard').hidden = false;
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'envoyer ton avis : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Envoyer ✦';
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
