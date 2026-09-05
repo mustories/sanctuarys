@@ -47,12 +47,12 @@ Deno.serve(async (req) => {
       admin.from('session_bookings')
         .select('id, start_at, end_at, status, gardienne_id, treatment_types(name), profiles:member_id(prenom, nom, phone, email)')
         .gte('start_at', since).lte('start_at', until)
-        .in('status', ['confirmed', 'completed'])
+        .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
       admin.from('appointments')
         .select('id, start_at, duration_minutes, status, gardienne_id, client_prenom, client_nom, client_email, client_phone')
         .gte('start_at', since).lte('start_at', until)
-        .in('status', ['confirmed', 'completed'])
+        .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
       admin.from('gardiennes').select('id, prenom').eq('active', true).order('prenom'),
       admin.from('bilans').select('appointment_id, session_booking_id, created_at')

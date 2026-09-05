@@ -529,13 +529,16 @@ function renderAgendaList() {
       const d = new Date(b.start_at);
       const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       const badge = b.a_deja_un_bilan ? '<span class="badge">✦ Bilan envoyé</span>' : '';
+      const statutBadge = b.status === 'pending_payment'
+        ? '<span class="badge" style="background:#f2d9a8;color:#6b4a12">⏳ Paiement en attente</span>'
+        : (b.status === 'cancelled' ? '<span class="badge" style="background:#eecfcf;color:#7a1f1f">Annulé</span>' : '');
       html += `
         <div class="result-row" onclick='selectBookingByKey("${b.source}", "${b.id}")'>
           <div>
             <div class="name">${heure} · ${escapeHtml(b.prenom)} ${escapeHtml(b.nom || '')}</div>
             <div class="sub">${escapeHtml(b.soin)} · ${escapeHtml(b.email)}</div>
           </div>
-          ${badge}
+          ${statutBadge}${badge}
         </div>
       `;
     });
