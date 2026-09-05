@@ -46,6 +46,7 @@
     font-weight: 300;
     min-height: 100vh;
     padding-bottom: 80px;
+    overflow-x: hidden;
   }
   body::after {
     content: '';
@@ -431,6 +432,64 @@
   @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes sparkleTwinkle { 0%, 100% { opacity: .3; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.1); } }
+
+  /* ===== Dynamisation et joie : mouvement, couleurs, icones ===== */
+  @keyframes panelFloatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pillRing { 0%, 100% { box-shadow: 0 0 0 0 rgba(200, 112, 77, 0.32); } 50% { box-shadow: 0 0 0 6px rgba(200, 112, 77, 0); } }
+  @keyframes blobFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-16px, 18px) scale(1.08); } }
+  @keyframes heroSparkle { 0%, 100% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(14deg) scale(1.15); } }
+  @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+  .hero { overflow: visible; }
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(55px);
+    z-index: -1;
+    opacity: 0.4;
+    animation: blobFloat 15s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .hero-blob.b1 { width: 240px; height: 240px; background: var(--terracotta-pale); top: -50px; right: 90px; }
+  .hero-blob.b2 { width: 170px; height: 170px; background: var(--or-pale); bottom: -20px; right: 340px; animation-delay: 4s; }
+  .hero h1 .hero-emoji { display: inline-block; font-family: initial; animation: heroSparkle 3.2s ease-in-out infinite; }
+
+  .status-pill { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .status-pill:hover { transform: translateY(-3px); }
+  .status-pill .dot { animation: pillRing 2.6s ease-in-out infinite; }
+
+  .welcome-banner {
+    background-size: 220% 220%;
+    animation: gradientShift 9s ease infinite;
+    transition: transform 0.3s ease;
+  }
+
+  .panels .panel {
+    animation: panelFloatIn 0.65s cubic-bezier(.22,.68,0,1.01) both;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    overflow: hidden;
+  }
+  .panel:hover { transform: translateY(-6px); box-shadow: 0 24px 54px rgba(74, 48, 32, 0.13); }
+  .panel::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent-a, var(--terracotta)), var(--accent-b, var(--or)));
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .panel:hover::after { opacity: 1; }
+  #panel-point   { animation-delay: 0.02s; --accent-a: #D4A04C; --accent-b: #C8704D; }
+  #panel-cycle   { animation-delay: 0.08s; --accent-a: #E8B099; --accent-b: #C8704D; }
+  #panel-seances { animation-delay: 0.14s; --accent-a: #C8704D; --accent-b: #A85537; }
+  #panel-soins   { animation-delay: 0.20s; --accent-a: #D4A04C; --accent-b: #E8C57A; }
+  #panel-bilans  { animation-delay: 0.26s; --accent-a: #8B9D7A; --accent-b: #D4A04C; }
+  #panel-journal { animation-delay: 0.32s; --accent-a: #E8B099; --accent-b: #F5DCC4; }
+  #panel-events  { animation-delay: 0.38s; --accent-a: #D4A04C; --accent-b: #C8704D; }
+  #panel-referral{ animation-delay: 0.44s; --accent-a: #8B9D7A; --accent-b: #C8704D; }
+
+  .panel h2 .panel-icon { display: inline-block; margin-right: 8px; font-family: initial; font-style: normal; }
+
+  .panel-btn.primary { position: relative; transition: all 0.3s ease; }
+  .panel-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(168, 85, 55, 0.28); }
 
   .cal-cell { animation: fadeIn 0.5s ease both; }
   .cal-cell:hover {
@@ -1025,6 +1084,8 @@
 
 <!-- ============== HERO ============== -->
 <section class="hero" style="display:none;" id="hero">
+  <div class="hero-blob b1"></div>
+  <div class="hero-blob b2"></div>
   <div class="hero-meta">
     <span id="heroMetaClub">Yoni Social Club</span>
     <span class="line"></span>
@@ -1032,7 +1093,7 @@
     <span class="line"></span>
     <span id="heroMetaDate"></span>
   </div>
-  <h1 id="heroTitle">Bienvenue<br><em>Fondatrice.</em></h1>
+  <h1 id="heroTitle">Bienvenue<br><em>Fondatrice.</em> <span class="hero-emoji">✨</span></h1>
   <p class="hero-sub" id="heroSub">Ton Temple est ouvert.</p>
 
   <div class="hero-status-bar">
@@ -1082,7 +1143,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num" style="color: var(--or);">00 / Point d'entrée</div>
-        <h2>Mon <em>point.</em></h2>
+        <h2><span class="panel-icon">✨</span>Mon <em>point.</em></h2>
       </div>
       <div class="panel-badge" id="pointBadge" style="background: rgba(212, 160, 76, 0.18); border-color: var(--or); color: var(--marron-deep);">Pas encore de point</div>
     </div>
@@ -1113,7 +1174,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">01 / Mon temple intérieur</div>
-        <h2>Mon <em>cycle.</em></h2>
+        <h2><span class="panel-icon">🌙</span>Mon <em>cycle.</em></h2>
       </div>
       <div class="panel-badge" id="cyclePhaseBadge" style="display:none;"></div>
     </div>
@@ -1125,7 +1186,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">02 / YoniSpa</div>
-        <h2>Mes <em>séances.</em></h2>
+        <h2><span class="panel-icon">🌸</span>Mes <em>séances.</em></h2>
       </div>
     </div>
     <div id="seancesContent"></div>
@@ -1136,7 +1197,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">03 / Compte rendu</div>
-        <h2>Soins <em>reçus.</em></h2>
+        <h2><span class="panel-icon">📝</span>Soins <em>reçus.</em></h2>
       </div>
     </div>
     <div id="soinsContent"></div>
@@ -1147,7 +1208,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">03bis / Lecture</div>
-        <h2>Mes <em>bilans.</em></h2>
+        <h2><span class="panel-icon">🔮</span>Mes <em>bilans.</em></h2>
       </div>
     </div>
     <div id="bilansContent"></div>
@@ -1158,7 +1219,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">04 / Intime</div>
-        <h2>Mon <em>journal.</em></h2>
+        <h2><span class="panel-icon">📖</span>Mon <em>journal.</em></h2>
       </div>
     </div>
     <div id="journalContent"></div>
@@ -1171,7 +1232,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">05 / Rencontres</div>
-        <h2><em>Événements.</em></h2>
+        <h2><span class="panel-icon">🎉</span><em>Événements.</em></h2>
       </div>
     </div>
     <div id="eventsContent"></div>
@@ -1182,7 +1243,7 @@
     <div class="panel-header">
       <div>
         <div class="panel-num">06 / Transmission</div>
-        <h2>Mon <em>parrainage.</em></h2>
+        <h2><span class="panel-icon">🎁</span>Mon <em>parrainage.</em></h2>
       </div>
     </div>
     <div id="referralContent"></div>
@@ -1386,7 +1447,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
 function renderHero() {
   const prenom = MEMBER.prenom || 'Fondatrice';
-  document.getElementById('heroTitle').innerHTML = `Bienvenue,<br><em>${escapeHtml(prenom)}.</em></br>`;
+  document.getElementById('heroTitle').innerHTML = `Bienvenue,<br><em>${escapeHtml(prenom)}.</em> <span class="hero-emoji">✨</span></br>`;
   document.getElementById('memberAvatar').textContent = (prenom[0] || '·').toUpperCase();
   const today = new Date();
   document.getElementById('heroMetaDate').textContent = today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
