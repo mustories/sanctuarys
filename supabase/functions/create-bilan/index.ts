@@ -28,7 +28,7 @@ function escapeHtml(s: string): string {
   return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-const SYSTEM_PROMPT = `Tu es la voix redactionnelle de Sanctuarys, gynecologie naturelle et fertilite, fondee par Princesse Tchassi Bekou a Paris.
+const SYSTEM_PROMPT_ADULTE = `Tu es la voix redactionnelle de Sanctuarys, gynecologie naturelle et fertilite, fondee par Princesse Tchassi Bekou a Paris.
 
 Une gardienne du Temple vient de realiser une lecture radiesthesique sur une cliente. Elle t'apporte deux mesures au pendule (etat de l'uterus en pourcentage, etat de receptivite en pourcentage) ainsi que la liste des allies vegetaux et encens choisis pour accompagner la cliente. Tu rediges le bilan qui lui sera envoye.
 
@@ -51,6 +51,31 @@ CONTENU OBLIGATOIRE, EN JSON STRICT AVEC CES 5 CLES :
 
 Reponds UNIQUEMENT en JSON strict, sans texte avant ni apres.`
 
+const SYSTEM_PROMPT_ADOLESCENTE = `Tu es la voix redactionnelle de Sanctuarys, gynecologie naturelle et fertilite, fondee par Princesse Tchassi Bekou a Paris.
+
+Une gardienne du Temple vient de realiser une lecture radiesthesique sur une JEUNE FILLE (profil adolescente). Elle t'apporte deux mesures au pendule (etat de l'uterus en pourcentage, etat de receptivite en pourcentage) ainsi que la liste des allies vegetaux et encens choisis pour l'accompagner. Tu rediges le bilan qui lui sera envoye.
+
+CONTEXTE IMPORTANT : la destinataire est une adolescente qui decouvre son corps et son cycle. Le ton doit etre doux, rassurant, jamais medical ni intrusif, jamais centre sur la sexualite ou la fertilite adulte. Le vocabulaire doit parler de croissance, d'equilibre, de decouverte de son corps, de confiance en soi, sans jamais aborder la vie sexuelle, la fertilite reproductive ou la conception.
+
+STYLE OBLIGATOIRE :
+- Prose francaise, simple, chaleureuse, jamais infantilisante mais adaptee a une jeune fille
+- Tutoiement, tu t'adresses directement a elle avec bienveillance
+- Aucun tiret cadratin nulle part, uniquement virgules et points
+- Aucun bullet point, aucune liste a puces
+- Aucune reference a la sexualite, a la fertilite ou a la grossesse
+- Met l'accent sur l'apprivoisement du cycle, l'ecoute de son corps qui grandit, la douceur et la confiance en soi
+
+CONTENU OBLIGATOIRE, EN JSON STRICT AVEC CES 5 CLES :
+{
+  "analyse_chiffres": "A partir des deux pourcentages mesures (etat de l'uterus et etat de receptivite), une analyse douce de ce que ces chiffres racontent de son cycle en train de s'installer. 4 a 6 lignes.",
+  "vibration_energetique": "Explique la vibration energetique des allies vegetaux et encens choisis pour elle, ce qu'ils viennent apaiser ou eveiller en douceur. 4 a 6 lignes.",
+  "bienfaits_physiologiques": "Les bienfaits physiologiques generalement rapportes pour ces plantes et encens, avec un focus sur le confort du cycle, l'equilibre et la vitalite, jamais sur la fertilite ou la sexualite. 5 a 8 lignes.",
+  "avis_medical": "Une seule phrase, claire, rappelant que ce bilan est un accompagnement energetique et vegetal qui ne remplace pas un avis medical, et qu'il est recommande d'en parler avec un parent ou un medecin, surtout en cas de traitement en cours ou de doute.",
+  "resume_final": "3 a 4 lignes resumant ce que vise cette seance pour elle, avec douceur et encouragement."
+}
+
+Reponds UNIQUEMENT en JSON strict, sans texte avant ni apres.`
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405)
@@ -69,30 +94,40 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const {
       mot_de_passe,
-      source, // 'public' (appointments) ou 'club' (session_bookings)
+      source, // 'public' (appointments), 'club' (session_bookings) ou 'manuel' (bilan sans rendez-vous)
       appointment_id,
       session_booking_id,
       gardienne_id,
       etat_uterus_pct,
       etat_receptivite_pct,
       elements_choisis,
-      notes_gardienne
+      notes_gardienne,
+      profil, // 'adulte' (defaut) ou 'adolescente'
+      // Pour source === 'manuel' uniquement : la cliente est saisie a la main,
+      // il n'y a ni rendez-vous ni seance a relier.
+      client_prenom: manualPrenom,
+      client_nom: manualNom,
+      client_email: manualEmail
     } = body
 
     if (mot_de_passe !== gardiennePassword) {
       return json({ error: 'Mot de passe incorrect' }, 401)
     }
-    if (source !== 'club' && source !== 'public') {
+    if (source !== 'club' && source !== 'public' && source !== 'manuel') {
       return json({ error: 'source invalide' }, 400)
     }
     if (source === 'public' && !appointment_id) return json({ error: 'appointment_id requis' }, 400)
     if (source === 'club' && !session_booking_id) return json({ error: 'session_booking_id requis' }, 400)
+    if (source === 'manuel' && (!manualPrenom || !manualEmail)) {
+      return json({ error: 'Prénom et email de la cliente requis pour un bilan sans rendez-vous' }, 400)
+    }
     if (etat_uterus_pct === undefined || etat_receptivite_pct === undefined) {
       return json({ error: 'Les deux pourcentages sont requis' }, 400)
     }
     if (!Array.isArray(elements_choisis) || elements_choisis.length === 0) {
       return json({ error: 'Choisis au moins un allié végétal' }, 400)
     }
+    const profilFinal = profil === 'adolescente' ? 'adolescente' : 'adulte'
 
     const admin = createClient(supabaseUrl, serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
@@ -120,7 +155,7 @@ Deno.serve(async (req) => {
       clientEmail = (appt.client_email || '').toLowerCase()
       clientProfileId = appt.client_profile_id || null
       sanctuaryName = (appt as any).sanctuaries?.nom || 'Sanctuarys'
-    } else {
+    } else if (source === 'club') {
       const { data: sb, error: sbError } = await admin
         .from('session_bookings')
         .select('id, member_id, start_at, profiles:member_id(prenom, nom, email)')
@@ -134,6 +169,13 @@ Deno.serve(async (req) => {
       clientNom = p.nom || null
       clientEmail = (p.email || '').toLowerCase()
       clientProfileId = sb.member_id || null
+      sanctuaryName = 'Sanctuarys'
+    } else {
+      // source === 'manuel' : bilan sans rendez-vous, cliente saisie a la main par la gardienne
+      clientPrenom = manualPrenom
+      clientNom = manualNom || null
+      clientEmail = (manualEmail || '').toLowerCase()
+      clientProfileId = null
       sanctuaryName = 'Sanctuarys'
     }
 
@@ -217,6 +259,8 @@ ${notes_gardienne ? `OBSERVATION DE LA GARDIENNE : ${notes_gardienne}` : ''}
 
 Rédige le bilan structuré en JSON strict, selon la structure imposée.`
 
+    const systemPrompt = profilFinal === 'adolescente' ? SYSTEM_PROMPT_ADOLESCENTE : SYSTEM_PROMPT_ADULTE
+
     const claudeResp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -227,7 +271,7 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 2048,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }]
       })
     })
@@ -250,7 +294,9 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
       return json({ error: 'Réponse IA invalide', raw: textResponse }, 500)
     }
 
-    const fallbackAvisMedical = "Ce bilan est un accompagnement énergétique et végétal, il ne remplace pas un avis médical : parle-en à ton médecin ou ta sage femme, surtout si tu suis un traitement, si tu es enceinte ou si tu allaites."
+    const fallbackAvisMedical = profilFinal === 'adolescente'
+      ? "Ce bilan est un accompagnement énergétique et végétal, il ne remplace pas un avis médical : parles-en à un parent ou à ton médecin, surtout si tu suis un traitement ou en cas de doute."
+      : "Ce bilan est un accompagnement énergétique et végétal, il ne remplace pas un avis médical : parle-en à ton médecin ou ta sage femme, surtout si tu suis un traitement, si tu es enceinte ou si tu allaites."
 
     const analyse_chiffres = parsed.analyse_chiffres || ''
     const vibration_energetique = parsed.vibration_energetique || ''
@@ -276,7 +322,9 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
         bienfaits_physiologiques,
         avis_medical,
         resume_final,
-        generated_by: 'sonnet-4-6'
+        generated_by: 'sonnet-4-6',
+        profil: profilFinal,
+        source_type: source === 'manuel' ? 'manuel' : 'rdv'
       })
       .select()
       .single()

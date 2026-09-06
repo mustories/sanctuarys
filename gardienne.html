@@ -338,6 +338,64 @@
   .action-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
   .action-grid .btn { font-size: 13px; padding: 10px 16px; }
 
+  .ga-barre { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+  .ga-nav { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .ga-nav button { background:var(--blanc); border:1px solid var(--line); padding:8px 12px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron); cursor:pointer; }
+  .ga-nav button:hover { background:var(--terracotta-pale); }
+  .ga-titre { font-family:'Italiana',serif; font-size:16px; color:var(--marron-deep); min-width:170px; text-align:center; }
+  .ga-vues { display:flex; border:1px solid var(--line); }
+  .ga-vues button { background:var(--blanc); border:0; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron-soft); cursor:pointer; }
+  .ga-vues button.actif { background:var(--terracotta); color:var(--blanc); }
+  .ga-grille { border:1px solid var(--line); background:var(--blanc); overflow-x:auto; margin-bottom:14px; }
+  .ga-entetes { display:grid; grid-template-columns:42px repeat(7,minmax(88px,1fr)); border-bottom:1px solid var(--line); }
+  .ga-entete { padding:8px 4px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--marron-soft); border-left:1px solid var(--line); }
+  .ga-entete .num { display:block; font-family:'Italiana',serif; font-size:15px; letter-spacing:0; color:var(--marron-deep); margin-top:2px; }
+  .ga-entete.aujourdhui { background:var(--terracotta-pale); }
+  .ga-entete.aujourdhui .num { color:var(--terracotta-deep); }
+  .ga-corps { display:grid; grid-template-columns:42px repeat(7,minmax(88px,1fr)); position:relative; }
+  .ga-heures { border-right:1px solid var(--line); }
+  .ga-heure { height:42px; font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--marron-soft); text-align:right; padding-right:5px; transform:translateY(-6px); }
+  .ga-colonne { position:relative; border-left:1px solid var(--line); }
+  .ga-ligne { height:42px; border-bottom:1px solid rgba(0,0,0,.05); }
+  .ga-ouvert { position:absolute; left:0; right:0; background:rgba(200,112,77,.06); border-top:1px solid rgba(200,112,77,.2); border-bottom:1px solid rgba(200,112,77,.2); pointer-events:none; }
+  .ga-bloc { position:absolute; left:3px; right:3px; border-radius:2px; padding:4px 6px; overflow:hidden; cursor:pointer; border-left:3px solid; }
+  .ga-bloc .qui { font-family:'Cormorant Garamond',serif; font-size:12px; line-height:1.15; color:#fff; }
+  .ga-bloc .quoi { font-family:'JetBrains Mono',monospace; font-size:7px; letter-spacing:.5px; color:rgba(255,255,255,.85); margin-top:2px; }
+  .ga-bloc.attente { background:repeating-linear-gradient(45deg,#C99A3F,#C99A3F 6px,#D8AE5C 6px,#D8AE5C 12px); border-left-color:#A8792A; }
+  .ga-bloc.terminee { background:#CFC3B4; border-left-color:#A79683; }
+  .ga-bloc.annulee { background:#E2D9CE; border-left-color:#BDB0A1; }
+  .ga-bloc.annulee .qui { text-decoration:line-through; color:#8A7C6C; }
+  .ga-bloc.annulee .quoi { color:#8A7C6C; }
+  .ga-legende { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--marron-soft); }
+  .ga-legende span { display:flex; align-items:center; gap:6px; }
+  .ga-pastille { width:11px; height:11px; border-radius:2px; display:inline-block; }
+  .ga-vide { padding:30px; text-align:center; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px; color:var(--marron-soft); }
+  @media (max-width: 640px) {
+    .ga-entetes, .ga-corps { grid-template-columns:34px repeat(7,minmax(70px,1fr)); }
+  }
+
+  .profil-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+  .profil-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--marron);
+    transition: all 0.15s;
+  }
+  .profil-option.active {
+    border-color: var(--terracotta);
+    background: rgba(200, 112, 77, 0.12);
+    color: var(--marron-deep);
+  }
+  .profil-option input { display: none; }
+  .badge-profil { background: #e3d4e8; color: #4a2e5c; }
+  .badge-manuel { background: #d4e3e8; color: #2e4a5c; }
+
   .bilan-view-section { margin-bottom: 20px; }
   .bilan-view-section .lbl-mini {
     font-family: 'JetBrains Mono', monospace;
@@ -426,12 +484,33 @@
   <div class="card tab-panel" data-tab="agenda" id="agendaCard" hidden>
     <div class="agenda-header">
       <h2>Ton <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">agenda.</em></h2>
-      <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBooking()">+ Nouveau rendez-vous</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBooking()">+ Nouveau rendez-vous</button>
+        <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBilan()">+ Bilan sans rendez-vous</button>
+      </div>
     </div>
-    <div class="field agenda-search">
-      <input type="text" id="agendaFilter" placeholder="Filtrer par prénom, nom ou email..." oninput="renderAgendaList()">
+
+    <div class="ga-barre">
+      <div class="ga-nav">
+        <button type="button" id="gaPrec">←</button>
+        <span class="ga-titre" id="gaTitre">—</span>
+        <button type="button" id="gaSuiv">→</button>
+        <button type="button" id="gaAuj">Cette semaine</button>
+      </div>
+      <div class="ga-vues">
+        <button type="button" id="gaVueSemaine" class="actif">Semaine</button>
+        <button type="button" id="gaVueListe">Liste</button>
+      </div>
     </div>
-    <div id="agendaList"></div>
+
+    <div id="gaSemaine"></div>
+
+    <div id="gaListeBloc" style="display:none;">
+      <div class="field agenda-search">
+        <input type="text" id="agendaFilter" placeholder="Filtrer par prénom, nom ou email..." oninput="renderAgendaList()">
+      </div>
+      <div id="agendaList"></div>
+    </div>
     <div class="error" id="agendaError" hidden></div>
   </div>
 
@@ -456,6 +535,7 @@
   <div class="card tab-panel" data-tab="clientes" id="clientesCard" hidden>
     <div class="agenda-header">
       <h2>Les <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">clientes.</em></h2>
+      <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBilan()">+ Bilan sans rendez-vous</button>
     </div>
     <div class="field agenda-search">
       <input type="text" id="clientesSearch" placeholder="Cherche par prénom, nom, email ou téléphone..." oninput="searchClientes()">
@@ -545,6 +625,7 @@
       <div>
         <div class="name" id="bvName"></div>
         <div class="meta" id="bvMeta"></div>
+        <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;" id="bvBadges"></div>
       </div>
       <button class="btn secondary" onclick="closeBilanView()" style="font-size:13px; padding:8px 14px;">← Retour</button>
     </div>
@@ -622,6 +703,30 @@
     <div class="error" id="manualError" hidden></div>
   </div>
 
+  <!-- Formulaire bilan sans rendez-vous -->
+  <div class="card" id="manualBilanCard" hidden>
+    <h2 style="font-family:'Italiana',serif; font-size:22px; margin-bottom:20px;">Nouveau bilan (sans rendez-vous)</h2>
+    <div class="field-row">
+      <div class="field">
+        <label for="mbPrenom">Prénom</label>
+        <input type="text" id="mbPrenom">
+      </div>
+      <div class="field">
+        <label for="mbNom">Nom (optionnel)</label>
+        <input type="text" id="mbNom">
+      </div>
+    </div>
+    <div class="field">
+      <label for="mbEmail">Email</label>
+      <input type="email" id="mbEmail">
+    </div>
+    <div class="actions-row">
+      <button class="btn secondary" onclick="closeManualBilan()">Annuler</button>
+      <button class="btn" id="manualBilanSubmitBtn" onclick="continueManualBilan()">Continuer vers le bilan ✦</button>
+    </div>
+    <div class="error" id="manualBilanError" hidden></div>
+  </div>
+
   <!-- ÉTAPE 2 : formulaire du bilan -->
   <div class="card" id="bilanCard" hidden>
     <div class="client-card">
@@ -635,6 +740,20 @@
     <div class="field">
       <label for="gardienneSelect">Gardienne</label>
       <select id="gardienneSelect"></select>
+    </div>
+
+    <div class="field">
+      <label>Profil du bilan</label>
+      <div class="profil-toggle" id="profilToggle">
+        <label class="profil-option active" data-profil="adulte">
+          <input type="radio" name="profilBilan" value="adulte" checked onchange="setProfilBilan('adulte')">
+          <span>Adulte</span>
+        </label>
+        <label class="profil-option" data-profil="adolescente">
+          <input type="radio" name="profilBilan" value="adolescente" onchange="setProfilBilan('adolescente')">
+          <span>Adolescente</span>
+        </label>
+      </div>
     </div>
 
     <div class="slider-block">
@@ -704,6 +823,7 @@ let AGENDA_GARDIENNES = [];
 let SELECTED_BOOKING = null;
 let SELECTED_BOOKING_ORIGIN = 'agenda';
 let CURRENT_TAB = 'agenda';
+let SELECTED_BILAN_PROFIL = 'adulte';
 let CLIENTE_RESULTS = [];
 let CURRENT_CLIENT = null;
 let CLIENT_DETAIL_ORIGIN = 'clientes';
@@ -728,10 +848,63 @@ function switchTab(tab) {
   CURRENT_TAB = tab;
   document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = (el.dataset.tab !== tab); });
   document.querySelectorAll('.tab-btn').forEach(el => { el.classList.toggle('active', el.dataset.tab === tab); });
-  ['manualCard', 'rdvCard', 'bilanCard', 'bilanViewCard', 'successCard', 'clientDetailCard'].forEach(id => {
+  ['manualCard', 'manualBilanCard', 'rdvCard', 'bilanCard', 'bilanViewCard', 'successCard', 'clientDetailCard'].forEach(id => {
     document.getElementById(id).hidden = true;
   });
   if (tab === 'historique' && HISTORIQUE_BOOKINGS.length === 0) loadHistorique(365);
+}
+
+function setProfilBilan(profil) {
+  SELECTED_BILAN_PROFIL = profil === 'adolescente' ? 'adolescente' : 'adulte';
+  document.querySelectorAll('#profilToggle .profil-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.profil === SELECTED_BILAN_PROFIL);
+  });
+}
+
+function resetProfilToggle() {
+  SELECTED_BILAN_PROFIL = 'adulte';
+  const radio = document.querySelector('#profilToggle input[value="adulte"]');
+  if (radio) radio.checked = true;
+  document.querySelectorAll('#profilToggle .profil-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.profil === 'adulte');
+  });
+}
+
+function openManualBilan() {
+  document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
+  document.getElementById('rdvCard').hidden = true;
+  document.getElementById('clientDetailCard').hidden = true;
+  document.getElementById('bilanCard').hidden = true;
+  document.getElementById('mbPrenom').value = '';
+  document.getElementById('mbNom').value = '';
+  document.getElementById('mbEmail').value = '';
+  document.getElementById('manualBilanError').hidden = true;
+  document.getElementById('manualBilanCard').hidden = false;
+}
+
+function closeManualBilan() {
+  document.getElementById('manualBilanCard').hidden = true;
+  switchTab(CURRENT_TAB);
+}
+
+function continueManualBilan() {
+  const errEl = document.getElementById('manualBilanError');
+  errEl.hidden = true;
+  const prenom = document.getElementById('mbPrenom').value.trim();
+  const nom = document.getElementById('mbNom').value.trim();
+  const email = document.getElementById('mbEmail').value.trim();
+  if (!prenom || !email) {
+    errEl.textContent = 'Prénom et email sont requis.';
+    errEl.hidden = false;
+    return;
+  }
+  SELECTED_BOOKING = { source: 'manuel', id: null, prenom, nom, email };
+  SELECTED_BOOKING_ORIGIN = CURRENT_TAB;
+  document.getElementById('clientName').textContent = `${prenom} ${nom || ''}`;
+  document.getElementById('clientMeta').textContent = `${email} · Bilan sans rendez-vous`;
+  resetProfilToggle();
+  document.getElementById('manualBilanCard').hidden = true;
+  document.getElementById('bilanCard').hidden = false;
 }
 
 function currentGardienneId() {
@@ -772,7 +945,12 @@ async function loadAgenda() {
     AGENDA_BOOKINGS = result.bookings || [];
     AGENDA_GARDIENNES = result.gardiennes || [];
     populateGardienneSelects();
-    renderAgendaList();
+    try {
+      const supa = await Sanctuarys.init();
+      const { data: hrs } = await supa.from('opening_hours').select('day_of_week, open_time, close_time, active');
+      GA_HORAIRES = hrs || [];
+    } catch (e) { GA_HORAIRES = []; }
+    renderAgendaVue();
   } catch (err) {
     errEl.textContent = 'Impossible de charger l\'agenda : ' + err.message;
     errEl.hidden = false;
@@ -804,6 +982,217 @@ document.getElementById('quiSuisJe').addEventListener('change', function () {
   try { sessionStorage.setItem('gardienne_qui', this.value); } catch (e) {}
   document.getElementById('gardienneSelect').value = this.value;
 });
+
+// ============ AGENDA VISUEL (vue semaine) ============
+let GA_HORAIRES = [];
+let GA_H_DEBUT = 8;
+let GA_H_FIN = 21;
+const GA_PX_HEURE = 42;
+const GA_JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const GA_COULEURS_GARDIENNE = ['#8E6C88', '#4F7C6A', '#B4553C', '#3F6B8C', '#8C6A4F'];
+let GA_VUE = 'semaine';
+let GA_LUNDI = gaLundiDe(new Date());
+
+function gaLundiDe(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  const jour = (x.getDay() + 6) % 7;
+  x.setDate(x.getDate() - jour);
+  return x;
+}
+
+function gaLibelleSemaine(lundi) {
+  const fin = new Date(lundi); fin.setDate(fin.getDate() + 6);
+  const memeMois = lundi.getMonth() === fin.getMonth();
+  const d1 = lundi.toLocaleDateString('fr-FR', memeMois ? { day: 'numeric' } : { day: 'numeric', month: 'long' });
+  const d2 = fin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  return d1 + ' au ' + d2;
+}
+
+function gaCouleur(b) {
+  if (b.status === 'pending_payment') return null;
+  if (b.status === 'completed' || b.status === 'no_show') return null;
+  return b.source === 'public' ? '#8C6A4F' : '#C8704D';
+}
+
+function gaClasse(b) {
+  if (b.status === 'pending_payment') return 'attente';
+  if (b.status === 'no_show' || b.status === 'cancelled' || b.status === 'refunded') return 'annulee';
+  if (b.status === 'completed') return 'terminee';
+  return '';
+}
+
+function gaCouleurGardienne(id) {
+  const i = AGENDA_GARDIENNES.findIndex(g => g.id === id);
+  return i < 0 ? null : GA_COULEURS_GARDIENNE[i % GA_COULEURS_GARDIENNE.length];
+}
+
+function gaNomGardienne(id) {
+  const g = AGENDA_GARDIENNES.find(x => x.id === id);
+  return g ? (g.prenom || '') : '';
+}
+
+function gaBornes() {
+  const actives = (GA_HORAIRES || []).filter(h => h.active !== false);
+  if (actives.length === 0) { GA_H_DEBUT = 8; GA_H_FIN = 21; return; }
+  let min = 24, max = 0;
+  actives.forEach(h => {
+    min = Math.min(min, parseInt(String(h.open_time).slice(0, 2), 10));
+    max = Math.max(max, Math.ceil(parseInt(String(h.close_time).slice(0, 2), 10) + (parseInt(String(h.close_time).slice(3, 5), 10) > 0 ? 1 : 0)));
+  });
+  GA_H_DEBUT = Math.max(0, min - 1);
+  GA_H_FIN = Math.min(24, max + 1);
+}
+
+function gaOuverture(jourDeLaSemaine) {
+  const h = (GA_HORAIRES || []).find(x => x.day_of_week === jourDeLaSemaine && x.active !== false);
+  if (!h) return null;
+  return {
+    debut: parseInt(String(h.open_time).slice(0, 2), 10) * 60 + parseInt(String(h.open_time).slice(3, 5), 10),
+    fin: parseInt(String(h.close_time).slice(0, 2), 10) * 60 + parseInt(String(h.close_time).slice(3, 5), 10)
+  };
+}
+
+function gaChevauche(b) {
+  const d1 = new Date(b.start_at).getTime();
+  const f1 = b.end_at ? new Date(b.end_at).getTime() : d1 + 3600000;
+  return AGENDA_BOOKINGS.some(o => {
+    if (o === b) return false;
+    const d2 = new Date(o.start_at).getTime();
+    const f2 = o.end_at ? new Date(o.end_at).getTime() : d2 + 3600000;
+    return d1 < f2 && d2 < f1;
+  });
+}
+
+function renderAgendaVue() {
+  document.getElementById('gaTitre').textContent = gaLibelleSemaine(GA_LUNDI);
+  document.getElementById('gaSemaine').style.display = GA_VUE === 'semaine' ? 'block' : 'none';
+  document.getElementById('gaListeBloc').style.display = GA_VUE === 'liste' ? 'block' : 'none';
+  document.getElementById('gaVueSemaine').classList.toggle('actif', GA_VUE === 'semaine');
+  document.getElementById('gaVueListe').classList.toggle('actif', GA_VUE === 'liste');
+  if (GA_VUE === 'semaine') renderAgendaSemaine();
+  else renderAgendaList();
+}
+
+function renderAgendaSemaine() {
+  gaBornes();
+  const hote = document.getElementById('gaSemaine');
+  const fin = new Date(GA_LUNDI); fin.setDate(fin.getDate() + 7);
+  const dedans = AGENDA_BOOKINGS.filter(b => {
+    const d = new Date(b.start_at);
+    return d >= GA_LUNDI && d < fin;
+  });
+
+  const aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
+  let entetes = '<div class="ga-entetes"><div class="ga-entete"></div>';
+  for (let k = 0; k < 7; k++) {
+    const j = new Date(GA_LUNDI); j.setDate(j.getDate() + k);
+    const cest = j.getTime() === aujourdhui.getTime();
+    entetes += '<div class="ga-entete' + (cest ? ' aujourdhui' : '') + '">' +
+      GA_JOURS[k].slice(0, 3) + '<span class="num">' + j.getDate() + '</span></div>';
+  }
+  entetes += '</div>';
+
+  let heures = '<div class="ga-heures">';
+  for (let h = GA_H_DEBUT; h < GA_H_FIN; h++) heures += '<div class="ga-heure">' + h + 'h</div>';
+  heures += '</div>';
+
+  let colonnes = '';
+  for (let k = 0; k < 7; k++) {
+    const j = new Date(GA_LUNDI); j.setDate(j.getDate() + k);
+    const finJ = new Date(j); finJ.setDate(finJ.getDate() + 1);
+    let lignes = '';
+    for (let h = GA_H_DEBUT; h < GA_H_FIN; h++) lignes += '<div class="ga-ligne"></div>';
+
+    const ouv = gaOuverture(j.getDay());
+    if (ouv) {
+      const hautOuv = Math.max(0, (ouv.debut - GA_H_DEBUT * 60) / 60 * GA_PX_HEURE);
+      const hauteurOuv = Math.max(0, (ouv.fin - ouv.debut) / 60 * GA_PX_HEURE);
+      lignes += '<div class="ga-ouvert" style="top:' + hautOuv + 'px;height:' + hauteurOuv + 'px;"></div>';
+    }
+
+    const duJour = dedans.filter(b => {
+      const d = new Date(b.start_at);
+      return d >= j && d < finJ;
+    });
+
+    const evts = duJour.map(b => {
+      const d = new Date(b.start_at);
+      const f = b.end_at ? new Date(b.end_at) : new Date(d.getTime() + 3600000);
+      return { b: b, d: d, f: f };
+    }).sort((x, y) => x.d - y.d);
+
+    const finsDeVoie = [];
+    evts.forEach(e => {
+      let voie = finsDeVoie.findIndex(fv => fv <= e.d.getTime());
+      if (voie < 0) { finsDeVoie.push(e.f.getTime()); voie = finsDeVoie.length - 1; }
+      else finsDeVoie[voie] = e.f.getTime();
+      e.voie = voie;
+    });
+    const voies = Math.max(1, finsDeVoie.length);
+
+    let blocs = '';
+    evts.forEach(e => {
+      const b = e.b, d = e.d, f = e.f;
+      const debutMin = d.getHours() * 60 + d.getMinutes() - GA_H_DEBUT * 60;
+      const duree = Math.max(30, (f - d) / 60000);
+      const haut = Math.max(0, debutMin / 60 * GA_PX_HEURE);
+      const hauteur = Math.max(24, duree / 60 * GA_PX_HEURE - 2);
+      const largeur = 100 / voies;
+      const couleur = gaCouleur(b);
+      const classe = gaClasse(b);
+      const badgeBilan = b.a_deja_un_bilan ? ' ✦' : '';
+      blocs += '<div class="ga-bloc ' + classe + '"' +
+        ' data-source="' + b.source + '" data-id="' + b.id + '"' +
+        ' style="top:' + haut + 'px;height:' + hauteur + 'px;' +
+        'left:calc(' + (e.voie * largeur) + '% + 3px);width:calc(' + largeur + '% - 6px);' +
+        (couleur ? 'background:' + couleur + ';' : '') +
+        (gaCouleurGardienne(b.gardienne_id) ? 'border-left-color:' + gaCouleurGardienne(b.gardienne_id) + ';border-left-width:5px;' : (couleur ? 'border-left-color:rgba(0,0,0,.25);' : '')) + '">' +
+        '<div class="qui">' + escapeHtml(b.prenom || '') + ' ' + escapeHtml((b.nom || '').slice(0, 10)) + badgeBilan + '</div>' +
+        '<div class="quoi">' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
+        (b.gardienne_id ? ' · ' + escapeHtml(gaNomGardienne(b.gardienne_id)) : '') +
+        '</div></div>';
+    });
+
+    colonnes += '<div class="ga-colonne">' + lignes + blocs + '</div>';
+  }
+
+  hote.innerHTML = '<div class="ga-grille">' + entetes + '<div class="ga-corps">' + heures + colonnes + '</div></div>' +
+    (dedans.length === 0 ? '<div class="ga-vide">Aucun rendez-vous cette semaine.</div>' : '') +
+    '<div class="ga-legende">' +
+    '<span><i class="ga-pastille" style="background:#C8704D"></i>Fondatrice</span>' +
+    '<span><i class="ga-pastille" style="background:#8C6A4F"></i>Public</span>' +
+    '<span><i class="ga-pastille" style="background:repeating-linear-gradient(45deg,#C99A3F,#C99A3F 4px,#D8AE5C 4px,#D8AE5C 8px)"></i>Paiement en attente</span>' +
+    '<span><i class="ga-pastille" style="background:#CFC3B4"></i>Terminé / absence</span>' +
+    '<span>✦ = bilan déjà envoyé</span>' +
+    '</div>';
+
+  hote.querySelectorAll('.ga-bloc').forEach(el => {
+    el.addEventListener('click', () => {
+      selectBookingByKey(el.dataset.source, el.dataset.id, 'agenda');
+    });
+  });
+}
+
+document.getElementById('gaPrec').addEventListener('click', () => {
+  GA_LUNDI.setDate(GA_LUNDI.getDate() - 7);
+  GA_LUNDI = new Date(GA_LUNDI);
+  renderAgendaSemaine();
+  document.getElementById('gaTitre').textContent = gaLibelleSemaine(GA_LUNDI);
+});
+document.getElementById('gaSuiv').addEventListener('click', () => {
+  GA_LUNDI.setDate(GA_LUNDI.getDate() + 7);
+  GA_LUNDI = new Date(GA_LUNDI);
+  renderAgendaSemaine();
+  document.getElementById('gaTitre').textContent = gaLibelleSemaine(GA_LUNDI);
+});
+document.getElementById('gaAuj').addEventListener('click', () => {
+  GA_LUNDI = gaLundiDe(new Date());
+  renderAgendaSemaine();
+  document.getElementById('gaTitre').textContent = gaLibelleSemaine(GA_LUNDI);
+});
+document.getElementById('gaVueSemaine').addEventListener('click', () => { GA_VUE = 'semaine'; renderAgendaVue(); });
+document.getElementById('gaVueListe').addEventListener('click', () => { GA_VUE = 'liste'; renderAgendaVue(); });
 
 function renderAgendaList() {
   const filter = (document.getElementById('agendaFilter').value || '').trim().toLowerCase();
@@ -1014,6 +1403,7 @@ function goToBilanFromRdv() {
   document.getElementById('clientName').textContent = `${b.prenom} ${b.nom || ''}`;
   const d = new Date(b.start_at);
   document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${b.email}`;
+  resetProfilToggle();
   document.getElementById('rdvCard').hidden = true;
   document.getElementById('bilanCard').hidden = false;
 }
@@ -1023,6 +1413,10 @@ function openBilanView(bilan) {
   document.getElementById('clientDetailCard').hidden = true;
   document.getElementById('bvName').textContent = `${bilan.client_prenom || ''} ${bilan.client_nom || ''}`;
   document.getElementById('bvMeta').textContent = `${bilan.client_email || ''} · ${new Date(bilan.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  let badgesHtml = '';
+  if (bilan.profil === 'adolescente') badgesHtml += '<span class="badge badge-profil">✦ Adolescente</span>';
+  if (bilan.source_type === 'manuel') badgesHtml += '<span class="badge badge-manuel">Sans rendez-vous</span>';
+  document.getElementById('bvBadges').innerHTML = badgesHtml;
   document.getElementById('bvUterus').textContent = (bilan.etat_uterus_pct != null ? bilan.etat_uterus_pct : '—') + '%';
   document.getElementById('bvReceptivite').textContent = (bilan.etat_receptivite_pct != null ? bilan.etat_receptivite_pct : '—') + '%';
   document.getElementById('bvElements').textContent = Array.isArray(bilan.elements_choisis) ? bilan.elements_choisis.join(', ') : (bilan.elements_choisis || '');
@@ -1056,12 +1450,14 @@ function resetToAgenda() {
   document.getElementById('bilanCard').hidden = true;
   document.getElementById('successCard').hidden = true;
   document.getElementById('manualCard').hidden = true;
+  document.getElementById('manualBilanCard').hidden = true;
   document.getElementById('rdvCard').hidden = true;
   document.getElementById('uterusSlider').value = 50;
   document.getElementById('receptiviteSlider').value = 50;
   document.getElementById('uterusVal').textContent = '50%';
   document.getElementById('receptiviteVal').textContent = '50%';
   document.getElementById('notesGardienne').value = '';
+  resetProfilToggle();
   document.querySelectorAll('.grimoire-item.active').forEach(el => {
     el.classList.remove('active');
     el.querySelector('input').checked = false;
@@ -1400,10 +1796,15 @@ async function submitBilan() {
       etat_receptivite_pct: parseInt(document.getElementById('receptiviteSlider').value, 10),
       elements_choisis: chosen,
       notes_gardienne: document.getElementById('notesGardienne').value.trim() || null,
-      gardienne_id: document.getElementById('gardienneSelect').value || null
+      gardienne_id: document.getElementById('gardienneSelect').value || null,
+      profil: SELECTED_BILAN_PROFIL
     };
     if (SELECTED_BOOKING.source === 'club') payload.session_booking_id = SELECTED_BOOKING.id;
-    else payload.appointment_id = SELECTED_BOOKING.id;
+    else if (SELECTED_BOOKING.source === 'manuel') {
+      payload.client_prenom = SELECTED_BOOKING.prenom;
+      payload.client_nom = SELECTED_BOOKING.nom || null;
+      payload.client_email = SELECTED_BOOKING.email;
+    } else payload.appointment_id = SELECTED_BOOKING.id;
 
     const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/create-bilan`, {
       method: 'POST',
@@ -1421,9 +1822,12 @@ async function submitBilan() {
 
     document.getElementById('bilanCard').hidden = true;
     document.getElementById('successCard').hidden = false;
+    let successSuffix;
+    if (result.account_created) successSuffix = `, avec un lien pour créer son espace membre.`;
+    else if (SELECTED_BOOKING.source === 'manuel') successSuffix = ` et retrouvable dans la bibliothèque de bilans.`;
+    else successSuffix = ` et apparaît dans son espace membre.`;
     document.getElementById('successText').textContent =
-      `Le bilan de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` +
-      (result.account_created ? `, avec un lien pour créer son espace membre.` : ` et apparaît dans son espace membre.`);
+      `Le bilan de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` + successSuffix;
   } catch (err) {
     errEl.textContent = 'Impossible d\'envoyer le bilan : ' + err.message;
     errEl.hidden = false;

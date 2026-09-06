@@ -1288,6 +1288,11 @@
       Agenda
       <span class="count" id="agendaCount">0</span>
     </a>
+    <a class="nav-item" data-panel="bilans">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 C 8 8, 8 14, 12 21 C 16 14, 16 8, 12 3 Z"/><path d="M9 11 L 15 11"/></svg>
+      Bibliothèque de bilans
+      <span class="count" id="bilansCount">0</span>
+    </a>
 
     <div class="nav-section-label">L'école</div>
     <a class="nav-item" data-panel="eleves">
@@ -2141,6 +2146,93 @@
       </div>
     </div>
 
+    <!-- BIBLIOTHEQUE DE BILANS -->
+    <div class="panel" id="panel-bilans">
+      <div class="panel-header">
+        <div class="breadcrumb">04 / Yoni Social Club · Bilans</div>
+        <div>
+          <h1 class="page-title">Bibliothèque de <em>bilans.</em></h1>
+          <p class="page-subtitle">Tous les bilans radiesthésiques rédigés par les gardiennes, avec ou sans rendez-vous, profil adulte ou adolescente.</p>
+        </div>
+        <div class="panel-meta">
+          <div class="meta-row"><strong>Total</strong><span id="bilansTotalCount">0</span></div>
+          <div class="meta-row"><strong>Adolescentes</strong><span id="bilansAdoCount">0</span></div>
+        </div>
+      </div>
+
+      <div class="eleves-toolbar">
+        <input type="text" class="search-box" placeholder="Rechercher par prénom, nom ou email..." id="searchBilan" oninput="renderBilansPanel()">
+        <select id="bilansProfilFilter" style="padding: 12px 16px; background: var(--blanc-deep); border: 1px solid var(--line); font-family: 'Inter', sans-serif; font-size: 13px; color: var(--marron-deep); cursor: pointer;" onchange="renderBilansPanel()">
+          <option value="all">Tous les profils</option>
+          <option value="adulte">Adulte</option>
+          <option value="adolescente">Adolescente</option>
+        </select>
+        <select id="bilansSourceFilter" style="padding: 12px 16px; background: var(--blanc-deep); border: 1px solid var(--line); font-family: 'Inter', sans-serif; font-size: 13px; color: var(--marron-deep); cursor: pointer;" onchange="renderBilansPanel()">
+          <option value="all">Toutes origines</option>
+          <option value="rdv">Avec rendez-vous</option>
+          <option value="manuel">Sans rendez-vous</option>
+        </select>
+      </div>
+
+      <div class="eleves-list" id="bilansList">
+        <div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 18px;">Chargement des bilans...</div>
+      </div>
+    </div>
+
+    <!-- MODAL Bilan detail -->
+    <div class="modal-overlay" id="modalBilan">
+      <div class="modal" style="max-width: 680px; padding: 50px 56px;">
+        <button class="modal-close" onclick="closeBilanModal()">×</button>
+        <div class="entry-modal-meta" id="bilanModalMeta">Bilan radiesthésique</div>
+        <h2 class="entry-modal-title"><em id="bilanModalName">Cliente</em></h2>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;" id="bilanModalBadges"></div>
+
+        <div style="display: flex; gap: 32px; margin-top: 26px;">
+          <div>
+            <div style="font-family: 'Italiana', serif; font-size: 30px; color: var(--terracotta-deep);" id="bilanModalUterus"></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--marron-soft); margin-top: 4px;">État de l'utérus</div>
+          </div>
+          <div>
+            <div style="font-family: 'Italiana', serif; font-size: 30px; color: var(--terracotta-deep);" id="bilanModalReceptivite"></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--marron-soft); margin-top: 4px;">État de réceptivité</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 26px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Alliés choisis</div>
+          <p id="bilanModalElements" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);"></p>
+        </div>
+        <div style="margin-top: 22px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Ce que révèlent ces chiffres</div>
+          <p id="bilanModalAnalyse" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
+        </div>
+        <div style="margin-top: 22px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">La vibration des alliés</div>
+          <p id="bilanModalVibration" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
+        </div>
+        <div style="margin-top: 22px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Bienfaits</div>
+          <p id="bilanModalBienfaits" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
+        </div>
+        <div style="margin-top: 22px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Ce que vise cette séance</div>
+          <p id="bilanModalResume" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
+        </div>
+        <div style="margin-top: 22px;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep);">Avis médical</div>
+          <p id="bilanModalAvis" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-soft); line-height: 1.7; margin-top: 6px;"></p>
+        </div>
+        <div id="bilanModalNotesBlock" style="margin-top: 22px; display: none;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Observation de la gardienne</div>
+          <p id="bilanModalNotes" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="bilanModalMailBtn" type="button" class="btn-outline" style="padding: 12px 22px; font-size: 10px;">Écrire un email ✦</button>
+        </div>
+      </div>
+    </div>
+
     <!-- FORMATRICES -->
     <div class="panel" id="panel-formatrices">
       <div class="panel-header">
@@ -2706,6 +2798,7 @@
     if (id === 'soins') loadSoinsPanel();
     if (id === 'horaires') loadHorairesPanel();
     if (id === 'agenda') loadAgendaPanel();
+    if (id === 'bilans') loadBilansPanel();
     if (id === 'ishtar') focusIshtar();
     if (id === 'inbox') loadInbox();
   }
@@ -3440,6 +3533,136 @@
     CURRENT_FONDATRICE = null;
   }
   window.closeFondatriceModal = closeFondatriceModal;
+
+  // ============ BIBLIOTHEQUE DE BILANS ============
+  let ALL_BILANS = [];
+  let CURRENT_BILAN = null;
+
+  async function loadBilansPanel() {
+    const supa = await Sanctuarys.init();
+    const { data: bilans } = await supa
+      .from('bilans')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(500);
+    ALL_BILANS = bilans || [];
+    document.getElementById('bilansCount').textContent = ALL_BILANS.length;
+    renderBilansPanel();
+  }
+  window.loadBilansPanel = loadBilansPanel;
+
+  function renderBilansPanel() {
+    const list = document.getElementById('bilansList');
+    const search = (document.getElementById('searchBilan').value || '').toLowerCase().trim();
+    const profilFilter = document.getElementById('bilansProfilFilter').value;
+    const sourceFilter = document.getElementById('bilansSourceFilter').value;
+    list.innerHTML = '';
+
+    document.getElementById('bilansTotalCount').textContent = ALL_BILANS.length;
+    document.getElementById('bilansAdoCount').textContent = ALL_BILANS.filter(b => b.profil === 'adolescente').length;
+
+    const filtered = ALL_BILANS.filter(b => {
+      if (profilFilter !== 'all' && (b.profil || 'adulte') !== profilFilter) return false;
+      if (sourceFilter !== 'all' && (b.source_type || 'rdv') !== sourceFilter) return false;
+      if (search) {
+        const text = ((b.client_prenom || '') + ' ' + (b.client_nom || '') + ' ' + (b.client_email || '')).toLowerCase();
+        if (!text.includes(search)) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--marron-soft); font-style: italic; font-family: \'Cormorant Garamond\', serif; font-size: 18px;">Aucun bilan à afficher pour ce filtre. Les bilans rédigés par les gardiennes (avec ou sans rendez-vous) apparaîtront ici.</div>';
+      return;
+    }
+
+    filtered.forEach(b => {
+      const initial = ((b.client_prenom || 'B')[0] || 'B').toUpperCase();
+      const dateStr = Sanctuarys.formatRelative ? Sanctuarys.formatRelative(b.created_at) : new Date(b.created_at).toLocaleString('fr-FR');
+      const isAdo = b.profil === 'adolescente';
+      const isManuel = (b.source_type || 'rdv') === 'manuel';
+      const profilBadge = isAdo
+        ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(168, 85, 168, 0.14); border: 1px solid #a855a8; color: #6c2e6c; font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Adolescente</span>'
+        : '';
+      const manuelBadge = isManuel
+        ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(76, 140, 168, 0.14); border: 1px solid #4c8ca8; color: #2e5c6c; font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Sans rendez-vous</span>'
+        : '';
+      const preview = b.resume_final
+        ? '"' + b.resume_final.substring(0, 140) + (b.resume_final.length > 140 ? '..."' : '"')
+        : 'Pas de résumé';
+
+      const row = document.createElement('div');
+      row.className = 'eleve-row';
+      row.style.cursor = 'pointer';
+      row.innerHTML = `
+        <div class="eleve-name">
+          <div class="eleve-avatar">${initial}</div>
+          <div>
+            <div class="name">${escapeHTML(b.client_prenom || '')} ${escapeHTML(b.client_nom || '')}${profilBadge}${manuelBadge}</div>
+            <div class="email">${escapeHTML(b.client_email || '')}</div>
+          </div>
+        </div>
+        <div class="eleve-progress">
+          <p style="color: var(--marron); font-size: 13px; line-height: 1.7; font-style: italic;">${escapeHTML(preview)}</p>
+        </div>
+        <div class="eleve-module">${dateStr}</div>
+        <div class="eleve-status completed">Envoyé</div>
+        <div class="eleve-actions">
+          <button class="icon-btn" title="Voir">→</button>
+        </div>
+      `;
+      row.addEventListener('click', () => openBilanModal(b));
+      list.appendChild(row);
+    });
+  }
+  window.renderBilansPanel = renderBilansPanel;
+
+  function openBilanModal(b) {
+    CURRENT_BILAN = b;
+    document.getElementById('bilanModalName').textContent = (b.client_prenom || 'Cliente') + (b.client_nom ? ' ' + b.client_nom : '');
+    document.getElementById('bilanModalMeta').textContent = (b.client_email || '') + ' · ' + new Date(b.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    let badges = '';
+    if (b.profil === 'adolescente') badges += '<span style="padding: 3px 9px; background: rgba(168, 85, 168, 0.14); border: 1px solid #a855a8; color: #6c2e6c; font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;">Adolescente</span>';
+    if ((b.source_type || 'rdv') === 'manuel') badges += '<span style="padding: 3px 9px; background: rgba(76, 140, 168, 0.14); border: 1px solid #4c8ca8; color: #2e5c6c; font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;">Sans rendez-vous</span>';
+    document.getElementById('bilanModalBadges').innerHTML = badges;
+    document.getElementById('bilanModalUterus').textContent = (b.etat_uterus_pct != null ? b.etat_uterus_pct : '—') + '%';
+    document.getElementById('bilanModalReceptivite').textContent = (b.etat_receptivite_pct != null ? b.etat_receptivite_pct : '—') + '%';
+    document.getElementById('bilanModalElements').textContent = Array.isArray(b.elements_choisis) ? b.elements_choisis.join(', ') : (b.elements_choisis || '');
+    document.getElementById('bilanModalAnalyse').textContent = b.analyse_chiffres || '';
+    document.getElementById('bilanModalVibration').textContent = b.vibration_energetique || '';
+    document.getElementById('bilanModalBienfaits').textContent = b.bienfaits_physiologiques || '';
+    document.getElementById('bilanModalResume').textContent = b.resume_final || '';
+    document.getElementById('bilanModalAvis').textContent = b.avis_medical || '';
+    const notesBlock = document.getElementById('bilanModalNotesBlock');
+    if (b.notes_gardienne) {
+      notesBlock.style.display = 'block';
+      document.getElementById('bilanModalNotes').textContent = b.notes_gardienne;
+    } else {
+      notesBlock.style.display = 'none';
+    }
+    const mailBtn = document.getElementById('bilanModalMailBtn');
+    mailBtn.onclick = () => {
+      closeBilanModal();
+      openComposeMail({
+        to: b.client_email || '',
+        subject: 'Ton bilan Sanctuarys',
+        recipientName: b.client_prenom || '',
+        context: 'bilan'
+      });
+    };
+    document.getElementById('modalBilan').classList.add('show');
+  }
+  window.openBilanModal = openBilanModal;
+
+  function closeBilanModal() {
+    document.getElementById('modalBilan').classList.remove('show');
+    CURRENT_BILAN = null;
+  }
+  window.closeBilanModal = closeBilanModal;
+
+  document.getElementById('modalBilan').addEventListener('click', e => {
+    if (e.target.id === 'modalBilan') closeBilanModal();
+  });
 
   // ============ QUESTIONNAIRE FONDATRICE (Premier Seuil + Points) ============
   const POINT_DOMAINS_LABELS = {
