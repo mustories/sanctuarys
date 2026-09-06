@@ -374,6 +374,15 @@
     .ga-entetes, .ga-corps { grid-template-columns:34px repeat(7,minmax(70px,1fr)); }
   }
 
+  .field-hint {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--marron-soft);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
   .profil-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
   .profil-option {
     display: flex;
@@ -756,6 +765,12 @@
       </div>
     </div>
 
+    <div class="field" id="mamanEmailField" hidden>
+      <label for="mamanEmail">Email de la maman (optionnel, si elle est déjà cliente)</label>
+      <input type="email" id="mamanEmail" placeholder="email@maman.fr">
+      <p class="field-hint">Si renseigné, son compte sera relié à celui de l'adolescente pour la contacter facilement. L'espace de l'adolescente reste privé : la maman n'y a pas accès et ne voit pas ce bilan.</p>
+    </div>
+
     <div class="slider-block">
       <div class="slider-head">
         <span class="lbl">État de l'utérus</span>
@@ -859,6 +874,8 @@ function setProfilBilan(profil) {
   document.querySelectorAll('#profilToggle .profil-option').forEach(el => {
     el.classList.toggle('active', el.dataset.profil === SELECTED_BILAN_PROFIL);
   });
+  document.getElementById('mamanEmailField').hidden = SELECTED_BILAN_PROFIL !== 'adolescente';
+  if (SELECTED_BILAN_PROFIL !== 'adolescente') document.getElementById('mamanEmail').value = '';
 }
 
 function resetProfilToggle() {
@@ -868,6 +885,8 @@ function resetProfilToggle() {
   document.querySelectorAll('#profilToggle .profil-option').forEach(el => {
     el.classList.toggle('active', el.dataset.profil === 'adulte');
   });
+  document.getElementById('mamanEmailField').hidden = true;
+  document.getElementById('mamanEmail').value = '';
 }
 
 function openManualBilan() {
@@ -1799,6 +1818,9 @@ async function submitBilan() {
       gardienne_id: document.getElementById('gardienneSelect').value || null,
       profil: SELECTED_BILAN_PROFIL
     };
+    if (SELECTED_BILAN_PROFIL === 'adolescente') {
+      payload.client_email_maman = document.getElementById('mamanEmail').value.trim() || null;
+    }
     if (SELECTED_BOOKING.source === 'club') payload.session_booking_id = SELECTED_BOOKING.id;
     else if (SELECTED_BOOKING.source === 'manuel') {
       payload.client_prenom = SELECTED_BOOKING.prenom;

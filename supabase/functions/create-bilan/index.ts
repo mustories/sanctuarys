@@ -107,7 +107,12 @@ Deno.serve(async (req) => {
       // il n'y a ni rendez-vous ni seance a relier.
       client_prenom: manualPrenom,
       client_nom: manualNom,
-      client_email: manualEmail
+      client_email: manualEmail,
+      // Pour profil === 'adolescente' uniquement (optionnel) : email de la maman,
+      // si elle est deja cliente Sanctuarys, pour relier les deux comptes.
+      // Ce lien ne donne AUCUN acces de la maman au bilan ou a l'espace de sa fille :
+      // l'espace de l'adolescente reste strictement le sien.
+      client_email_maman: mamanEmail
     } = body
 
     if (mot_de_passe !== gardiennePassword) {
@@ -188,8 +193,12 @@ Deno.serve(async (req) => {
     // ===== Auto-creation de l'espace membre pour les clientes qui n'en ont pas encore =====
     // (typiquement les rendez vous pris via WhatsApp, sans paiement Stripe et donc
     // sans passage par le webhook qui cree habituellement le compte)
+    // Une adolescente doit toujours avoir son propre espace, meme pour un bilan
+    // sans rendez-vous : c'est le seul cas ou la source 'manuel' declenche aussi
+    // la creation de compte.
     let clientAccessLink: string | null = null
-    if (source === 'public') {
+    const doitAvoirUnEspace = source === 'public' || (profilFinal === 'adolescente' && source === 'manuel')
+    if (doitAvoirUnEspace) {
       try {
         if (clientProfileId) {
           const { data: magicData } = await admin.auth.admin.generateLink({
@@ -248,6 +257,32 @@ Deno.serve(async (req) => {
       } catch (accountErr) {
         // Ne bloque jamais la creation du bilan si la creation de compte echoue
         console.error('create-bilan auto-account error:', accountErr)
+      }
+    }
+
+    // ===== Lien avec le compte de la maman (profil adolescente uniquement) =====
+    // On marque le profil comme mineur, et si une gardienne a renseigne l'email
+    // de la maman et que celle ci est deja cliente Sanctuarys, on relie les deux
+    // comptes (parent_profile_id). Ce lien sert uniquement de reference pour
+    // l'equipe (par exemple pour la contacter) : il ne donne a la maman aucun
+    // acces au bilan ni a l'espace de sa fille, qui reste strictement le sien.
+    if (profilFinal === 'adolescente' && clientProfileId) {
+      try {
+        const updateAdo: Record<string, unknown> = { est_mineure: true }
+        const mamanEmailNorm = (mamanEmail || '').trim().toLowerCase()
+        if (mamanEmailNorm) {
+          const { data: mamanProfile } = await admin
+            .from('profiles')
+            .select('id')
+            .eq('email', mamanEmailNorm)
+            .maybeSingle()
+          if (mamanProfile) {
+            updateAdo.parent_profile_id = mamanProfile.id
+          }
+        }
+        await admin.from('profiles').update(updateAdo).eq('id', clientProfileId)
+      } catch (parentLinkErr) {
+        console.error('create-bilan parent link error:', parentLinkErr)
       }
     }
 
