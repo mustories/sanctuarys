@@ -1,6 +1,6 @@
 // =====================================================
 // SANCTUARYS · Edge Function · rdv-create-checkout
-// Cree une session Stripe pour un rendez-vous public (66€)
+// Cree une session Stripe pour un rendez-vous public (soin au choix)
 // Genere l'appointment en 'pending_payment' puis passe a 'confirmed' via webhook
 // =====================================================
 
@@ -10,6 +10,34 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, content-type, apikey'
+}
+
+// Catalogue des soins reservables sur reserver.html. Le prix et la duree
+// viennent toujours de ce catalogue cote serveur, jamais de ce qu'envoie
+// le navigateur, pour eviter qu'un prix soit falsifie depuis le client.
+type ServiceDef = { label: string; duration: number; price: number; description: string; apptType: string | null }
+const SERVICES: Record<string, ServiceDef> = {
+  vsteam: {
+    label: 'Bain Vapeur Vaginal',
+    duration: 60,
+    price: 66,
+    description: "Lecture radiesthesique de l'uterus + Bain Vapeur Vaginal",
+    apptType: null
+  },
+  venusian: {
+    label: 'Venusian Body',
+    duration: 60,
+    price: 66,
+    description: 'Detox au sauna infrarouge',
+    apptType: 'venusian'
+  },
+  venusian_gommage: {
+    label: 'Venusian Body + gommage',
+    duration: 80,
+    price: 88,
+    description: 'Detox au sauna infrarouge avec gommage',
+    apptType: 'venusian_gommage'
+  }
 }
 
 function json(body: unknown, status = 200) {
@@ -37,12 +65,15 @@ Deno.serve(async (req) => {
     const {
       sanctuary_id, start_at,
       prenom, nom, email, phone, ville,
-      notes, allaitement
+      notes, allaitement, service_key
     } = body
 
     if (!sanctuary_id || !start_at || !prenom || !nom || !email || !phone) {
       return json({ error: 'Champs obligatoires manquants : sanctuary, creneau, prenom, nom, email, telephone' }, 400)
     }
+
+    const svcKey = typeof service_key === 'string' && SERVICES[service_key] ? service_key : 'vsteam'
+    const service = SERVICES[svcKey]
 
     // Sanctuary info (capacite + metadata)
     const { data: sanctuary } = await admin
@@ -55,7 +86,7 @@ Deno.serve(async (req) => {
 
     // Verifie que le creneau a encore de la place (capacite = nombre de sieges du lieu)
     const startDate = new Date(start_at)
-    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
+    const endDate = new Date(startDate.getTime() + service.duration * 60 * 1000)
 
     const { data: conflicting } = await admin
       .from('appointments')
@@ -90,8 +121,9 @@ Deno.serve(async (req) => {
         client_notes: notes || null,
         is_allaitement: allaitement === true || allaitement === 'oui',
         start_at,
-        duration_minutes: 60,
-        price_total_eur: 66,
+        duration_minutes: service.duration,
+        price_total_eur: service.price,
+        type: service.apptType,
         status: 'pending_payment'
       })
       .select()
@@ -108,19 +140,21 @@ Deno.serve(async (req) => {
       hour: '2-digit', minute: '2-digit'
     })
 
-    // Stripe Checkout Session (prix inline 66€)
+    // Stripe Checkout Session (prix du catalogue selon le soin choisi)
     const stripeParams = new URLSearchParams()
     stripeParams.append('mode', 'payment')
     stripeParams.append('line_items[0][price_data][currency]', 'eur')
-    stripeParams.append('line_items[0][price_data][unit_amount]', '6600')
-    stripeParams.append('line_items[0][price_data][product_data][name]', `Bain Vapeur Vaginal - ${sanctuary?.nom || 'Sanctuarys'}`)
-    stripeParams.append('line_items[0][price_data][product_data][description]', `Lecture radiesthesique de l'uterus + Bain Vapeur Vaginal (60 min) - ${startLabel}`)
+    stripeParams.append('line_items[0][price_data][unit_amount]', String(service.price * 100))
+    stripeParams.append('line_items[0][price_data][product_data][name]', `${service.label} - ${sanctuary?.nom || 'Sanctuarys'}`)
+    stripeParams.append('line_items[0][price_data][product_data][description]', `${service.description} (${service.duration} min) - ${startLabel}`)
     stripeParams.append('line_items[0][quantity]', '1')
     stripeParams.append('customer_email', email.toLowerCase())
     stripeParams.append('success_url', `https://sanctuarys.me/paiement-confirme?session_id={CHECKOUT_SESSION_ID}&type=rdv`)
     stripeParams.append('cancel_url', `https://sanctuarys.me/reserver`)
     stripeParams.append('metadata[appointment_id]', appt.id)
     stripeParams.append('metadata[type]', 'rdv')
+    stripeParams.append('metadata[service_key]', svcKey)
+    stripeParams.append('metadata[service_label]', service.label)
     stripeParams.append('metadata[sanctuary]', sanctuary?.nom || '')
     stripeParams.append('metadata[start_at]', start_at)
     stripeParams.append('metadata[prenom]', prenom)

@@ -275,6 +275,20 @@ Deno.serve(async (req) => {
           (appt as any).sanctuary?.ville
         ].filter(Boolean).join(', ')
 
+        // Le libelle du soin depend du type stocke sur l'appointment
+        // (null = Bain Vapeur Vaginal, historique par defaut)
+        const apptType = (appt as any).type || null
+        const serviceLabel = apptType === 'venusian' ? 'Venusian Body'
+          : apptType === 'venusian_gommage' ? 'Venusian Body + gommage'
+          : 'Bain Vapeur Vaginal'
+        const serviceDesc = apptType === 'venusian'
+          ? 'Détox au sauna infrarouge, dans une cabine dédiée.'
+          : apptType === 'venusian_gommage'
+          ? 'Détox au sauna infrarouge avec gommage, dans une cabine dédiée.'
+          : "Lecture radiesthésique de ton utérus + Bain Vapeur Vaginal, avec composition de plantes personnelle au Bar à plantes."
+        const durationLabel = `${(appt as any).duration_minutes || 60} minutes`
+        const priceLabel = `${(appt as any).price_total_eur != null ? (appt as any).price_total_eur : 66}€`
+
         const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 body{background:#FAF5EC;font-family:Georgia,serif;color:#2A1810;margin:0;padding:40px 20px}
 .c{max-width:580px;margin:0 auto;background:#FAF5EC;padding:48px;border:1px solid rgba(106,68,35,.18)}
@@ -290,16 +304,18 @@ p{font-size:16px;line-height:1.85;color:#4A3020;margin:0 0 16px}
 <p class="meta">✦ Sanctuarys · RDV confirmé</p>
 <h1>Ton rendez-vous<br><em>est confirmé.</em></h1>
 <p>Chère ${prenom || appt.client_prenom},</p>
-<p>Ton paiement de 66€ a bien été reçu. Nous avons hâte de t'accueillir.</p>
+<p>Ton paiement de ${priceLabel} a bien été reçu. Nous avons hâte de t'accueillir.</p>
 <div class="box">
   <div class="k">✦ Quand</div>
   <div class="v">${startLabel}</div>
   <div class="k">✦ Où</div>
   <div class="v">${sanctuaryName}<br><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#6B4423">${sanctuaryAddr || ''}</span></div>
+  <div class="k">✦ Soin</div>
+  <div class="v">${serviceLabel}</div>
   <div class="k">✦ Durée</div>
-  <div class="v">60 minutes</div>
+  <div class="v">${durationLabel}</div>
   <div class="k">✦ Ce qui est prévu</div>
-  <div class="v" style="font-size:16px;font-family:Georgia,serif;font-style:normal">Lecture radiesthésique de ton utérus + Bain Vapeur Vaginal, avec composition de plantes personnelle au Bar à plantes.</div>
+  <div class="v" style="font-size:16px;font-family:Georgia,serif;font-style:normal">${serviceDesc}</div>
 </div>
 <p><strong>Prépare-toi</strong> : arrive 5 minutes avant l'heure. Prévois un vêtement ample et confortable. Nous fournissons le linge nécessaire pour le soin.</p>
 <p>Un rappel te sera envoyé 24h avant. Si un empêchement survient, préviens-nous par email au moins 48h à l'avance.</p>

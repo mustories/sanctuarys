@@ -7,7 +7,7 @@
 <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <meta name="theme-color" content="#C8704D">
-<meta name="description" content="Prendre rendez-vous dans une Sanctuarys. Lecture radiesthésique de l'utérus et Bain Vapeur Vaginal. Créneaux d'1h à 66€.">
+<meta name="description" content="Prendre rendez-vous dans une Sanctuarys. Bain Vapeur Vaginal ou Venusian Body. Créneaux à partir de 66€.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -259,7 +259,7 @@
   <div class="header">
     <div class="meta">✦ Réserver mon soin</div>
     <h1>Ton rendez-vous<br><em>Sanctuarys.</em></h1>
-    <p class="subtitle">Lecture radiesthésique de l'utérus, prescription au Bar à plantes et Bain Vapeur Vaginal. Un créneau d'une heure, 66€, paiement en ligne.</p>
+    <p class="subtitle">Bain Vapeur Vaginal ou Venusian Body, au choix. Paiement en ligne, dernier créneau à 19h.</p>
   </div>
 
   <div id="fondatriceBanner" style="display:none; background: linear-gradient(135deg, rgba(168, 85, 55, 0.10), rgba(212, 160, 76, 0.10)); border: 1px solid var(--terracotta); padding: 22px 26px; margin-bottom: 30px; text-align: center;">
@@ -274,9 +274,10 @@
 
   <div class="steps-bar">
     <div class="step-dot active" data-step="1"><div class="num">1</div><span>Sanctuarys</span></div>
-    <div class="step-dot" data-step="2"><div class="num">2</div><span>Créneau</span></div>
-    <div class="step-dot" data-step="3"><div class="num">3</div><span>Informations</span></div>
-    <div class="step-dot" data-step="4"><div class="num">4</div><span>Paiement</span></div>
+    <div class="step-dot" data-step="2"><div class="num">2</div><span>Soin</span></div>
+    <div class="step-dot" data-step="3"><div class="num">3</div><span>Créneau</span></div>
+    <div class="step-dot" data-step="4"><div class="num">4</div><span>Informations</span></div>
+    <div class="step-dot" data-step="5"><div class="num">5</div><span>Paiement</span></div>
   </div>
 
   <div class="error" id="globalError"></div>
@@ -289,8 +290,18 @@
     </div>
   </div>
 
-  <!-- STEP 2 : DATE + SLOT -->
+  <!-- STEP 2 : SERVICE -->
   <div class="step-panel" id="step2">
+    <h2>Quel <em>soin ?</em></h2>
+    <div class="sanctuary-list" id="serviceList"></div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(1)">← Retour</button>
+      <button class="btn-next" type="button" id="step2Next" onclick="goToSlotStep()" disabled>Suivant →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 : DATE + SLOT -->
+  <div class="step-panel" id="step3">
     <h2>Ton <em>créneau.</em></h2>
     <div class="month-nav">
       <button type="button" onclick="shiftWeek(-1)">‹</button>
@@ -303,13 +314,13 @@
       <div class="slots-grid" id="slotsGrid"></div>
     </div>
     <div class="actions">
-      <button class="btn-back" type="button" onclick="goStep(1)">← Retour</button>
-      <button class="btn-next" type="button" id="step2Next" onclick="goStep(3)" disabled>Suivant →</button>
+      <button class="btn-back" type="button" onclick="goStep(2)">← Retour</button>
+      <button class="btn-next" type="button" id="step3Next" onclick="goStep(4)" disabled>Suivant →</button>
     </div>
   </div>
 
-  <!-- STEP 3 : INFO -->
-  <div class="step-panel" id="step3">
+  <!-- STEP 4 : INFO -->
+  <div class="step-panel" id="step4">
     <h2>Tes <em>informations.</em></h2>
     <div class="form-row">
       <div class="form-group">
@@ -349,23 +360,23 @@
       Sanctuarys n'accueille pas les femmes enceintes pour des raisons de sécurité physiologique. En envoyant ce formulaire, tu confirmes ne pas être enceinte. Les allaitantes sont accueillies, indique-le ci-dessus.
     </div>
     <div class="actions">
-      <button class="btn-back" type="button" onclick="goStep(2)">← Retour</button>
-      <button class="btn-next" type="button" onclick="goStep(4)">Suivant →</button>
+      <button class="btn-back" type="button" onclick="goStep(3)">← Retour</button>
+      <button class="btn-next" type="button" onclick="goStep(5)">Suivant →</button>
     </div>
   </div>
 
-  <!-- STEP 4 : RECAP + PAIEMENT -->
-  <div class="step-panel" id="step4">
+  <!-- STEP 5 : RECAP + PAIEMENT -->
+  <div class="step-panel" id="step5">
     <h2>Récapitulatif <em>et paiement.</em></h2>
     <div class="recap" id="recap"></div>
     <div id="paymentInfoBox" style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.08), rgba(212, 160, 76, 0.08)); border: 1px solid var(--terracotta); padding: 20px 22px; margin: 20px 0; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.65;">
-      En cliquant sur <strong style="font-family:'Italiana',serif;font-weight:normal;font-style:normal;">Payer 66€</strong>, tu seras redirigée vers Stripe pour un règlement sécurisé. Ton créneau est réservé pendant 30 minutes le temps du paiement.
+      En cliquant sur <strong style="font-family:'Italiana',serif;font-weight:normal;font-style:normal;" id="payLabelInfo">Payer</strong>, tu seras redirigée vers Stripe pour un règlement sécurisé. Ton créneau est réservé pendant 30 minutes le temps du paiement.
     </div>
     <div class="actions">
-      <button class="btn-back" type="button" onclick="goStep(3)">← Retour</button>
+      <button class="btn-back" type="button" onclick="goStep(4)">← Retour</button>
       <button class="btn-next" type="button" id="fondatriceBtn" style="display:none; background: var(--or); border-color: var(--or);" onclick="startFondatriceBooking()">Utiliser une séance incluse ✦</button>
       <button class="btn-next" type="button" id="whatsappBtn" style="display:none; background: var(--or); border-color: var(--or);" onclick="startWhatsappBooking()">Confirmer le rendez-vous ✦</button>
-      <button class="btn-next" type="button" id="payBtn" onclick="startPayment()">Payer 66€ ✦</button>
+      <button class="btn-next" type="button" id="payBtn" onclick="startPayment()">Payer ✦</button>
     </div>
   </div>
 </div>
@@ -376,8 +387,18 @@
 
 <script src="/js/sanctuarys.js"></script>
 <script>
+  // Catalogue des soins proposes. Le prix/duree definitifs sont toujours
+  // recalcules cote serveur dans rdv-create-checkout (jamais de confiance
+  // dans ce qui part du navigateur pour le paiement).
+  const SERVICES = [
+    { key: 'vsteam', label: 'Bain Vapeur Vaginal', duration: 60, price: 66, desc: "Lecture radiesthésique de l'utérus, prescription au Bar à plantes et Bain Vapeur Vaginal." },
+    { key: 'venusian', label: 'Venusian Body', duration: 60, price: 66, desc: 'Détox au sauna infrarouge, dans une cabine dédiée.' },
+    { key: 'venusian_gommage', label: 'Venusian Body + gommage', duration: 80, price: 88, desc: 'Détox au sauna infrarouge avec gommage, pour prolonger le soin.' }
+  ];
+
   const state = {
     sanctuary: null,
+    service: null,
     weekStart: null,
     date: null,
     slotStart: null,
@@ -393,11 +414,11 @@
       d.classList.toggle('active', step === n);
       d.classList.toggle('done', step < n);
     });
-    if (n === 3) {
-      // Verifier que les etapes precedentes sont completes
-      if (!state.slotStart) { goStep(2); return; }
-    }
     if (n === 4) {
+      // Verifier que les etapes precedentes sont completes
+      if (!state.slotStart) { goStep(3); return; }
+    }
+    if (n === 5) {
       // Verifier informations
       const prenom = document.getElementById('fPrenom').value.trim();
       const nom = document.getElementById('fNom').value.trim();
@@ -406,7 +427,7 @@
       const allaitement = document.querySelector('input[name="allaitement"]:checked');
       if (!prenom || !nom || !email || !phone || !allaitement) {
         showError('Prénom, nom, email, téléphone et réponse allaitement sont obligatoires.');
-        goStep(3);
+        goStep(4);
         return;
       }
       renderRecap();
@@ -470,8 +491,36 @@
     document.querySelectorAll('.sanctuary-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
     state.sanctuary = { id: el.dataset.id, nom: el.querySelector('h3').textContent.split('.')[0].trim() };
-    setTimeout(() => { initDatePicker(); goStep(2); }, 200);
+    setTimeout(() => { renderServiceList(); goStep(2); }, 200);
   }
+
+  function renderServiceList() {
+    const container = document.getElementById('serviceList');
+    container.innerHTML = SERVICES.map((s, i) => `
+      <div class="sanctuary-card" data-key="${s.key}" onclick="chooseService(this)">
+        <div>
+          <h3>${s.label}<br><em>${s.duration} min.</em></h3>
+          <p>${s.desc}</p>
+        </div>
+        <div class="status">${s.price}€</div>
+      </div>
+    `).join('');
+  }
+
+  function chooseService(el) {
+    document.querySelectorAll('#serviceList .sanctuary-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const svc = SERVICES.find(s => s.key === el.dataset.key);
+    state.service = svc;
+    document.getElementById('step2Next').disabled = false;
+  }
+  window.chooseService = chooseService;
+
+  function goToSlotStep() {
+    if (!state.weekStart) initDatePicker();
+    goStep(3);
+  }
+  window.goToSlotStep = goToSlotStep;
 
   function initDatePicker() {
     const today = new Date();
@@ -498,7 +547,7 @@
     state.date = null;
     state.slotStart = null;
     document.getElementById('slotSection').style.display = 'none';
-    document.getElementById('step2Next').disabled = true;
+    document.getElementById('step3Next').disabled = true;
     renderDatePicker();
   }
 
@@ -544,7 +593,7 @@
     el.classList.add('selected');
     state.date = iso;
     state.slotStart = null;
-    document.getElementById('step2Next').disabled = true;
+    document.getElementById('step3Next').disabled = true;
     document.getElementById('slotSection').style.display = 'block';
     await loadSlots();
   }
@@ -580,7 +629,7 @@
     document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
     el.classList.add('selected');
     state.slotStart = iso;
-    document.getElementById('step2Next').disabled = false;
+    document.getElementById('step3Next').disabled = false;
   }
 
   function renderRecap() {
@@ -594,16 +643,21 @@
     const nom = document.getElementById('fNom').value.trim();
     const email = document.getElementById('fEmail').value.trim();
     const phone = document.getElementById('fPhone').value.trim();
+    const svc = state.service;
+    const priceLabel = svc.price.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' €';
     recap.innerHTML = `
       <div class="recap-row"><div class="recap-k">Lieu</div><div class="recap-v">${state.sanctuary.nom}</div></div>
+      <div class="recap-row"><div class="recap-k">Soin</div><div class="recap-v">${svc.label}</div></div>
       <div class="recap-row"><div class="recap-k">Créneau</div><div class="recap-v">${label}</div></div>
-      <div class="recap-row"><div class="recap-k">Durée</div><div class="recap-v">60 minutes</div></div>
-      <div class="recap-row"><div class="recap-k">Ce qui est prévu</div><div class="recap-v">Lecture radiesthésique de l'utérus + Bain Vapeur Vaginal + prescription plantes</div></div>
+      <div class="recap-row"><div class="recap-k">Durée</div><div class="recap-v">${svc.duration} minutes</div></div>
+      <div class="recap-row"><div class="recap-k">Ce qui est prévu</div><div class="recap-v">${svc.desc}</div></div>
       <div class="recap-row"><div class="recap-k">Nom</div><div class="recap-v">${prenom} ${nom}</div></div>
       <div class="recap-row"><div class="recap-k">Email</div><div class="recap-v">${email}</div></div>
       <div class="recap-row"><div class="recap-k">Téléphone</div><div class="recap-v">${phone}</div></div>
-      <div class="recap-row" style="border-top: 2px solid var(--terracotta); padding-top: 12px; margin-top: 6px;"><div class="recap-k" style="font-size:12px;color:var(--terracotta-deep);">Total à payer</div><div class="recap-v" style="font-family:'Italiana',serif;font-style:normal;font-size:22px;color:var(--terracotta-deep);">66,00 €</div></div>
+      <div class="recap-row" style="border-top: 2px solid var(--terracotta); padding-top: 12px; margin-top: 6px;"><div class="recap-k" style="font-size:12px;color:var(--terracotta-deep);">Total à payer</div><div class="recap-v" style="font-family:'Italiana',serif;font-style:normal;font-size:22px;color:var(--terracotta-deep);">${priceLabel}</div></div>
     `;
+    document.getElementById('payBtn').innerHTML = `Payer ${svc.price}€ ✦`;
+    document.getElementById('payLabelInfo').textContent = `Payer ${svc.price}€`;
   }
 
   async function startPayment() {
@@ -613,6 +667,7 @@
 
     const payload = {
       sanctuary_id: state.sanctuary.id,
+      service_key: state.service.key,
       start_at: state.slotStart,
       prenom: document.getElementById('fPrenom').value.trim(),
       nom: document.getElementById('fNom').value.trim(),
@@ -639,7 +694,7 @@
     } catch (err) {
       showError('Impossible de créer le paiement : ' + err.message + '. Écris-nous à info@sanctuarys.me');
       payBtn.disabled = false;
-      payBtn.innerHTML = 'Payer 66€ ✦';
+      payBtn.innerHTML = `Payer ${state.service.price}€ ✦`;
     }
   }
 
@@ -709,8 +764,9 @@
         client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Séance Fondatrice incluse - membership ' + state.fondatrice.membershipId + ']',
         is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
         start_at: state.slotStart,
-        duration_minutes: 60,
+        duration_minutes: state.service.duration,
         price_total_eur: 0,
+        type: state.service.key === 'vsteam' ? null : state.service.key,
         status: 'confirmed',
         paid_at: new Date().toISOString()
       }).select().single();
@@ -752,8 +808,9 @@
         client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Réservé via WhatsApp - payé par PayPal]',
         is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
         start_at: state.slotStart,
-        duration_minutes: 60,
-        price_total_eur: 66,
+        duration_minutes: state.service.duration,
+        price_total_eur: state.service.price,
+        type: state.service.key === 'vsteam' ? null : state.service.key,
         status: 'confirmed',
         paid_at: new Date().toISOString()
       }).select().single();
