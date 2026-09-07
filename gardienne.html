@@ -860,7 +860,7 @@
       <div id="grimoireContainer"></div>
     </div>
 
-    <div class="devis-block">
+    <div class="devis-block" id="devisBlock" hidden>
       <label class="grimoire-item cure-toggle">
         <input type="checkbox" id="cureSachetsCheck" onchange="toggleCureSachets(this.checked)">
         <span>Proposer la cure de 4 sachets prêts à l'emploi · 33 €</span>
@@ -1006,6 +1006,7 @@ function setBilanCardMode(typeAnalyse) {
   const isAchat = SELECTED_TYPE_ANALYSE === 'achat';
   document.getElementById('bilanFullFields').hidden = isAchat;
   document.getElementById('achatHint').hidden = !isAchat;
+  document.getElementById('devisBlock').hidden = !isAchat;
   document.getElementById('submitBtn').textContent = isAchat
     ? 'Générer et expédier l\'analyse ✦'
     : 'Générer et expédier le bilan ✦';
