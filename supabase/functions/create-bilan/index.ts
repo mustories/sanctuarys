@@ -138,7 +138,13 @@ Deno.serve(async (req) => {
       // si elle est deja cliente Sanctuarys, pour relier les deux comptes.
       // Ce lien ne donne AUCUN acces de la maman au bilan ou a l'espace de sa fille :
       // l'espace de l'adolescente reste strictement le sien.
-      client_email_maman: mamanEmail
+      client_email_maman: mamanEmail,
+      // Si fourni, on ne cree pas un nouveau bilan : on met a jour celui-ci
+      // (regeneration d'un bilan deja existant, par exemple pour corriger
+      // des pourcentages ou des plantes, ou simplement redemander une
+      // redaction). Le mail corrige est renvoye a la cliente comme pour
+      // une creation normale.
+      regenerate_bilan_id: regenerateBilanId
     } = body
 
     if (mot_de_passe !== gardiennePassword) {
@@ -152,6 +158,7 @@ Deno.serve(async (req) => {
     if (source === 'manuel' && (!manualPrenom || !manualEmail)) {
       return json({ error: 'Prénom et email de la cliente requis pour un bilan sans rendez-vous' }, 400)
     }
+    const regenerateId = typeof regenerateBilanId === 'string' && regenerateBilanId ? regenerateBilanId : null
     const typeAnalyseFinal = type_analyse === 'achat' ? 'achat' : 'bilan'
     if (typeAnalyseFinal === 'bilan' && (etat_uterus_pct === undefined || etat_receptivite_pct === undefined)) {
       return json({ error: 'Les deux pourcentages sont requis' }, 400)
@@ -374,31 +381,31 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
     const avis_medical = typeAnalyseFinal === 'achat' ? null : (parsed.avis_medical || fallbackAvisMedical)
     const resume_final = typeAnalyseFinal === 'achat' ? null : (parsed.resume_final || '')
 
-    const { data: saved, error: saveError } = await admin
-      .from('bilans')
-      .insert({
-        appointment_id: source === 'public' ? appointment_id : null,
-        session_booking_id: source === 'club' ? session_booking_id : null,
-        gardienne_id: gardienne_id || null,
-        client_prenom: clientPrenom,
-        client_nom: clientNom,
-        client_email: clientEmail,
-        etat_uterus_pct: uterusPct,
-        etat_receptivite_pct: receptivitePct,
-        elements_choisis,
-        notes_gardienne: notes_gardienne || null,
-        analyse_chiffres,
-        vibration_energetique,
-        bienfaits_physiologiques,
-        avis_medical,
-        resume_final,
-        generated_by: 'sonnet-4-6',
-        profil: profilFinal,
-        type_analyse: typeAnalyseFinal,
-        source_type: source === 'manuel' ? 'manuel' : 'rdv'
-      })
-      .select()
-      .single()
+    const bilanFields = {
+      appointment_id: source === 'public' ? appointment_id : null,
+      session_booking_id: source === 'club' ? session_booking_id : null,
+      gardienne_id: gardienne_id || null,
+      client_prenom: clientPrenom,
+      client_nom: clientNom,
+      client_email: clientEmail,
+      etat_uterus_pct: uterusPct,
+      etat_receptivite_pct: receptivitePct,
+      elements_choisis,
+      notes_gardienne: notes_gardienne || null,
+      analyse_chiffres,
+      vibration_energetique,
+      bienfaits_physiologiques,
+      avis_medical,
+      resume_final,
+      generated_by: 'sonnet-4-6',
+      profil: profilFinal,
+      type_analyse: typeAnalyseFinal,
+      source_type: source === 'manuel' ? 'manuel' : 'rdv'
+    }
+
+    const { data: saved, error: saveError } = regenerateId
+      ? await admin.from('bilans').update(bilanFields).eq('id', regenerateId).select().single()
+      : await admin.from('bilans').insert(bilanFields).select().single()
 
     if (saveError) {
       return json({ error: `Sauvegarde impossible : ${saveError.message}` }, 500)
@@ -542,12 +549,12 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
     if (!resendResp.ok) {
       const errTxt = await resendResp.text()
       console.error('Resend error:', errTxt)
-      return json({ success: true, bilan: saved, email_error: errTxt }, 200)
+      return json({ success: true, bilan: saved, email_error: errTxt, regenerated: !!regenerateId }, 200)
     }
 
     await admin.from('bilans').update({ sent_at: new Date().toISOString() }).eq('id', saved.id)
 
-    return json({ success: true, bilan: { ...saved, sent_at: new Date().toISOString() }, account_created: !!clientAccessLink })
+    return json({ success: true, bilan: { ...saved, sent_at: new Date().toISOString() }, account_created: !!clientAccessLink, regenerated: !!regenerateId })
   } catch (err: any) {
     console.error('create-bilan error:', err)
     return json({ error: err.message || 'Erreur inattendue' }, 500)

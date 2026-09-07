@@ -712,7 +712,10 @@
         <div class="meta" id="bvMeta"></div>
         <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;" id="bvBadges"></div>
       </div>
-      <button class="btn secondary" onclick="closeBilanView()" style="font-size:13px; padding:8px 14px;">← Retour</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn secondary" onclick="regenerateCurrentBilan()" style="font-size:13px; padding:8px 14px;">Régénérer ✦</button>
+        <button class="btn secondary" onclick="closeBilanView()" style="font-size:13px; padding:8px 14px;">← Retour</button>
+      </div>
     </div>
     <div class="jauge-pair">
       <div class="jauge-mini"><div class="pct" id="bvUterus"></div><div class="lab">État de l'utérus</div></div>
@@ -978,6 +981,8 @@ let CLIENTE_RESULTS = [];
 let CURRENT_CLIENT = null;
 let CLIENT_DETAIL_ORIGIN = 'clientes';
 let MANUAL_BILAN_RETURN_TO_CLIENT = false;
+let CURRENT_VIEWED_BILAN = null;
+let REGENERATE_BILAN_ID = null;
 
 function unlockGate() {
   const pwd = document.getElementById('gatePassword').value.trim();
@@ -1034,10 +1039,21 @@ function setBilanCardMode(typeAnalyse) {
   document.getElementById('bilanFullFields').hidden = isAchat;
   document.getElementById('achatHint').hidden = !isAchat;
   document.getElementById('devisBlock').hidden = !isAchat;
-  document.getElementById('submitBtn').textContent = isAchat
-    ? 'Générer et expédier l\'analyse ✦'
-    : 'Générer et expédier le bilan ✦';
+  updateSubmitButtonLabel();
   resetDevis();
+}
+
+// Le libelle du bouton d'envoi change selon qu'on cree un nouveau bilan ou
+// qu'on regenere un bilan deja existant (REGENERATE_BILAN_ID renseigne).
+function updateSubmitButtonLabel() {
+  const isAchat = SELECTED_TYPE_ANALYSE === 'achat';
+  const btn = document.getElementById('submitBtn');
+  if (!btn) return;
+  if (REGENERATE_BILAN_ID) {
+    btn.textContent = isAchat ? 'Régénérer et renvoyer l\'analyse ✦' : 'Régénérer et renvoyer le bilan ✦';
+  } else {
+    btn.textContent = isAchat ? 'Générer et expédier l\'analyse ✦' : 'Générer et expédier le bilan ✦';
+  }
 }
 
 // Remet a zero la selection d'alliés + le devis (grammages, cure de sachets)
@@ -1060,6 +1076,7 @@ function resetDevis() {
 }
 
 function openManualBilan() {
+  REGENERATE_BILAN_ID = null;
   document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
   document.getElementById('rdvCard').hidden = true;
   document.getElementById('clientDetailCard').hidden = true;
@@ -1079,6 +1096,7 @@ function openManualBilan() {
 // de bilan lie a un rendez-vous, ou pour lui en refaire un.
 function startBilanForCurrentClient() {
   if (!CURRENT_CLIENT) return;
+  REGENERATE_BILAN_ID = null;
   document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
   document.getElementById('clientDetailCard').hidden = true;
   document.getElementById('bilanCard').hidden = true;
@@ -1647,6 +1665,7 @@ function goToBilanFromRdv() {
     openBilanView(b.bilan);
     return;
   }
+  REGENERATE_BILAN_ID = null;
   document.getElementById('clientName').textContent = `${b.prenom} ${b.nom || ''}`;
   const d = new Date(b.start_at);
   document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${b.email}`;
@@ -1657,6 +1676,7 @@ function goToBilanFromRdv() {
 }
 
 function openBilanView(bilan) {
+  CURRENT_VIEWED_BILAN = bilan;
   document.getElementById('rdvCard').hidden = true;
   document.getElementById('clientDetailCard').hidden = true;
   document.getElementById('bvName').textContent = `${bilan.client_prenom || ''} ${bilan.client_nom || ''}`;
@@ -1705,8 +1725,69 @@ function closeBilanView() {
   }
 }
 
+// Coche dans le grimoire les allies deja choisis pour un bilan qu'on regenere,
+// en reutilisant onGrimoireToggle pour rester coherent avec un choix manuel
+// (ligne de prix, devis...).
+function prefillGrimoireSelection(elements) {
+  const liste = Array.isArray(elements) ? elements : [];
+  GRIMOIRE_ITEMS_FLAT.forEach((item, i) => {
+    if (!liste.includes(item.name)) return;
+    const input = document.querySelector(`.grimoire-item input[value="${CSS.escape(item.name)}"]`);
+    if (input && !input.checked) {
+      input.checked = true;
+      onGrimoireToggle(i, input);
+    }
+  });
+}
+
+// Reprend le bilan affiche dans le formulaire, prerempli avec ses valeurs,
+// pour permettre a la gardienne de corriger puis de regenerer et renvoyer
+// une version corrigee a la cliente (meme bilan, pas de doublon cree).
+function regenerateCurrentBilan() {
+  const bilan = CURRENT_VIEWED_BILAN;
+  if (!bilan) return;
+
+  if (bilan.appointment_id) {
+    SELECTED_BOOKING = { source: 'public', id: bilan.appointment_id, prenom: bilan.client_prenom, nom: bilan.client_nom, email: bilan.client_email, type: bilan.type_analyse };
+  } else if (bilan.session_booking_id) {
+    SELECTED_BOOKING = { source: 'club', id: bilan.session_booking_id, prenom: bilan.client_prenom, nom: bilan.client_nom, email: bilan.client_email, type: bilan.type_analyse };
+  } else {
+    SELECTED_BOOKING = { source: 'manuel', id: null, prenom: bilan.client_prenom, nom: bilan.client_nom, email: bilan.client_email, type: bilan.type_analyse };
+  }
+  SELECTED_BOOKING_ORIGIN = CURRENT_CLIENT ? 'clientes' : (SELECTED_BOOKING_ORIGIN || 'agenda');
+  REGENERATE_BILAN_ID = bilan.id;
+  if (CURRENT_CLIENT) MANUAL_BILAN_RETURN_TO_CLIENT = true;
+
+  document.getElementById('bilanViewCard').hidden = true;
+  document.getElementById('clientName').textContent = `${bilan.client_prenom || ''} ${bilan.client_nom || ''}`;
+  document.getElementById('clientMeta').textContent = `${bilan.client_email || ''} · Régénération d'un bilan existant`;
+
+  resetProfilToggle();
+  if (bilan.profil === 'adolescente') setProfilBilan('adolescente');
+  setBilanCardMode(bilan.type_analyse === 'achat' ? 'achat' : 'bilan');
+
+  if (bilan.type_analyse !== 'achat') {
+    const u = bilan.etat_uterus_pct != null ? bilan.etat_uterus_pct : 50;
+    const r = bilan.etat_receptivite_pct != null ? bilan.etat_receptivite_pct : 50;
+    document.getElementById('uterusSlider').value = u;
+    document.getElementById('receptiviteSlider').value = r;
+    document.getElementById('uterusVal').textContent = u + '%';
+    document.getElementById('receptiviteVal').textContent = r + '%';
+  }
+  document.getElementById('notesGardienne').value = bilan.notes_gardienne || '';
+  if (bilan.gardienne_id) {
+    const sel = document.getElementById('gardienneSelect');
+    if (sel) sel.value = bilan.gardienne_id;
+  }
+  prefillGrimoireSelection(bilan.elements_choisis);
+
+  document.getElementById('bilanCard').hidden = false;
+}
+window.regenerateCurrentBilan = regenerateCurrentBilan;
+
 function resetToAgenda() {
   SELECTED_BOOKING = null;
+  REGENERATE_BILAN_ID = null;
   document.getElementById('bilanCard').hidden = true;
   document.getElementById('successCard').hidden = true;
   document.getElementById('manualCard').hidden = true;
@@ -2057,7 +2138,10 @@ function renderGrimoire() {
 function onGrimoireToggle(i, checkbox) {
   checkbox.closest('.grimoire-item').classList.toggle('active', checkbox.checked);
   const row = document.getElementById('priceRow-' + i);
-  if (checkbox.checked) {
+  // Le prix par allie ne concerne que le creneau achat boutique : le bilan
+  // de soin n'affiche jamais de prix sur les plantes choisies.
+  const showPrix = checkbox.checked && SELECTED_TYPE_ANALYSE === 'achat';
+  if (showPrix) {
     row.hidden = false;
     if (GRIMOIRE_ITEMS_FLAT[i].prix30 && !DEVIS_GRAMMAGES[i]) DEVIS_GRAMMAGES[i] = 30;
   } else {
@@ -2112,8 +2196,9 @@ async function submitBilan() {
   }
 
   const btn = document.getElementById('submitBtn');
+  const wasRegenerate = !!REGENERATE_BILAN_ID;
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Rédaction en cours...';
+  btn.innerHTML = wasRegenerate ? '<span class="spinner"></span> Régénération en cours...' : '<span class="spinner"></span> Rédaction en cours...';
 
   try {
     const payload = {
@@ -2125,6 +2210,7 @@ async function submitBilan() {
       gardienne_id: document.getElementById('gardienneSelect').value || null,
       profil: SELECTED_BILAN_PROFIL
     };
+    if (wasRegenerate) payload.regenerate_bilan_id = REGENERATE_BILAN_ID;
     if (SELECTED_TYPE_ANALYSE !== 'achat') {
       payload.etat_uterus_pct = parseInt(document.getElementById('uterusSlider').value, 10);
       payload.etat_receptivite_pct = parseInt(document.getElementById('receptiviteSlider').value, 10);
@@ -2160,14 +2246,16 @@ async function submitBilan() {
     else if (SELECTED_BOOKING.source === 'manuel') successSuffix = ` et retrouvable dans la bibliothèque de bilans.`;
     else successSuffix = ` et apparaît dans son espace membre.`;
     const libelle = SELECTED_TYPE_ANALYSE === 'achat' ? 'L\'analyse de plantes' : 'Le bilan';
+    const verbe = wasRegenerate ? 'régénéré et renvoyé' : 'envoyé';
     document.getElementById('successText').textContent =
-      `${libelle} de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` + successSuffix;
+      `${libelle} de ${SELECTED_BOOKING.prenom} a été ${verbe} à ${SELECTED_BOOKING.email}` + successSuffix;
+    REGENERATE_BILAN_ID = null;
   } catch (err) {
-    errEl.textContent = 'Impossible d\'envoyer le bilan : ' + err.message;
+    errEl.textContent = (wasRegenerate ? 'Impossible de régénérer le bilan : ' : 'Impossible d\'envoyer le bilan : ') + err.message;
     errEl.hidden = false;
   } finally {
     btn.disabled = false;
-    btn.innerHTML = SELECTED_TYPE_ANALYSE === 'achat' ? 'Générer et expédier l\'analyse ✦' : 'Générer et expédier le bilan ✦';
+    updateSubmitButtonLabel();
   }
 }
 
