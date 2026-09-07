@@ -402,6 +402,15 @@
   .action-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
   .action-grid .btn { font-size: 13px; padding: 10px 16px; }
 
+  .ga-stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .ga-stat { flex:1; min-width:130px; background:var(--blanc-deep); border:1px solid var(--line); padding:14px 16px; transition:transform 0.2s; }
+  .ga-stat:hover { transform:translateY(-2px); }
+  .ga-stat .n { font-family:'Italiana',serif; font-size:26px; color:var(--terracotta-deep); line-height:1; }
+  .ga-stat .l { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron-soft); margin-top:6px; }
+  .ga-stat.alerte .n { color:var(--terracotta); }
+  .ga-stat.alerte { border-color:var(--terracotta); }
+  .badge-todo { background:rgba(200,112,77,0.12); color:var(--terracotta-deep); border:1px solid var(--terracotta); font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; padding:3px 8px; display:inline-block; }
+
   .ga-barre { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
   .ga-nav { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .ga-nav button { background:var(--blanc); border:1px solid var(--line); padding:8px 12px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--marron); cursor:pointer; }
@@ -563,6 +572,8 @@
       </div>
     </div>
 
+    <div class="ga-stats" id="gaStats"></div>
+
     <div class="ga-barre">
       <div class="ga-nav">
         <button type="button" id="gaPrec">←</button>
@@ -635,6 +646,7 @@
     <div class="rdv-detail-block">
       <div class="lbl-mini">Bilans déjà réalisés</div>
       <div id="cdBilans"></div>
+      <button class="btn" style="margin-top:14px;" onclick="startBilanForCurrentClient()">+ Faire un bilan pour elle ✦</button>
     </div>
 
     <div class="rdv-detail-block">
@@ -965,6 +977,7 @@ let SELECTED_TYPE_ANALYSE = 'bilan'; // 'bilan' (complet) ou 'achat' (creneau ac
 let CLIENTE_RESULTS = [];
 let CURRENT_CLIENT = null;
 let CLIENT_DETAIL_ORIGIN = 'clientes';
+let MANUAL_BILAN_RETURN_TO_CLIENT = false;
 
 function unlockGate() {
   const pwd = document.getElementById('gatePassword').value.trim();
@@ -1056,8 +1069,28 @@ function openManualBilan() {
   document.getElementById('mbEmail').value = '';
   document.getElementById('manualBilanError').hidden = true;
   setManualBilanType('soin');
+  MANUAL_BILAN_RETURN_TO_CLIENT = false;
   document.getElementById('manualBilanCard').hidden = false;
 }
+
+// Depuis la fiche d'une cliente (espace Clientes) : prepare directement le
+// bilan avec ses infos deja connues, la gardienne n'a plus qu'a choisir
+// soin ou achat puis continuer. Utile quand une cliente n'a pas encore
+// de bilan lie a un rendez-vous, ou pour lui en refaire un.
+function startBilanForCurrentClient() {
+  if (!CURRENT_CLIENT) return;
+  document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
+  document.getElementById('clientDetailCard').hidden = true;
+  document.getElementById('bilanCard').hidden = true;
+  document.getElementById('mbPrenom').value = CURRENT_CLIENT.prenom || '';
+  document.getElementById('mbNom').value = CURRENT_CLIENT.nom || '';
+  document.getElementById('mbEmail').value = CURRENT_CLIENT.email || '';
+  document.getElementById('manualBilanError').hidden = true;
+  setManualBilanType('soin');
+  MANUAL_BILAN_RETURN_TO_CLIENT = true;
+  document.getElementById('manualBilanCard').hidden = false;
+}
+window.startBilanForCurrentClient = startBilanForCurrentClient;
 
 function setManualBilanType(type) {
   MANUAL_BILAN_TYPE = type === 'achat' ? 'achat' : 'soin';
@@ -1068,7 +1101,12 @@ function setManualBilanType(type) {
 
 function closeManualBilan() {
   document.getElementById('manualBilanCard').hidden = true;
-  switchTab(CURRENT_TAB);
+  if (MANUAL_BILAN_RETURN_TO_CLIENT && CURRENT_CLIENT) {
+    MANUAL_BILAN_RETURN_TO_CLIENT = false;
+    document.getElementById('clientDetailCard').hidden = false;
+  } else {
+    switchTab(CURRENT_TAB);
+  }
 }
 
 function continueManualBilan() {
@@ -1135,12 +1173,31 @@ async function loadAgenda() {
       const { data: hrs } = await supa.from('opening_hours').select('day_of_week, open_time, close_time, active');
       GA_HORAIRES = hrs || [];
     } catch (e) { GA_HORAIRES = []; }
+    renderGaStats();
     renderAgendaVue();
   } catch (err) {
     errEl.textContent = 'Impossible de charger l\'agenda : ' + err.message;
     errEl.hidden = false;
     listEl.innerHTML = '';
   }
+}
+
+// Un coup d'oeil vivant sur l'activite du moment, sans avoir a fouiller
+// la liste : combien de rendez vous aujourd'hui, combien de bilans ou
+// analyses restent a faire (rendez vous confirmes sans bilan envoye).
+function renderGaStats() {
+  const el = document.getElementById('gaStats');
+  if (!el) return;
+  const todayKey = new Date().toDateString();
+  const actifs = AGENDA_BOOKINGS.filter(b => b.status !== 'cancelled' && b.status !== 'no_show');
+  const aujourdhui = actifs.filter(b => new Date(b.start_at).toDateString() === todayKey);
+  const enAttenteBilan = actifs.filter(b => !b.a_deja_un_bilan && b.status !== 'pending_payment');
+  const achats = actifs.filter(b => b.type === 'achat');
+  el.innerHTML = `
+    <div class="ga-stat"><div class="n">${aujourdhui.length}</div><div class="l">Aujourd'hui</div></div>
+    <div class="ga-stat ${enAttenteBilan.length ? 'alerte' : ''}"><div class="n">${enAttenteBilan.length}</div><div class="l">Bilans à faire</div></div>
+    <div class="ga-stat"><div class="n">${achats.length}</div><div class="l">Créneaux achat</div></div>
+  `;
 }
 
 function populateGardienneSelects() {
@@ -1417,7 +1474,9 @@ function renderBookingRow(b, origin) {
   const d = new Date(b.start_at);
   const heure = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const dateLabel = origin === 'historique' ? d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ' · ' : '';
-  const badge = b.a_deja_un_bilan ? '<span class="badge">✦ Bilan envoyé</span>' : '';
+  const badge = b.a_deja_un_bilan
+    ? '<span class="badge">✦ Bilan envoyé</span>'
+    : (b.status === 'confirmed' || b.status === 'in_progress') ? '<span class="badge-todo">À faire</span>' : '';
   let statutBadge = '';
   if (b.status === 'pending_payment') statutBadge = '<span class="badge badge-retard">⏳ Paiement en attente</span>';
   else if (b.status === 'cancelled') statutBadge = '<span class="badge badge-noshow">Annulé</span>';
@@ -1611,13 +1670,14 @@ function openBilanView(bilan) {
   document.getElementById('bvElements').textContent = Array.isArray(bilan.elements_choisis) ? bilan.elements_choisis.join(', ') : (bilan.elements_choisis || '');
   document.getElementById('bvVibration').textContent = bilan.vibration_energetique || '';
 
-  // Le creneau achat boutique n'a ni jauges, ni analyse chiffree, ni bienfaits,
-  // ni resume, ni avis medical : uniquement les plantes et leur vibration.
+  // Le creneau achat boutique n'a ni jauges, ni analyse chiffree, ni resume,
+  // ni avis medical : uniquement les plantes, leur vibration et leurs
+  // bienfaits (cote femme et cote homme, pour ne pas exclure au niveau de la vente).
   document.querySelector('#bilanViewCard .jauge-pair').hidden = estAchat;
   document.getElementById('bvAnalyse').textContent = bilan.analyse_chiffres || '';
   document.getElementById('bvAnalyse').closest('.bilan-view-section').hidden = estAchat;
   document.getElementById('bvBienfaits').textContent = bilan.bienfaits_physiologiques || '';
-  document.getElementById('bvBienfaits').closest('.bilan-view-section').hidden = estAchat;
+  document.getElementById('bvBienfaits').closest('.bilan-view-section').hidden = false;
   document.getElementById('bvResume').textContent = bilan.resume_final || '';
   document.getElementById('bvResume').closest('.bilan-view-section').hidden = estAchat;
   if (!estAchat) {
@@ -1659,6 +1719,17 @@ function resetToAgenda() {
   document.getElementById('notesGardienne').value = '';
   resetProfilToggle();
   setBilanCardMode('bilan');
+  if (MANUAL_BILAN_RETURN_TO_CLIENT && CURRENT_CLIENT) {
+    MANUAL_BILAN_RETURN_TO_CLIENT = false;
+    // Recharge la fiche pour que le bilan tout juste cree apparaisse dans sa liste
+    const idx = CLIENTE_RESULTS.indexOf(CURRENT_CLIENT);
+    if (idx >= 0) {
+      openClientDetail(idx);
+    } else {
+      document.getElementById('clientDetailCard').hidden = false;
+    }
+    return;
+  }
   loadAgenda();
   HISTORIQUE_BOOKINGS = [];
   switchTab(SELECTED_BOOKING_ORIGIN || 'agenda');

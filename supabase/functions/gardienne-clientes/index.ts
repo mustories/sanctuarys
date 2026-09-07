@@ -143,9 +143,19 @@ Deno.serve(async (req) => {
         sessionBookings = data || []
       }
 
+      // Les bilans (dont les analyses d'achat boutique) sont retrouves par email,
+      // mais aussi via les rendez vous/seances deja identifies plus haut : cela
+      // evite de rater une analyse si l'email saisi lors d'une reservation
+      // (par exemple au creneau achat) differe legerement de l'email du profil.
       let bilans: any[] = []
-      if (finalEmail) {
-        const { data } = await admin.from('bilans').select('*').eq('client_email', finalEmail).order('created_at', { ascending: false })
+      const apptIds = (appointments || []).map((a: any) => a.id).filter(Boolean)
+      const bookingIds = (sessionBookings || []).map((s: any) => s.id).filter(Boolean)
+      const orClauses: string[] = []
+      if (finalEmail) orClauses.push(`client_email.eq.${finalEmail}`)
+      if (apptIds.length) orClauses.push(`appointment_id.in.(${apptIds.join(',')})`)
+      if (bookingIds.length) orClauses.push(`session_booking_id.in.(${bookingIds.join(',')})`)
+      if (orClauses.length) {
+        const { data } = await admin.from('bilans').select('*').or(orClauses.join(',')).order('created_at', { ascending: false })
         bilans = data || []
       }
 
