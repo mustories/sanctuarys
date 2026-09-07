@@ -779,6 +779,19 @@
   <!-- Formulaire bilan sans rendez-vous -->
   <div class="card" id="manualBilanCard" hidden>
     <h2 style="font-family:'Italiana',serif; font-size:22px; margin-bottom:20px;">Nouveau bilan (sans rendez-vous)</h2>
+    <div class="field">
+      <label>Type de bilan</label>
+      <div class="profil-toggle" id="manualBilanTypeToggle">
+        <label class="profil-option active" data-type="soin">
+          <input type="radio" name="manualBilanType" value="soin" checked onchange="setManualBilanType('soin')">
+          <span>Bilan soin</span>
+        </label>
+        <label class="profil-option" data-type="achat">
+          <input type="radio" name="manualBilanType" value="achat" onchange="setManualBilanType('achat')">
+          <span>Bilan achat (plantes)</span>
+        </label>
+      </div>
+    </div>
     <div class="field-row">
       <div class="field">
         <label for="mbPrenom">Prénom</label>
@@ -947,6 +960,7 @@ let SELECTED_BOOKING = null;
 let SELECTED_BOOKING_ORIGIN = 'agenda';
 let CURRENT_TAB = 'agenda';
 let SELECTED_BILAN_PROFIL = 'adulte';
+let MANUAL_BILAN_TYPE = 'soin';
 let SELECTED_TYPE_ANALYSE = 'bilan'; // 'bilan' (complet) ou 'achat' (creneau achat boutique, plantes uniquement)
 let CLIENTE_RESULTS = [];
 let CURRENT_CLIENT = null;
@@ -1041,7 +1055,15 @@ function openManualBilan() {
   document.getElementById('mbNom').value = '';
   document.getElementById('mbEmail').value = '';
   document.getElementById('manualBilanError').hidden = true;
+  setManualBilanType('soin');
   document.getElementById('manualBilanCard').hidden = false;
+}
+
+function setManualBilanType(type) {
+  MANUAL_BILAN_TYPE = type === 'achat' ? 'achat' : 'soin';
+  document.querySelectorAll('#manualBilanTypeToggle .profil-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.type === MANUAL_BILAN_TYPE);
+  });
 }
 
 function closeManualBilan() {
@@ -1060,12 +1082,12 @@ function continueManualBilan() {
     errEl.hidden = false;
     return;
   }
-  SELECTED_BOOKING = { source: 'manuel', id: null, prenom, nom, email, type: 'soin' };
+  SELECTED_BOOKING = { source: 'manuel', id: null, prenom, nom, email, type: MANUAL_BILAN_TYPE };
   SELECTED_BOOKING_ORIGIN = CURRENT_TAB;
   document.getElementById('clientName').textContent = `${prenom} ${nom || ''}`;
-  document.getElementById('clientMeta').textContent = `${email} · Bilan sans rendez-vous`;
+  document.getElementById('clientMeta').textContent = `${email} · ${MANUAL_BILAN_TYPE === 'achat' ? 'Analyse plantes' : 'Bilan'} sans rendez-vous`;
   resetProfilToggle();
-  setBilanCardMode('bilan');
+  setBilanCardMode(MANUAL_BILAN_TYPE);
   document.getElementById('manualBilanCard').hidden = true;
   document.getElementById('bilanCard').hidden = false;
 }
