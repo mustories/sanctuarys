@@ -260,6 +260,70 @@
   }
   .grimoire-item input { display: none; }
 
+  .grimoire-item-block { display: flex; flex-direction: column; }
+  .grimoire-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    border-top: none;
+  }
+  .grimoire-weights { display: flex; gap: 4px; }
+  .weight-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--marron-soft);
+    cursor: pointer;
+  }
+  .weight-chip.active {
+    border-color: var(--terracotta);
+    background: var(--terracotta);
+    color: var(--blanc);
+  }
+  .grimoire-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--terracotta-deep);
+    white-space: nowrap;
+  }
+  .grimoire-price.custom {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--marron-soft);
+  }
+
+  .devis-block { margin-top: 18px; padding-top: 18px; border-top: 1px dashed var(--line); }
+  .cure-toggle { margin-bottom: 10px; max-width: 420px; }
+  .devis-recap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: rgba(200, 112, 77, 0.1);
+    border: 1px solid var(--terracotta-pale);
+  }
+  .devis-recap span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--marron-soft);
+  }
+  .devis-recap strong {
+    font-family: 'Italiana', serif;
+    font-size: 20px;
+    color: var(--terracotta-deep);
+  }
+
   .spinner {
     width: 14px; height: 14px;
     border: 2px solid rgba(255,255,255,0.4);
@@ -796,6 +860,18 @@
       <div id="grimoireContainer"></div>
     </div>
 
+    <div class="devis-block">
+      <label class="grimoire-item cure-toggle">
+        <input type="checkbox" id="cureSachetsCheck" onchange="toggleCureSachets(this.checked)">
+        <span>Proposer la cure de 4 sachets prêts à l'emploi · 33 €</span>
+      </label>
+      <p class="field-hint">Les 4 sachets sont préparés à partir du mélange choisi ci-dessus ; la cliente les utilise librement en bain de purification, bain de pieds ou bain vaginal.</p>
+      <div class="devis-recap" id="devisRecap" hidden>
+        <span>Total du devis (usage interne)</span>
+        <strong id="devisTotal">0,00 €</strong>
+      </div>
+    </div>
+
     <div class="field">
       <label for="notesGardienne">Observation de la gardienne (optionnel, aide l'IA à rédiger)</label>
       <textarea id="notesGardienne" placeholder="Ce que tu as ressenti, observé, capté pendant la lecture..."></textarea>
@@ -834,6 +910,34 @@ const GRIMOIRE = {
     "Encens de Vénus (mélange maison)", "Encens Purity (mélange maison)"
   ]
 };
+
+// Prix publics au 30g (carte "Les alliés de l'espace féminin"). Les mélanges
+// maison (Encens de Vénus, Encens Purity) et Achillée millefeuille n'ont pas
+// de prix fixe : ils s'affichent en "prix personnalisé" dans l'espace gardienne.
+const PRIX_30G = {
+  "Angélique": 14.85, "Armoise": 6.45, "Ashwagandha": 9.75, "Bardane": 8.85,
+  "Camomille matricaire": 10.80, "Chardon-Marie": 8.70, "Citronnelle": 6.45,
+  "Corossol (feuilles)": 30.00, "Damiana": 13.50, "Framboisier (feuilles)": 8.85,
+  "Hamamélis": 14.70, "Hibiscus": 6.45, "Hysope africaine": 30.00, "Maca": 4.50,
+  "Mélisse": 10.05, "Rose (boutons / pétales)": 14.85, "Rue": 22.50, "Sauge": 8.55,
+  "Sel gemme": 8.25, "Souci (calendula)": 9.75, "Spiruline": 8.25, "Vigne rouge": 16.35,
+  "Benjoin rouge": 22.50, "Sang-dragon": 30.00, "Oliban": 16.50, "Myrrhe": 9.75
+};
+const PRIX_CURE_SACHETS = 33;
+let GRIMOIRE_ITEMS_FLAT = []; // [{ name, prix30 }] rempli par renderGrimoire()
+let DEVIS_GRAMMAGES = {}; // index dans GRIMOIRE_ITEMS_FLAT -> 30 | 50 | 100
+let DEVIS_CURE = false;
+
+// Calcule le prix au grammage demande depuis le prix du 30g, arrondi au
+// 0,50 € le plus proche (le 30g garde le prix exact de la carte).
+function prixPourGrammage(prix30, grammage) {
+  if (grammage === 30) return prix30;
+  const brut = (prix30 / 30) * grammage;
+  return Math.round(brut / 0.5) * 0.5;
+}
+function formatEuro(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
 
 let GARDIENNE_PASSWORD = '';
 let AGENDA_BOOKINGS = [];
@@ -905,6 +1009,26 @@ function setBilanCardMode(typeAnalyse) {
   document.getElementById('submitBtn').textContent = isAchat
     ? 'Générer et expédier l\'analyse ✦'
     : 'Générer et expédier le bilan ✦';
+  resetDevis();
+}
+
+// Remet a zero la selection d'alliés + le devis (grammages, cure de sachets)
+// a chaque ouverture d'un bilan pour une nouvelle cliente.
+function resetDevis() {
+  DEVIS_GRAMMAGES = {};
+  DEVIS_CURE = false;
+  document.querySelectorAll('.grimoire-item.active').forEach(el => {
+    el.classList.remove('active');
+    const input = el.querySelector('input');
+    if (input) input.checked = false;
+  });
+  document.querySelectorAll('.grimoire-price-row').forEach(el => {
+    el.hidden = true;
+    el.querySelectorAll('.weight-chip').forEach(btn => btn.classList.toggle('active', btn.dataset.g === '30'));
+  });
+  const cureCheck = document.getElementById('cureSachetsCheck');
+  if (cureCheck) cureCheck.checked = false;
+  updateDevisTotal();
 }
 
 function openManualBilan() {
@@ -1512,10 +1636,6 @@ function resetToAgenda() {
   document.getElementById('notesGardienne').value = '';
   resetProfilToggle();
   setBilanCardMode('bilan');
-  document.querySelectorAll('.grimoire-item.active').forEach(el => {
-    el.classList.remove('active');
-    el.querySelector('input').checked = false;
-  });
   loadAgenda();
   HISTORIQUE_BOOKINGS = [];
   switchTab(SELECTED_BOOKING_ORIGIN || 'agenda');
@@ -1805,20 +1925,79 @@ async function submitManualBooking() {
 
 function renderGrimoire() {
   const container = document.getElementById('grimoireContainer');
+  GRIMOIRE_ITEMS_FLAT = [];
   let html = '';
   Object.entries(GRIMOIRE).forEach(([cat, items]) => {
     html += `<div class="grimoire-cat"><h4>${cat}</h4><div class="grimoire-grid">`;
     items.forEach(item => {
+      const i = GRIMOIRE_ITEMS_FLAT.length;
+      const prix30 = PRIX_30G[item] || null;
+      GRIMOIRE_ITEMS_FLAT.push({ name: item, prix30 });
       html += `
-        <label class="grimoire-item">
-          <input type="checkbox" value="${escapeHtml(item)}" onchange="this.closest('.grimoire-item').classList.toggle('active', this.checked)">
-          <span>${escapeHtml(item)}</span>
-        </label>
+        <div class="grimoire-item-block">
+          <label class="grimoire-item">
+            <input type="checkbox" value="${escapeHtml(item)}" onchange="onGrimoireToggle(${i}, this)">
+            <span>${escapeHtml(item)}</span>
+          </label>
+          <div class="grimoire-price-row" id="priceRow-${i}" hidden>
+            ${prix30 ? `
+              <div class="grimoire-weights">
+                <button type="button" class="weight-chip active" data-g="30" onclick="setGrammage(${i}, 30)">30g</button>
+                <button type="button" class="weight-chip" data-g="50" onclick="setGrammage(${i}, 50)">50g</button>
+                <button type="button" class="weight-chip" data-g="100" onclick="setGrammage(${i}, 100)">100g</button>
+              </div>
+              <span class="grimoire-price" id="price-${i}">${formatEuro(prix30)}</span>
+            ` : `<span class="grimoire-price custom">Prix personnalisé</span>`}
+          </div>
+        </div>
       `;
     });
     html += `</div></div>`;
   });
   container.innerHTML = html;
+  updateDevisTotal();
+}
+
+// Coche/decoche un allié : affiche ou masque sa ligne de prix et met a jour
+// le devis (usage interne gardienne uniquement).
+function onGrimoireToggle(i, checkbox) {
+  checkbox.closest('.grimoire-item').classList.toggle('active', checkbox.checked);
+  const row = document.getElementById('priceRow-' + i);
+  if (checkbox.checked) {
+    row.hidden = false;
+    if (GRIMOIRE_ITEMS_FLAT[i].prix30 && !DEVIS_GRAMMAGES[i]) DEVIS_GRAMMAGES[i] = 30;
+  } else {
+    row.hidden = true;
+    delete DEVIS_GRAMMAGES[i];
+  }
+  updateDevisTotal();
+}
+
+function setGrammage(i, g) {
+  DEVIS_GRAMMAGES[i] = g;
+  const row = document.getElementById('priceRow-' + i);
+  row.querySelectorAll('.weight-chip').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.g, 10) === g));
+  const prix30 = GRIMOIRE_ITEMS_FLAT[i].prix30;
+  document.getElementById('price-' + i).textContent = formatEuro(prixPourGrammage(prix30, g));
+  updateDevisTotal();
+}
+
+function toggleCureSachets(checked) {
+  DEVIS_CURE = checked;
+  updateDevisTotal();
+}
+
+function updateDevisTotal() {
+  let total = 0;
+  Object.entries(DEVIS_GRAMMAGES).forEach(([i, g]) => {
+    const item = GRIMOIRE_ITEMS_FLAT[i];
+    if (item && item.prix30) total += prixPourGrammage(item.prix30, g);
+  });
+  if (DEVIS_CURE) total += PRIX_CURE_SACHETS;
+  const totalEl = document.getElementById('devisTotal');
+  if (totalEl) totalEl.textContent = formatEuro(total);
+  const wrap = document.getElementById('devisRecap');
+  if (wrap) wrap.hidden = (total === 0);
 }
 
 async function submitBilan() {
