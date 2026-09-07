@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créneau achat boutique · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#C8704D">
+<meta name="description" content="Réserve ton créneau achat au Bar à plantes Sanctuarys, à Paris. Sélection de plantes par radiesthésie, 15 minutes, acompte de 10€ déduit de tes achats.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --rose-pale: #E8C5B6;
+    --rouge-vif: #B22B2B;
+    --vert-succes: #6B8C4A;
+    --line: rgba(106, 68, 35, 0.18);
+    --line-soft: rgba(106, 68, 35, 0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--blanc); color: var(--marron-deep); font-family: 'Inter', sans-serif; font-weight: 300; overflow-x: hidden; min-height: 100vh; }
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    padding: 20px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250, 245, 236, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  nav a.logo img { height: 42px; display: block; }
+  nav .back {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--marron-deep); text-transform: uppercase; text-decoration: none;
+    padding: 10px 18px; border: 1px solid var(--terracotta);
+    transition: all 0.3s;
+  }
+  nav .back:hover { background: var(--terracotta); color: var(--blanc); }
+
+  .page {
+    max-width: 780px; margin: 0 auto; padding: 120px 24px 60px;
+  }
+
+  .header {
+    text-align: center; margin-bottom: 40px;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 5px;
+    color: var(--terracotta-deep); text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Italiana', serif; font-size: clamp(36px, 5vw, 54px);
+    line-height: 1.05; color: var(--marron-deep); margin-bottom: 18px; font-weight: 400;
+  }
+  h1 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+  .subtitle {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px;
+    color: var(--marron-soft); max-width: 560px; margin: 0 auto; line-height: 1.65;
+  }
+
+  .steps-bar {
+    display: flex; justify-content: center; gap: 12px; margin: 30px 0 40px;
+  }
+  .step-dot {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    color: var(--marron-soft); text-transform: uppercase;
+  }
+  .step-dot .num {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; background: var(--blanc);
+  }
+  .step-dot.active .num { background: var(--terracotta); border-color: var(--terracotta); color: var(--blanc); }
+  .step-dot.done .num { background: var(--vert-succes); border-color: var(--vert-succes); color: var(--blanc); }
+  .step-dot.active { color: var(--terracotta-deep); }
+  @media (max-width: 640px) { .step-dot span:not(.num) { display: none; } }
+
+  .step-panel {
+    background: var(--blanc-deep); border: 1px solid var(--line);
+    padding: 40px 34px; display: none;
+  }
+  .step-panel.active { display: block; }
+
+  h2 {
+    font-family: 'Italiana', serif; font-size: 28px; color: var(--marron-deep);
+    font-weight: 400; margin-bottom: 24px;
+  }
+  h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-deep); }
+
+  .date-picker {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+    margin-bottom: 24px;
+  }
+  .date-cell {
+    padding: 12px 6px; text-align: center; cursor: pointer;
+    border: 1px solid var(--line); background: var(--blanc);
+    transition: all 0.2s;
+  }
+  .date-cell:hover:not(.past):not(.closed) { border-color: var(--terracotta); }
+  .date-cell.selected { background: var(--terracotta); color: var(--blanc); border-color: var(--terracotta); }
+  .date-cell.past, .date-cell.closed { opacity: 0.3; cursor: not-allowed; }
+  .date-cell .day-name { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1.5px; color: var(--marron-soft); text-transform: uppercase; margin-bottom: 4px; }
+  .date-cell .day-num { font-family: 'Italiana', serif; font-size: 22px; color: var(--marron-deep); }
+  .date-cell.selected .day-name, .date-cell.selected .day-num { color: var(--blanc); }
+
+  .month-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .month-nav button {
+    background: none; border: none; cursor: pointer;
+    padding: 8px 14px; font-size: 20px; color: var(--marron-soft);
+  }
+  .month-label {
+    font-family: 'Italiana', serif; font-size: 20px; color: var(--marron-deep);
+    text-transform: capitalize;
+  }
+
+  .slots-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  .slot {
+    padding: 14px 8px; text-align: center; cursor: pointer;
+    border: 1px solid var(--line); background: var(--blanc);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--marron-deep); transition: all 0.2s;
+  }
+  .slot:hover:not(.taken) { border-color: var(--terracotta); background: rgba(200, 112, 77, 0.05); }
+  .slot.selected { background: var(--terracotta); color: var(--blanc); border-color: var(--terracotta); }
+  .slot.taken { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+  .no-slots {
+    text-align: center; padding: 30px; font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: var(--marron-soft);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 2.5px; color: var(--marron-deep); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .form-group input {
+    width: 100%; padding: 13px 16px;
+    border: 1px solid var(--line); background: var(--blanc);
+    font-family: 'Cormorant Garamond', serif; font-size: 16px;
+    color: var(--marron-deep); font-style: italic;
+  }
+  .form-group input:focus { outline: none; border-color: var(--terracotta); }
+
+  .recap {
+    background: var(--blanc); border: 1px solid var(--line);
+    padding: 20px 22px; margin: 20px 0;
+  }
+  .recap-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line-soft); }
+  .recap-row:last-child { border-bottom: none; }
+  .recap-k { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--marron-soft); text-transform: uppercase; }
+  .recap-v { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); text-align: right; }
+
+  .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+  .btn-back, .btn-next {
+    padding: 14px 26px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; border: none; transition: all 0.3s;
+  }
+  .btn-back { background: transparent; color: var(--marron-deep); border: 1px solid var(--line); }
+  .btn-back:hover { border-color: var(--marron-deep); }
+  .btn-next {
+    background: var(--terracotta); color: var(--blanc);
+    border: 1px solid var(--terracotta);
+  }
+  .btn-next:hover { background: var(--marron-deep); border-color: var(--marron-deep); }
+  .btn-next:disabled { background: var(--marron-soft); border-color: var(--marron-soft); cursor: not-allowed; opacity: 0.6; }
+
+  .error {
+    background: rgba(178, 43, 43, 0.1); color: var(--rouge-vif);
+    padding: 12px 16px; margin-bottom: 16px;
+    font-family: 'Cormorant Garamond', serif; font-size: 14px;
+    display: none;
+  }
+  .error.show { display: block; }
+
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(250, 245, 236, 0.3);
+    border-top-color: var(--blanc); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    text-align: center; padding: 30px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px; color: var(--marron-soft); text-transform: uppercase;
+    border-top: 1px solid var(--line-soft); margin-top: 40px;
+  }
+  footer a { color: var(--terracotta-deep); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo"><img src="assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <a href="/" class="back">← Accueil</a>
+</nav>
+
+<div class="page">
+  <div class="header">
+    <div class="meta">✦ Créneau achat boutique</div>
+    <h1>Ton passage au<br><em>Bar à plantes.</em></h1>
+    <p class="subtitle">Réserve un créneau de 15 minutes à notre boutique de Paris. Une gardienne du Temple sélectionne pour toi des alliés végétaux par radiesthésie. Acompte de 10€, déduit de tes achats sur place.</p>
+  </div>
+
+  <div class="steps-bar">
+    <div class="step-dot active" data-step="1"><div class="num">1</div><span>Créneau</span></div>
+    <div class="step-dot" data-step="2"><div class="num">2</div><span>Informations</span></div>
+    <div class="step-dot" data-step="3"><div class="num">3</div><span>Paiement</span></div>
+  </div>
+
+  <div class="error" id="globalError"></div>
+
+  <!-- STEP 1 : DATE + SLOT -->
+  <div class="step-panel active" id="step1">
+    <h2>Ton <em>créneau.</em></h2>
+    <div class="month-nav">
+      <button type="button" onclick="shiftWeek(-1)">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button type="button" onclick="shiftWeek(1)">›</button>
+    </div>
+    <div class="date-picker" id="datePicker"></div>
+    <div id="slotSection" style="display:none;">
+      <h3 style="font-family: 'Italiana', serif; font-size: 18px; color: var(--marron-deep); margin: 18px 0 14px; font-weight: 400;">Créneaux disponibles</h3>
+      <div class="slots-grid" id="slotsGrid"></div>
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="location.href='/'">← Retour</button>
+      <button class="btn-next" type="button" id="step1Next" onclick="goStep(2)" disabled>Suivant →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 : INFO -->
+  <div class="step-panel" id="step2">
+    <h2>Tes <em>informations.</em></h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prénom *</label>
+        <input type="text" id="fPrenom" required>
+      </div>
+      <div class="form-group">
+        <label>Nom *</label>
+        <input type="text" id="fNom" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email *</label>
+      <input type="email" id="fEmail" required>
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="fPhone" required placeholder="06 ...">
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(1)">← Retour</button>
+      <button class="btn-next" type="button" onclick="goStep(3)">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 : RECAP + PAIEMENT -->
+  <div class="step-panel" id="step3">
+    <h2>Récapitulatif <em>et paiement.</em></h2>
+    <div class="recap" id="recap"></div>
+    <div id="paymentInfoBox" style="background: linear-gradient(135deg, rgba(168, 85, 55, 0.08), rgba(212, 160, 76, 0.08)); border: 1px solid var(--terracotta); padding: 20px 22px; margin: 20px 0; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-deep); line-height: 1.65;">
+      En cliquant sur <strong style="font-family:'Italiana',serif;font-weight:normal;font-style:normal;">Payer 10€</strong>, tu seras redirigée vers Stripe pour un règlement sécurisé. Cet acompte est déduit de tes achats en boutique. Ton créneau est réservé pendant 30 minutes le temps du paiement.
+    </div>
+    <div class="actions">
+      <button class="btn-back" type="button" onclick="goStep(2)">← Retour</button>
+      <button class="btn-next" type="button" id="payBtn" onclick="startPayment()">Payer 10€ ✦</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Sanctuarys · <a href="/">Accueil</a> · <a href="/cgv">CGV</a> · <a href="mailto:info@sanctuarys.me">info@sanctuarys.me</a>
+</footer>
+
+<script src="/js/sanctuarys.js"></script>
+<script>
+  // Le creneau achat boutique n'existe qu'a Paris
+  const PARIS_SANCTUARY_ID = '0816217f-2b32-4def-babd-f38d99d1a6d5';
+
+  const state = {
+    weekStart: null,
+    date: null,
+    slotStart: null
+  };
+
+  function goStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    document.querySelectorAll('.step-dot').forEach(d => {
+      const step = parseInt(d.dataset.step, 10);
+      d.classList.toggle('active', step === n);
+      d.classList.toggle('done', step < n);
+    });
+    if (n === 2 && !state.slotStart) { goStep(1); return; }
+    if (n === 3) {
+      const prenom = document.getElementById('fPrenom').value.trim();
+      const nom = document.getElementById('fNom').value.trim();
+      const email = document.getElementById('fEmail').value.trim();
+      const phone = document.getElementById('fPhone').value.trim();
+      if (!prenom || !nom || !email || !phone) {
+        showError('Prénom, nom, email et téléphone sont obligatoires.');
+        goStep(2);
+        return;
+      }
+      renderRecap();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('globalError');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 7000);
+  }
+
+  function initDatePicker() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Ouverture des reservations a partir du 1er septembre 2026
+    const openingFloor = new Date(2026, 8, 1);
+    const base = openingFloor > today ? openingFloor : today;
+    const dow = base.getDay();
+    const monday = new Date(base);
+    monday.setDate(base.getDate() - (dow === 0 ? 6 : dow - 1));
+    state.weekStart = monday;
+    renderDatePicker();
+  }
+
+  function shiftWeek(delta) {
+    const newStart = new Date(state.weekStart);
+    newStart.setDate(newStart.getDate() + delta * 7);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (delta < 0 && newStart < today) return;
+    state.weekStart = newStart;
+    state.date = null;
+    state.slotStart = null;
+    document.getElementById('slotSection').style.display = 'none';
+    document.getElementById('step1Next').disabled = true;
+    renderDatePicker();
+  }
+
+  function toLocalISO(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function renderDatePicker() {
+    const container = document.getElementById('datePicker');
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const openingFloor = new Date(2026, 8, 1);
+    const earliestBookable = openingFloor > today ? openingFloor : today;
+
+    let cells = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(state.weekStart);
+      d.setDate(d.getDate() + i);
+      const isPast = d < earliestBookable;
+      // Le creneau achat boutique est ouvert 7j/7, du lundi au dimanche
+      const iso = toLocalISO(d);
+      cells += `<div class="date-cell ${isPast ? 'past' : ''}" data-date="${iso}" ${!isPast ? `onclick="chooseDate('${iso}', this)"` : ''}>
+        <div class="day-name">${dayNames[i]}</div>
+        <div class="day-num">${d.getDate()}</div>
+      </div>`;
+    }
+    container.innerHTML = cells;
+    const label = state.weekStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    document.getElementById('monthLabel').textContent = label;
+  }
+
+  async function chooseDate(iso, el) {
+    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.date = iso;
+    state.slotStart = null;
+    document.getElementById('step1Next').disabled = true;
+    document.getElementById('slotSection').style.display = 'block';
+    await loadSlots();
+  }
+
+  async function loadSlots() {
+    const grid = document.getElementById('slotsGrid');
+    grid.innerHTML = '<div class="no-slots">Recherche des créneaux...</div>';
+    const supa = await Sanctuarys.init();
+    const { data, error } = await supa.rpc('get_available_slots', {
+      p_sanctuary_id: PARIS_SANCTUARY_ID,
+      p_date: state.date,
+      p_type: 'achat'
+    });
+    if (error) {
+      grid.innerHTML = `<div class="no-slots">Erreur : ${error.message}</div>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div class="no-slots">Ce jour est fermé.</div>';
+      return;
+    }
+    const cutoff = new Date(Date.now() + 2 * 60 * 60 * 1000);
+    grid.innerHTML = data.map(s => {
+      const start = new Date(s.slot_start);
+      const isPast = start < cutoff;
+      const takenOrPast = !s.available || isPast;
+      const label = start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
+      return `<div class="slot ${takenOrPast ? 'taken' : ''}" ${!takenOrPast ? `onclick="chooseSlot('${s.slot_start}', this)"` : ''} data-start="${s.slot_start}">${label}</div>`;
+    }).join('');
+  }
+
+  function chooseSlot(iso, el) {
+    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    state.slotStart = iso;
+    document.getElementById('step1Next').disabled = false;
+  }
+
+  function renderRecap() {
+    const start = new Date(state.slotStart);
+    const label = start.toLocaleString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
+    });
+    const recap = document.getElementById('recap');
+    const prenom = document.getElementById('fPrenom').value.trim();
+    const nom = document.getElementById('fNom').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    recap.innerHTML = `
+      <div class="recap-row"><div class="recap-k">Lieu</div><div class="recap-v">Sanctuarys Paris</div></div>
+      <div class="recap-row"><div class="recap-k">Créneau</div><div class="recap-v">${label}</div></div>
+      <div class="recap-row"><div class="recap-k">Durée</div><div class="recap-v">15 minutes</div></div>
+      <div class="recap-row"><div class="recap-k">Ce qui est prévu</div><div class="recap-v">Sélection de plantes par radiesthésie au Bar à plantes</div></div>
+      <div class="recap-row"><div class="recap-k">Nom</div><div class="recap-v">${prenom} ${nom}</div></div>
+      <div class="recap-row"><div class="recap-k">Email</div><div class="recap-v">${email}</div></div>
+      <div class="recap-row"><div class="recap-k">Téléphone</div><div class="recap-v">${phone}</div></div>
+      <div class="recap-row" style="border-top: 2px solid var(--terracotta); padding-top: 12px; margin-top: 6px;"><div class="recap-k" style="font-size:12px;color:var(--terracotta-deep);">Acompte à payer (déduit de tes achats)</div><div class="recap-v" style="font-family:'Italiana',serif;font-style:normal;font-size:22px;color:var(--terracotta-deep);">10,00 €</div></div>
+    `;
+  }
+
+  async function startPayment() {
+    const payBtn = document.getElementById('payBtn');
+    payBtn.disabled = true;
+    payBtn.innerHTML = '<span class="spinner"></span>Redirection...';
+
+    const payload = {
+      sanctuary_id: PARIS_SANCTUARY_ID,
+      start_at: state.slotStart,
+      prenom: document.getElementById('fPrenom').value.trim(),
+      nom: document.getElementById('fNom').value.trim(),
+      email: document.getElementById('fEmail').value.trim().toLowerCase(),
+      phone: document.getElementById('fPhone').value.trim()
+    };
+
+    try {
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/boutique-create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error || 'Erreur de paiement');
+      if (result.checkout_url) {
+        window.location.href = result.checkout_url;
+      } else {
+        throw new Error('URL de paiement manquante');
+      }
+    } catch (err) {
+      showError('Impossible de créer le paiement : ' + err.message + '. Écris-nous à info@sanctuarys.me');
+      payBtn.disabled = false;
+      payBtn.innerHTML = 'Payer 10€ ✦';
+    }
+  }
+
+  initDatePicker();
+</script>
+</body>
+</html>

@@ -76,6 +76,25 @@ CONTENU OBLIGATOIRE, EN JSON STRICT AVEC CES 5 CLES :
 
 Reponds UNIQUEMENT en JSON strict, sans texte avant ni apres.`
 
+const SYSTEM_PROMPT_ACHAT = `Tu es la voix redactionnelle de Sanctuarys, gynecologie naturelle et fertilite, fondee par Princesse Tchassi Bekou a Paris.
+
+Une gardienne du Temple vient de selectionner par radiesthesie des allies vegetaux et encens pour une cliente venue faire un achat en boutique au Bar a plantes. Il n'y a ici ni lecture d'uterus ni mesure de receptivite : uniquement une selection de plantes. Tu rediges l'analyse simplifiee qui accompagne ces plantes.
+
+STYLE OBLIGATOIRE :
+- Prose francaise, dense, sensible, editoriale
+- Tutoiement, tu t'adresses directement a la cliente
+- Aucun tiret cadratin nulle part, uniquement virgules et points
+- Aucun bullet point, aucune liste a puces
+- Ton sobre et chaleureux, ni clinique ni grandiloquent
+- Evite "magnifique", "incroyable", "puissant" et les adjectifs vides
+
+CONTENU OBLIGATOIRE, EN JSON STRICT AVEC UNE SEULE CLE :
+{
+  "vibration_energetique": "Explique la vibration energetique des allies vegetaux et encens choisis pour cette cliente, ce qu'ils viennent equilibrer ou eveiller, leurs pouvoirs magiques vibratoires. 5 a 8 lignes."
+}
+
+Reponds UNIQUEMENT en JSON strict, sans texte avant ni apres.`
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405)
@@ -103,6 +122,10 @@ Deno.serve(async (req) => {
       elements_choisis,
       notes_gardienne,
       profil, // 'adulte' (defaut) ou 'adolescente'
+      // 'bilan' (defaut, lecture complete uterus + receptivite + plantes) ou
+      // 'achat' (creneau achat boutique : uniquement la selection de plantes,
+      // sans pourcentages, analyse simplifiee limitee aux pouvoirs vibratoires)
+      type_analyse,
       // Pour source === 'manuel' uniquement : la cliente est saisie a la main,
       // il n'y a ni rendez-vous ni seance a relier.
       client_prenom: manualPrenom,
@@ -126,7 +149,8 @@ Deno.serve(async (req) => {
     if (source === 'manuel' && (!manualPrenom || !manualEmail)) {
       return json({ error: 'Prénom et email de la cliente requis pour un bilan sans rendez-vous' }, 400)
     }
-    if (etat_uterus_pct === undefined || etat_receptivite_pct === undefined) {
+    const typeAnalyseFinal = type_analyse === 'achat' ? 'achat' : 'bilan'
+    if (typeAnalyseFinal === 'bilan' && (etat_uterus_pct === undefined || etat_receptivite_pct === undefined)) {
       return json({ error: 'Les deux pourcentages sont requis' }, 400)
     }
     if (!Array.isArray(elements_choisis) || elements_choisis.length === 0) {
@@ -186,8 +210,8 @@ Deno.serve(async (req) => {
 
     if (!clientEmail) return json({ error: 'Email de la cliente introuvable' }, 400)
 
-    const uterusPct = Math.max(0, Math.min(100, Math.round(etat_uterus_pct)))
-    const receptivitePct = Math.max(0, Math.min(100, Math.round(etat_receptivite_pct)))
+    const uterusPct = typeAnalyseFinal === 'bilan' ? Math.max(0, Math.min(100, Math.round(etat_uterus_pct))) : null
+    const receptivitePct = typeAnalyseFinal === 'bilan' ? Math.max(0, Math.min(100, Math.round(etat_receptivite_pct))) : null
     const elementsList = elements_choisis.join(', ')
 
     // ===== Auto-creation de l'espace membre pour les clientes qui n'en ont pas encore =====
@@ -286,7 +310,13 @@ Deno.serve(async (req) => {
       }
     }
 
-    const userMessage = `CLIENTE : ${clientPrenom}
+    const userMessage = typeAnalyseFinal === 'achat'
+      ? `CLIENTE : ${clientPrenom}
+ALLIÉS VÉGÉTAUX ET ENCENS CHOISIS : ${elementsList}
+${notes_gardienne ? `OBSERVATION DE LA GARDIENNE : ${notes_gardienne}` : ''}
+
+Rédige l'analyse simplifiée en JSON strict, selon la structure imposée.`
+      : `CLIENTE : ${clientPrenom}
 ÉTAT DE L'UTÉRUS : ${uterusPct}%
 ÉTAT DE RÉCEPTIVITÉ : ${receptivitePct}%
 ALLIÉS VÉGÉTAUX ET ENCENS CHOISIS : ${elementsList}
@@ -294,7 +324,9 @@ ${notes_gardienne ? `OBSERVATION DE LA GARDIENNE : ${notes_gardienne}` : ''}
 
 Rédige le bilan structuré en JSON strict, selon la structure imposée.`
 
-    const systemPrompt = profilFinal === 'adolescente' ? SYSTEM_PROMPT_ADOLESCENTE : SYSTEM_PROMPT_ADULTE
+    const systemPrompt = typeAnalyseFinal === 'achat'
+      ? SYSTEM_PROMPT_ACHAT
+      : (profilFinal === 'adolescente' ? SYSTEM_PROMPT_ADOLESCENTE : SYSTEM_PROMPT_ADULTE)
 
     const claudeResp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -333,11 +365,11 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
       ? "Ce bilan est un accompagnement énergétique et végétal, il ne remplace pas un avis médical : parles-en à un parent ou à ton médecin, surtout si tu suis un traitement ou en cas de doute."
       : "Ce bilan est un accompagnement énergétique et végétal, il ne remplace pas un avis médical : parle-en à ton médecin ou ta sage femme, surtout si tu suis un traitement, si tu es enceinte ou si tu allaites."
 
-    const analyse_chiffres = parsed.analyse_chiffres || ''
     const vibration_energetique = parsed.vibration_energetique || ''
-    const bienfaits_physiologiques = parsed.bienfaits_physiologiques || ''
-    const avis_medical = parsed.avis_medical || fallbackAvisMedical
-    const resume_final = parsed.resume_final || ''
+    const analyse_chiffres = typeAnalyseFinal === 'achat' ? null : (parsed.analyse_chiffres || '')
+    const bienfaits_physiologiques = typeAnalyseFinal === 'achat' ? null : (parsed.bienfaits_physiologiques || '')
+    const avis_medical = typeAnalyseFinal === 'achat' ? null : (parsed.avis_medical || fallbackAvisMedical)
+    const resume_final = typeAnalyseFinal === 'achat' ? null : (parsed.resume_final || '')
 
     const { data: saved, error: saveError } = await admin
       .from('bilans')
@@ -359,6 +391,7 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
         resume_final,
         generated_by: 'sonnet-4-6',
         profil: profilFinal,
+        type_analyse: typeAnalyseFinal,
         source_type: source === 'manuel' ? 'manuel' : 'rdv'
       })
       .select()
@@ -385,11 +418,6 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
     }
 
     // ===== Email a la cliente =====
-    const paragraphs = [
-      `Chère ${escapeHtml(clientPrenom)},`,
-      `Voici le bilan de ta lecture radiesthésique réalisée au ${escapeHtml(sanctuaryName)}.`
-    ]
-
     const accessBlock = clientAccessLink
       ? `<div class="section-title">Ton espace t'attend</div>
   <p>Ce bilan est aussi enregistré dans ton espace personnel Sanctuarys, avec ton calendrier de cycle et le suivi de tes prescriptions au Bar à plantes.</p>
@@ -397,7 +425,41 @@ Rédige le bilan structuré en JSON strict, selon la structure imposée.`
   <p style="font-size:13px;color:#6B4423;font-style:italic;">Si le bouton ne s'affiche pas, copie ce lien : <a href="${clientAccessLink}" style="color:#A85537;word-break:break-all;">${clientAccessLink}</a></p>`
       : `<a class="cta" href="https://sanctuarys.me/espace-membre.html">Retrouver ce bilan dans mon espace ✦</a>`
 
-    const emailHtml = `<!DOCTYPE html>
+    const emailHtml = typeAnalyseFinal === 'achat'
+      ? `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body { background: #FAF5EC; font-family: Georgia, serif; color: #2A1810; margin: 0; padding: 40px 20px; }
+.container { max-width: 600px; margin: 0 auto; background: #FAF5EC; padding: 48px; border: 1px solid rgba(106, 68, 35, 0.18); }
+.meta { font-family: monospace; font-size: 10px; letter-spacing: 4px; color: #A85537; text-transform: uppercase; margin: 0 0 32px; }
+h1 { font-family: Georgia, serif; font-size: 26px; color: #2A1810; margin: 0 0 24px; }
+p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-family: Georgia, serif; }
+.section-title { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #A85537; text-transform: uppercase; margin: 28px 0 10px; }
+.elements { font-style: italic; color: #6B4423; }
+.cta { display: inline-block; margin-top: 12px; padding: 14px 28px; background: #C8704D; color: #FAF5EC !important; text-decoration: none; font-family: Georgia, serif; }
+.signature { font-family: Georgia, serif; font-size: 18px; color: #A85537; margin-top: 32px; }
+.signature-name { font-size: 20px; color: #2A1810; margin-top: -10px; }
+.footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
+</style></head><body>
+<div class="container">
+  <p class="meta">✦ Sanctuarys · Bar à plantes</p>
+  <h1>Ta sélection de plantes est prête.</h1>
+  <p>Chère ${escapeHtml(clientPrenom)},</p>
+  <p>Voici l'analyse de la sélection réalisée par radiesthésie au ${escapeHtml(sanctuaryName)}.</p>
+
+  <div class="section-title">Alliés choisis pour toi</div>
+  <p class="elements">${escapeHtml(elementsList)}</p>
+
+  <div class="section-title">La vibration de tes alliés</div>
+  <p>${escapeHtml(vibration_energetique)}</p>
+
+  ${accessBlock}
+
+  <p class="signature">Avec attention,</p>
+  <p class="signature-name">L'équipe Sanctuarys</p>
+
+  <div class="footer">Sanctuarys · Gynécologie naturelle · Fertilité · sanctuarys.me</div>
+</div></body></html>`
+      : `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
 body { background: #FAF5EC; font-family: Georgia, serif; color: #2A1810; margin: 0; padding: 40px 20px; }
 .container { max-width: 600px; margin: 0 auto; background: #FAF5EC; padding: 48px; border: 1px solid rgba(106, 68, 35, 0.18); }
@@ -419,7 +481,8 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
 <div class="container">
   <p class="meta">✦ Sanctuarys · Bilan radiesthésique</p>
   <h1>Ton bilan est prêt.</h1>
-  ${paragraphs.map(p => `<p>${p}</p>`).join('\n')}
+  <p>Chère ${escapeHtml(clientPrenom)},</p>
+  <p>Voici le bilan de ta lecture radiesthésique réalisée au ${escapeHtml(sanctuaryName)}.</p>
 
   <div class="jauges">
     <div class="jauge"><div class="jauge-pct">${uterusPct}%</div><div class="jauge-label">État de l'utérus</div></div>
@@ -451,6 +514,10 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
   <div class="footer">Sanctuarys · Gynécologie naturelle · Fertilité · sanctuarys.me</div>
 </div></body></html>`
 
+    const emailSubject = typeAnalyseFinal === 'achat'
+      ? 'Ta sélection de plantes · Sanctuarys'
+      : 'Ton bilan radiesthésique · Sanctuarys'
+
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -460,7 +527,7 @@ p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-f
       body: JSON.stringify({
         from: 'Sanctuarys <info@sanctuarys.me>',
         to: clientEmail,
-        subject: 'Ton bilan radiesthésique · Sanctuarys',
+        subject: emailSubject,
         html: emailHtml,
         reply_to: 'info@sanctuarys.me'
       })

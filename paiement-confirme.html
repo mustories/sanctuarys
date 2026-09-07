@@ -204,11 +204,11 @@
 
 <div class="frame">
   <img class="logo" src="assets/sanctuarys-logo-1.png" alt="Sanctuarys">
-  <div class="meta">Rendez-vous confirmé ✦</div>
+  <div class="meta" id="metaLabel">Rendez-vous confirmé ✦</div>
 
-  <h1>Ton rendez-vous<br><em>est réservé.</em></h1>
+  <h1 id="mainTitle">Ton rendez-vous<br><em>est réservé.</em></h1>
 
-  <p class="intro">
+  <p class="intro" id="introText">
     Ton paiement est validé et ta séance est bloquée. Nous t'attendons dans nos murs à l'heure choisie pour ta lecture radiesthésique et ton Bain Vapeur Vaginal.
   </p>
 
@@ -216,15 +216,15 @@
     <h3>Ce qui vient maintenant</h3>
     <div class="step">
       <div class="step-num">I</div>
-      <div class="step-text"><strong>Vérifie ta boîte email.</strong> Tu reçois dans la minute un message de confirmation avec la date, l'heure exacte et l'adresse. Un rappel te sera envoyé 24h avant.</div>
+      <div class="step-text" id="step1Text"><strong>Vérifie ta boîte email.</strong> Tu reçois dans la minute un message de confirmation avec la date, l'heure exacte et l'adresse. Un rappel te sera envoyé 24h avant.</div>
     </div>
     <div class="step">
       <div class="step-num">II</div>
-      <div class="step-text"><strong>Prépare-toi.</strong> Prévois un vêtement ample et confortable. Nous fournissons le linge pour le soin. Arrive 5 minutes avant l'heure pour ta lecture d'utérus.</div>
+      <div class="step-text" id="step2Text"><strong>Prépare-toi.</strong> Prévois un vêtement ample et confortable. Nous fournissons le linge pour le soin. Arrive 5 minutes avant l'heure pour ta lecture d'utérus.</div>
     </div>
     <div class="step">
       <div class="step-num">III</div>
-      <div class="step-text"><strong>Ton espace personnel est prêt.</strong> Dans l'email de confirmation, un bouton "Accéder à mon espace" t'ouvre ton espace membre : calendrier menstruel, journal, et bientôt le compte-rendu de ton soin et tes prescriptions au Bar à plantes.</div>
+      <div class="step-text" id="step3Text"><strong>Ton espace personnel est prêt.</strong> Dans l'email de confirmation, un bouton "Accéder à mon espace" t'ouvre ton espace membre : calendrier menstruel, journal, et bientôt le compte-rendu de ton soin et tes prescriptions au Bar à plantes.</div>
     </div>
   </div>
 
@@ -239,5 +239,17 @@
   </div>
 </div>
 
+<script>
+  // Adapte le texte de confirmation selon le type de reservation
+  const typeParam = new URLSearchParams(window.location.search).get('type');
+  if (typeParam === 'achat') {
+    document.getElementById('metaLabel').textContent = 'Créneau achat boutique confirmé ✦';
+    document.getElementById('mainTitle').innerHTML = 'Ton créneau achat<br><em>est réservé.</em>';
+    document.getElementById('introText').textContent = "Ton acompte de 10€ est validé, il sera déduit de tes achats sur place. Nous t'attendons au Bar à plantes à l'heure choisie pour ta sélection de plantes par radiesthésie.";
+    document.getElementById('step1Text').innerHTML = '<strong>Vérifie ta boîte email.</strong> Tu reçois dans la minute un message de confirmation avec la date, l\'heure exacte et l\'adresse de la boutique.';
+    document.getElementById('step2Text').innerHTML = '<strong>Prépare-toi.</strong> Arrive à l\'heure, la sélection prend quinze minutes. Une gardienne du Temple choisit pour toi des alliés végétaux par radiesthésie.';
+    document.getElementById('step3Text').innerHTML = '<strong>Ton espace personnel est prêt.</strong> Juste après ta visite, tu recevras par email et dans ton espace membre l\'analyse des pouvoirs vibratoires des plantes choisies pour toi.';
+  }
+</script>
 </body>
 </html>

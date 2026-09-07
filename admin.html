@@ -2172,6 +2172,11 @@
           <option value="rdv">Avec rendez-vous</option>
           <option value="manuel">Sans rendez-vous</option>
         </select>
+        <select id="bilansTypeFilter" style="padding: 12px 16px; background: var(--blanc-deep); border: 1px solid var(--line); font-family: 'Inter', sans-serif; font-size: 13px; color: var(--marron-deep); cursor: pointer;" onchange="renderBilansPanel()">
+          <option value="all">Tous types</option>
+          <option value="bilan">Bilan complet</option>
+          <option value="achat">Achat boutique</option>
+        </select>
       </div>
 
       <div class="eleves-list" id="bilansList">
@@ -2187,7 +2192,7 @@
         <h2 class="entry-modal-title"><em id="bilanModalName">Cliente</em></h2>
         <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;" id="bilanModalBadges"></div>
 
-        <div style="display: flex; gap: 32px; margin-top: 26px;">
+        <div style="display: flex; gap: 32px; margin-top: 26px;" id="bilanModalJauges">
           <div>
             <div style="font-family: 'Italiana', serif; font-size: 30px; color: var(--terracotta-deep);" id="bilanModalUterus"></div>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--marron-soft); margin-top: 4px;">État de l'utérus</div>
@@ -2202,7 +2207,7 @@
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Alliés choisis</div>
           <p id="bilanModalElements" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep);"></p>
         </div>
-        <div style="margin-top: 22px;">
+        <div style="margin-top: 22px;" id="bilanModalAnalyseBlock">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Ce que révèlent ces chiffres</div>
           <p id="bilanModalAnalyse" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
         </div>
@@ -2210,15 +2215,15 @@
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">La vibration des alliés</div>
           <p id="bilanModalVibration" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
         </div>
-        <div style="margin-top: 22px;">
+        <div style="margin-top: 22px;" id="bilanModalBienfaitsBlock">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Bienfaits</div>
           <p id="bilanModalBienfaits" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
         </div>
-        <div style="margin-top: 22px;">
+        <div style="margin-top: 22px;" id="bilanModalResumeBlock">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep); margin-bottom: 8px;">Ce que vise cette séance</div>
           <p id="bilanModalResume" style="font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--marron-deep); line-height: 1.7;"></p>
         </div>
-        <div style="margin-top: 22px;">
+        <div style="margin-top: 22px;" id="bilanModalAvisBlock">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta-deep);">Avis médical</div>
           <p id="bilanModalAvis" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: var(--marron-soft); line-height: 1.7; margin-top: 6px;"></p>
         </div>
@@ -3556,6 +3561,7 @@
     const search = (document.getElementById('searchBilan').value || '').toLowerCase().trim();
     const profilFilter = document.getElementById('bilansProfilFilter').value;
     const sourceFilter = document.getElementById('bilansSourceFilter').value;
+    const typeFilter = document.getElementById('bilansTypeFilter').value;
     list.innerHTML = '';
 
     document.getElementById('bilansTotalCount').textContent = ALL_BILANS.length;
@@ -3564,6 +3570,7 @@
     const filtered = ALL_BILANS.filter(b => {
       if (profilFilter !== 'all' && (b.profil || 'adulte') !== profilFilter) return false;
       if (sourceFilter !== 'all' && (b.source_type || 'rdv') !== sourceFilter) return false;
+      if (typeFilter !== 'all' && (b.type_analyse || 'bilan') !== typeFilter) return false;
       if (search) {
         const text = ((b.client_prenom || '') + ' ' + (b.client_nom || '') + ' ' + (b.client_email || '')).toLowerCase();
         if (!text.includes(search)) return false;
@@ -3581,15 +3588,21 @@
       const dateStr = Sanctuarys.formatRelative ? Sanctuarys.formatRelative(b.created_at) : new Date(b.created_at).toLocaleString('fr-FR');
       const isAdo = b.profil === 'adolescente';
       const isManuel = (b.source_type || 'rdv') === 'manuel';
+      const isAchat = b.type_analyse === 'achat';
+      const achatBadge = isAchat
+        ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(200, 112, 77, 0.14); border: 1px solid var(--terracotta); color: var(--terracotta-deep); font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Achat boutique</span>'
+        : '';
       const profilBadge = isAdo
         ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(168, 85, 168, 0.14); border: 1px solid #a855a8; color: #6c2e6c; font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Adolescente</span>'
         : '';
       const manuelBadge = isManuel
         ? '<span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(76, 140, 168, 0.14); border: 1px solid #4c8ca8; color: #2e5c6c; font-family: \'JetBrains Mono\', monospace; font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; vertical-align: middle;">Sans rendez-vous</span>'
         : '';
-      const preview = b.resume_final
-        ? '"' + b.resume_final.substring(0, 140) + (b.resume_final.length > 140 ? '..."' : '"')
-        : 'Pas de résumé';
+      const preview = isAchat
+        ? (b.vibration_energetique ? '"' + b.vibration_energetique.substring(0, 140) + (b.vibration_energetique.length > 140 ? '..."' : '"') : 'Pas de résumé')
+        : (b.resume_final
+          ? '"' + b.resume_final.substring(0, 140) + (b.resume_final.length > 140 ? '..."' : '"')
+          : 'Pas de résumé');
 
       const row = document.createElement('div');
       row.className = 'eleve-row';
@@ -3598,7 +3611,7 @@
         <div class="eleve-name">
           <div class="eleve-avatar">${initial}</div>
           <div>
-            <div class="name">${escapeHTML(b.client_prenom || '')} ${escapeHTML(b.client_nom || '')}${profilBadge}${manuelBadge}</div>
+            <div class="name">${escapeHTML(b.client_prenom || '')} ${escapeHTML(b.client_nom || '')}${achatBadge}${profilBadge}${manuelBadge}</div>
             <div class="email">${escapeHTML(b.client_email || '')}</div>
           </div>
         </div>
@@ -3621,10 +3634,19 @@
     CURRENT_BILAN = b;
     document.getElementById('bilanModalName').textContent = (b.client_prenom || 'Cliente') + (b.client_nom ? ' ' + b.client_nom : '');
     document.getElementById('bilanModalMeta').textContent = (b.client_email || '') + ' · ' + new Date(b.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const isAchat = b.type_analyse === 'achat';
     let badges = '';
+    if (isAchat) badges += '<span style="padding: 3px 9px; background: rgba(200, 112, 77, 0.14); border: 1px solid var(--terracotta); color: var(--terracotta-deep); font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;">Achat boutique</span>';
     if (b.profil === 'adolescente') badges += '<span style="padding: 3px 9px; background: rgba(168, 85, 168, 0.14); border: 1px solid #a855a8; color: #6c2e6c; font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;">Adolescente</span>';
     if ((b.source_type || 'rdv') === 'manuel') badges += '<span style="padding: 3px 9px; background: rgba(76, 140, 168, 0.14); border: 1px solid #4c8ca8; color: #2e5c6c; font-family: \'JetBrains Mono\', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;">Sans rendez-vous</span>';
     document.getElementById('bilanModalBadges').innerHTML = badges;
+    // Le creneau achat boutique n'a ni jauges, ni analyse chiffree, ni bienfaits,
+    // ni resume, ni avis medical : uniquement les plantes et leur vibration.
+    document.getElementById('bilanModalJauges').style.display = isAchat ? 'none' : 'flex';
+    document.getElementById('bilanModalAnalyseBlock').style.display = isAchat ? 'none' : 'block';
+    document.getElementById('bilanModalBienfaitsBlock').style.display = isAchat ? 'none' : 'block';
+    document.getElementById('bilanModalResumeBlock').style.display = isAchat ? 'none' : 'block';
+    document.getElementById('bilanModalAvisBlock').style.display = isAchat ? 'none' : 'block';
     document.getElementById('bilanModalUterus').textContent = (b.etat_uterus_pct != null ? b.etat_uterus_pct : '—') + '%';
     document.getElementById('bilanModalReceptivite').textContent = (b.etat_receptivite_pct != null ? b.etat_receptivite_pct : '—') + '%';
     document.getElementById('bilanModalElements').textContent = Array.isArray(b.elements_choisis) ? b.elements_choisis.join(', ') : (b.elements_choisis || '');
@@ -3645,7 +3667,7 @@
       closeBilanModal();
       openComposeMail({
         to: b.client_email || '',
-        subject: 'Ton bilan Sanctuarys',
+        subject: isAchat ? 'Ta sélection de plantes Sanctuarys' : 'Ton bilan Sanctuarys',
         recipientName: b.client_prenom || '',
         context: 'bilan'
       });

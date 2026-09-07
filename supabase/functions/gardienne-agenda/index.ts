@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
         .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
       admin.from('appointments')
-        .select('id, start_at, duration_minutes, status, gardienne_id, retard_count, sanction_montant, client_prenom, client_nom, client_email, client_phone, client_profile_id')
+        .select('id, start_at, duration_minutes, status, gardienne_id, retard_count, sanction_montant, client_prenom, client_nom, client_email, client_phone, client_profile_id, type')
         .gte('start_at', since).lte('start_at', until)
         .neq('status', 'cancelled')
         .order('start_at', { ascending: true }),
@@ -72,6 +72,7 @@ Deno.serve(async (req) => {
 
     const desClub = (club.data || []).map((b: any) => ({
       source: 'club',
+      type: 'soin',
       id: b.id,
       start_at: b.start_at,
       end_at: b.end_at,
@@ -91,6 +92,7 @@ Deno.serve(async (req) => {
 
     const desPublics = (publics.data || []).map((a: any) => ({
       source: 'public',
+      type: a.type || 'soin',
       id: a.id,
       start_at: a.start_at,
       end_at: a.start_at ? new Date(new Date(a.start_at).getTime() + (a.duration_minutes || 60) * 60000).toISOString() : null,
@@ -100,7 +102,7 @@ Deno.serve(async (req) => {
       email: a.client_email || '',
       phone: a.client_phone || '',
       profile_id: a.client_profile_id || null,
-      soin: 'V-Steam · rendez vous public',
+      soin: a.type === 'achat' ? 'Achat boutique · sélection de plantes' : 'V-Steam · rendez vous public',
       gardienne_id: a.gardienne_id || null,
       retard_count: a.retard_count || 0,
       sanction_montant: a.sanction_montant || 0,

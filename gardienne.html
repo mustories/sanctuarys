@@ -751,40 +751,44 @@
       <select id="gardienneSelect"></select>
     </div>
 
-    <div class="field">
-      <label>Profil du bilan</label>
-      <div class="profil-toggle" id="profilToggle">
-        <label class="profil-option active" data-profil="adulte">
-          <input type="radio" name="profilBilan" value="adulte" checked onchange="setProfilBilan('adulte')">
-          <span>Adulte</span>
-        </label>
-        <label class="profil-option" data-profil="adolescente">
-          <input type="radio" name="profilBilan" value="adolescente" onchange="setProfilBilan('adolescente')">
-          <span>Adolescente</span>
-        </label>
-      </div>
-    </div>
+    <div class="field-hint" id="achatHint" hidden style="margin-bottom:22px;">Créneau achat boutique : sélectionne uniquement les alliés végétaux, l'analyse simplifiée ne contiendra que leurs pouvoirs vibratoires.</div>
 
-    <div class="field" id="mamanEmailField" hidden>
-      <label for="mamanEmail">Email de la maman (optionnel, si elle est déjà cliente)</label>
-      <input type="email" id="mamanEmail" placeholder="email@maman.fr">
-      <p class="field-hint">Si renseigné, son compte sera relié à celui de l'adolescente pour la contacter facilement. L'espace de l'adolescente reste privé : la maman n'y a pas accès et ne voit pas ce bilan.</p>
-    </div>
-
-    <div class="slider-block">
-      <div class="slider-head">
-        <span class="lbl">État de l'utérus</span>
-        <span class="val" id="uterusVal">50%</span>
+    <div id="bilanFullFields">
+      <div class="field">
+        <label>Profil du bilan</label>
+        <div class="profil-toggle" id="profilToggle">
+          <label class="profil-option active" data-profil="adulte">
+            <input type="radio" name="profilBilan" value="adulte" checked onchange="setProfilBilan('adulte')">
+            <span>Adulte</span>
+          </label>
+          <label class="profil-option" data-profil="adolescente">
+            <input type="radio" name="profilBilan" value="adolescente" onchange="setProfilBilan('adolescente')">
+            <span>Adolescente</span>
+          </label>
+        </div>
       </div>
-      <input type="range" id="uterusSlider" min="0" max="100" value="50" oninput="document.getElementById('uterusVal').textContent = this.value + '%'">
-    </div>
 
-    <div class="slider-block">
-      <div class="slider-head">
-        <span class="lbl">État de réceptivité</span>
-        <span class="val" id="receptiviteVal">50%</span>
+      <div class="field" id="mamanEmailField" hidden>
+        <label for="mamanEmail">Email de la maman (optionnel, si elle est déjà cliente)</label>
+        <input type="email" id="mamanEmail" placeholder="email@maman.fr">
+        <p class="field-hint">Si renseigné, son compte sera relié à celui de l'adolescente pour la contacter facilement. L'espace de l'adolescente reste privé : la maman n'y a pas accès et ne voit pas ce bilan.</p>
       </div>
-      <input type="range" id="receptiviteSlider" min="0" max="100" value="50" oninput="document.getElementById('receptiviteVal').textContent = this.value + '%'">
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <span class="lbl">État de l'utérus</span>
+          <span class="val" id="uterusVal">50%</span>
+        </div>
+        <input type="range" id="uterusSlider" min="0" max="100" value="50" oninput="document.getElementById('uterusVal').textContent = this.value + '%'">
+      </div>
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <span class="lbl">État de réceptivité</span>
+          <span class="val" id="receptiviteVal">50%</span>
+        </div>
+        <input type="range" id="receptiviteSlider" min="0" max="100" value="50" oninput="document.getElementById('receptiviteVal').textContent = this.value + '%'">
+      </div>
     </div>
 
     <div class="field">
@@ -839,6 +843,7 @@ let SELECTED_BOOKING = null;
 let SELECTED_BOOKING_ORIGIN = 'agenda';
 let CURRENT_TAB = 'agenda';
 let SELECTED_BILAN_PROFIL = 'adulte';
+let SELECTED_TYPE_ANALYSE = 'bilan'; // 'bilan' (complet) ou 'achat' (creneau achat boutique, plantes uniquement)
 let CLIENTE_RESULTS = [];
 let CURRENT_CLIENT = null;
 let CLIENT_DETAIL_ORIGIN = 'clientes';
@@ -889,6 +894,19 @@ function resetProfilToggle() {
   document.getElementById('mamanEmail').value = '';
 }
 
+// Bascule le formulaire du bilan entre le mode complet (uterus, receptivite,
+// profil adulte/adolescente) et le mode achat boutique (plantes uniquement,
+// analyse simplifiee limitee aux pouvoirs vibratoires).
+function setBilanCardMode(typeAnalyse) {
+  SELECTED_TYPE_ANALYSE = typeAnalyse === 'achat' ? 'achat' : 'bilan';
+  const isAchat = SELECTED_TYPE_ANALYSE === 'achat';
+  document.getElementById('bilanFullFields').hidden = isAchat;
+  document.getElementById('achatHint').hidden = !isAchat;
+  document.getElementById('submitBtn').textContent = isAchat
+    ? 'Générer et expédier l\'analyse ✦'
+    : 'Générer et expédier le bilan ✦';
+}
+
 function openManualBilan() {
   document.querySelectorAll('.tab-panel').forEach(el => { el.hidden = true; });
   document.getElementById('rdvCard').hidden = true;
@@ -917,11 +935,12 @@ function continueManualBilan() {
     errEl.hidden = false;
     return;
   }
-  SELECTED_BOOKING = { source: 'manuel', id: null, prenom, nom, email };
+  SELECTED_BOOKING = { source: 'manuel', id: null, prenom, nom, email, type: 'soin' };
   SELECTED_BOOKING_ORIGIN = CURRENT_TAB;
   document.getElementById('clientName').textContent = `${prenom} ${nom || ''}`;
   document.getElementById('clientMeta').textContent = `${email} · Bilan sans rendez-vous`;
   resetProfilToggle();
+  setBilanCardMode('bilan');
   document.getElementById('manualBilanCard').hidden = true;
   document.getElementById('bilanCard').hidden = false;
 }
@@ -1299,7 +1318,10 @@ function openRdvDetail() {
   document.getElementById('rdvMeta').textContent = meta;
 
   const bilanBtn = document.getElementById('rdvBilanBtn');
-  bilanBtn.textContent = b.a_deja_un_bilan ? 'Voir le bilan ✦' : 'Faire le bilan ✦';
+  const estAchat = b.type === 'achat';
+  bilanBtn.textContent = b.a_deja_un_bilan
+    ? (estAchat ? 'Voir l\'analyse ✦' : 'Voir le bilan ✦')
+    : (estAchat ? 'Faire l\'analyse ✦' : 'Faire le bilan ✦');
 
   document.getElementById('rdvEditDate').value = d.toISOString().slice(0, 10);
   document.getElementById('rdvEditHeure').value = d.toTimeString().slice(0, 5);
@@ -1423,6 +1445,7 @@ function goToBilanFromRdv() {
   const d = new Date(b.start_at);
   document.getElementById('clientMeta').textContent = `${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} · ${b.email}`;
   resetProfilToggle();
+  setBilanCardMode(b.type === 'achat' ? 'achat' : 'bilan');
   document.getElementById('rdvCard').hidden = true;
   document.getElementById('bilanCard').hidden = false;
 }
@@ -1433,16 +1456,27 @@ function openBilanView(bilan) {
   document.getElementById('bvName').textContent = `${bilan.client_prenom || ''} ${bilan.client_nom || ''}`;
   document.getElementById('bvMeta').textContent = `${bilan.client_email || ''} · ${new Date(bilan.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
   let badgesHtml = '';
+  const estAchat = bilan.type_analyse === 'achat';
+  if (estAchat) badgesHtml += '<span class="badge badge-manuel">✦ Achat boutique</span>';
   if (bilan.profil === 'adolescente') badgesHtml += '<span class="badge badge-profil">✦ Adolescente</span>';
   if (bilan.source_type === 'manuel') badgesHtml += '<span class="badge badge-manuel">Sans rendez-vous</span>';
   document.getElementById('bvBadges').innerHTML = badgesHtml;
-  document.getElementById('bvUterus').textContent = (bilan.etat_uterus_pct != null ? bilan.etat_uterus_pct : '—') + '%';
-  document.getElementById('bvReceptivite').textContent = (bilan.etat_receptivite_pct != null ? bilan.etat_receptivite_pct : '—') + '%';
   document.getElementById('bvElements').textContent = Array.isArray(bilan.elements_choisis) ? bilan.elements_choisis.join(', ') : (bilan.elements_choisis || '');
-  document.getElementById('bvAnalyse').textContent = bilan.analyse_chiffres || '';
   document.getElementById('bvVibration').textContent = bilan.vibration_energetique || '';
+
+  // Le creneau achat boutique n'a ni jauges, ni analyse chiffree, ni bienfaits,
+  // ni resume, ni avis medical : uniquement les plantes et leur vibration.
+  document.querySelector('#bilanViewCard .jauge-pair').hidden = estAchat;
+  document.getElementById('bvAnalyse').textContent = bilan.analyse_chiffres || '';
+  document.getElementById('bvAnalyse').closest('.bilan-view-section').hidden = estAchat;
   document.getElementById('bvBienfaits').textContent = bilan.bienfaits_physiologiques || '';
+  document.getElementById('bvBienfaits').closest('.bilan-view-section').hidden = estAchat;
   document.getElementById('bvResume').textContent = bilan.resume_final || '';
+  document.getElementById('bvResume').closest('.bilan-view-section').hidden = estAchat;
+  if (!estAchat) {
+    document.getElementById('bvUterus').textContent = (bilan.etat_uterus_pct != null ? bilan.etat_uterus_pct : '—') + '%';
+    document.getElementById('bvReceptivite').textContent = (bilan.etat_receptivite_pct != null ? bilan.etat_receptivite_pct : '—') + '%';
+  }
   const notesBlock = document.getElementById('bvNotesBlock');
   if (bilan.notes_gardienne) {
     notesBlock.hidden = false;
@@ -1477,6 +1511,7 @@ function resetToAgenda() {
   document.getElementById('receptiviteVal').textContent = '50%';
   document.getElementById('notesGardienne').value = '';
   resetProfilToggle();
+  setBilanCardMode('bilan');
   document.querySelectorAll('.grimoire-item.active').forEach(el => {
     el.classList.remove('active');
     el.querySelector('input').checked = false;
@@ -1811,15 +1846,18 @@ async function submitBilan() {
     const payload = {
       mot_de_passe: GARDIENNE_PASSWORD,
       source: SELECTED_BOOKING.source,
-      etat_uterus_pct: parseInt(document.getElementById('uterusSlider').value, 10),
-      etat_receptivite_pct: parseInt(document.getElementById('receptiviteSlider').value, 10),
+      type_analyse: SELECTED_TYPE_ANALYSE,
       elements_choisis: chosen,
       notes_gardienne: document.getElementById('notesGardienne').value.trim() || null,
       gardienne_id: document.getElementById('gardienneSelect').value || null,
       profil: SELECTED_BILAN_PROFIL
     };
-    if (SELECTED_BILAN_PROFIL === 'adolescente') {
-      payload.client_email_maman = document.getElementById('mamanEmail').value.trim() || null;
+    if (SELECTED_TYPE_ANALYSE !== 'achat') {
+      payload.etat_uterus_pct = parseInt(document.getElementById('uterusSlider').value, 10);
+      payload.etat_receptivite_pct = parseInt(document.getElementById('receptiviteSlider').value, 10);
+      if (SELECTED_BILAN_PROFIL === 'adolescente') {
+        payload.client_email_maman = document.getElementById('mamanEmail').value.trim() || null;
+      }
     }
     if (SELECTED_BOOKING.source === 'club') payload.session_booking_id = SELECTED_BOOKING.id;
     else if (SELECTED_BOOKING.source === 'manuel') {
@@ -1848,14 +1886,15 @@ async function submitBilan() {
     if (result.account_created) successSuffix = `, avec un lien pour créer son espace membre.`;
     else if (SELECTED_BOOKING.source === 'manuel') successSuffix = ` et retrouvable dans la bibliothèque de bilans.`;
     else successSuffix = ` et apparaît dans son espace membre.`;
+    const libelle = SELECTED_TYPE_ANALYSE === 'achat' ? 'L\'analyse de plantes' : 'Le bilan';
     document.getElementById('successText').textContent =
-      `Le bilan de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` + successSuffix;
+      `${libelle} de ${SELECTED_BOOKING.prenom} a été envoyé à ${SELECTED_BOOKING.email}` + successSuffix;
   } catch (err) {
     errEl.textContent = 'Impossible d\'envoyer le bilan : ' + err.message;
     errEl.hidden = false;
   } finally {
     btn.disabled = false;
-    btn.innerHTML = 'Générer et expédier le bilan ✦';
+    btn.innerHTML = SELECTED_TYPE_ANALYSE === 'achat' ? 'Générer et expédier l\'analyse ✦' : 'Générer et expédier le bilan ✦';
   }
 }
 

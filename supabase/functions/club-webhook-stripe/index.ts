@@ -51,6 +51,86 @@ async function verifyStripeSignature(rawBody: string, signature: string, secret:
   }
 }
 
+// Cree ou retrouve le compte espace membre d'une cliente et renvoie un lien
+// d'acces (magic link pour un compte existant, invitation pour un nouveau).
+// Met aussi a jour appointments.client_profile_id une fois le compte connu.
+// Partage entre le flux rdv (66€) et le flux achat boutique (10€).
+async function autoCreerCompteClient(
+  admin: any,
+  params: { email: string; prenom: string | null; nom: string | null; phone: string | null; appointmentId: string }
+): Promise<string | null> {
+  const clientEmail = (params.email || '').toLowerCase()
+  if (!clientEmail) return null
+
+  let clientAccessLink: string | null = null
+  try {
+    const { data: existingClientProfile } = await admin
+      .from('profiles')
+      .select('id, role')
+      .eq('email', clientEmail)
+      .maybeSingle()
+
+    let clientProfileId: string | null = null
+
+    if (existingClientProfile) {
+      clientProfileId = existingClientProfile.id
+      if (!['admin', 'formatrice', 'membre'].includes(existingClientProfile.role)) {
+        await admin.from('profiles').update({ role: 'membre' }).eq('id', clientProfileId)
+      }
+      const { data: magicData } = await admin.auth.admin.generateLink({
+        type: 'magiclink',
+        email: clientEmail,
+        options: { redirectTo: 'https://sanctuarys.me/espace-membre' }
+      })
+      clientAccessLink = magicData?.properties?.action_link || null
+    } else {
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+        type: 'invite',
+        email: clientEmail,
+        options: {
+          redirectTo: 'https://sanctuarys.me/espace-membre',
+          data: {
+            prenom: params.prenom,
+            nom: params.nom,
+            phone: params.phone,
+            role_intended: 'membre'
+          }
+        }
+      })
+
+      if (linkError) {
+        console.error('autoCreerCompteClient generateLink error:', linkError)
+      } else {
+        clientProfileId = linkData.user?.id || null
+        clientAccessLink = linkData.properties?.action_link || null
+        if (clientProfileId) {
+          await admin
+            .from('profiles')
+            .update({
+              role: 'membre',
+              prenom: params.prenom || undefined,
+              nom: params.nom || undefined,
+              phone: params.phone || undefined,
+              email: clientEmail
+            })
+            .eq('id', clientProfileId)
+        }
+      }
+    }
+
+    if (clientProfileId) {
+      await admin
+        .from('appointments')
+        .update({ client_profile_id: clientProfileId })
+        .eq('id', params.appointmentId)
+    }
+  } catch (accountErr: any) {
+    console.error('autoCreerCompteClient error:', accountErr)
+  }
+
+  return clientAccessLink
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (req.method !== 'POST') return json({ error: 'Méthode non autorisée' }, 405)
@@ -247,6 +327,102 @@ ${clientAccessLink ? `<p><strong>Ton espace personnel t'attend</strong> : calend
       }
 
       return json({ received: true, type: 'rdv', appointment_id: appointmentId })
+    }
+
+    // === Creneau achat boutique (type=achat) : confirme l'appointment ===
+    if (paymentType === 'achat' && appointmentId) {
+      const { data: appt } = await admin
+        .from('appointments')
+        .update({
+          status: 'confirmed',
+          stripe_payment_intent_id: session.payment_intent,
+          paid_at: new Date().toISOString()
+        })
+        .eq('id', appointmentId)
+        .select('*, sanctuary:sanctuaries(nom, ville, adresse, code_postal)')
+        .single()
+
+      const clientEmail = ((email || appt?.client_email || '') as string).toLowerCase()
+      const clientPrenom = prenom || appt?.client_prenom || null
+      const clientNom = nom || appt?.client_nom || null
+      const clientPhone = phone || appt?.client_phone || null
+
+      let clientAccessLink: string | null = null
+      if (appt && clientEmail) {
+        clientAccessLink = await autoCreerCompteClient(admin, {
+          email: clientEmail,
+          prenom: clientPrenom,
+          nom: clientNom,
+          phone: clientPhone,
+          appointmentId
+        })
+      }
+
+      // Email de confirmation via Resend
+      if (resendKey && appt) {
+        const startLabel = new Date(appt.start_at).toLocaleString('fr-FR', {
+          timeZone: 'Europe/Paris',
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        })
+        const sanctuaryName = (appt as any).sanctuary?.nom || 'Sanctuarys'
+        const sanctuaryAddr = [
+          (appt as any).sanctuary?.adresse,
+          (appt as any).sanctuary?.code_postal,
+          (appt as any).sanctuary?.ville
+        ].filter(Boolean).join(', ')
+
+        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+body{background:#FAF5EC;font-family:Georgia,serif;color:#2A1810;margin:0;padding:40px 20px}
+.c{max-width:580px;margin:0 auto;background:#FAF5EC;padding:48px;border:1px solid rgba(106,68,35,.18)}
+h1{font-family:'Italiana',Georgia,serif;font-size:34px;color:#2A1810;line-height:1.1;margin:0 0 14px;font-weight:400}
+h1 em{font-style:italic;color:#A85537}
+.meta{font-family:monospace;font-size:10px;letter-spacing:4px;color:#A85537;text-transform:uppercase;margin:0 0 28px}
+p{font-size:16px;line-height:1.85;color:#4A3020;margin:0 0 16px}
+.box{background:#FFFCF5;border:1px solid rgba(106,68,35,.18);padding:22px 26px;margin:22px 0}
+.k{font-family:monospace;font-size:10px;letter-spacing:2.5px;color:#A85537;text-transform:uppercase}
+.v{font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin:4px 0 12px}
+.btn{display:inline-block;padding:18px 38px;background:#C8704D;color:#FAF5EC !important;text-decoration:none;font-family:monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:10px 0}
+</style></head><body><div class="c">
+<p class="meta">✦ Sanctuarys · Créneau achat boutique confirmé</p>
+<h1>Ton créneau achat<br><em>est confirmé.</em></h1>
+<p>Chère ${prenom || appt.client_prenom},</p>
+<p>Ton acompte de 10€ a bien été reçu, il sera déduit de tes achats sur place au Bar à plantes.</p>
+<div class="box">
+  <div class="k">✦ Quand</div>
+  <div class="v">${startLabel}</div>
+  <div class="k">✦ Où</div>
+  <div class="v">${sanctuaryName}<br><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;color:#6B4423">${sanctuaryAddr || ''}</span></div>
+  <div class="k">✦ Durée</div>
+  <div class="v">15 minutes</div>
+  <div class="k">✦ Ce qui est prévu</div>
+  <div class="v" style="font-size:16px;font-family:Georgia,serif;font-style:normal">Une gardienne du Temple sélectionne pour toi des alliés végétaux par radiesthésie. Tu repars avec tes plantes et l'analyse de leurs pouvoirs vibratoires.</div>
+</div>
+<p><strong>Prépare-toi</strong> : arrive à l'heure, la sélection prend quinze minutes. Si un empêchement survient, préviens-nous par email.</p>
+${clientAccessLink ? `<p><strong>Ton espace personnel t'attend</strong> : tu y retrouveras l'analyse de tes plantes juste après ta visite.</p>
+<p style="text-align:center"><a href="${clientAccessLink}" class="btn">Accéder à mon espace ✦</a></p>
+<p style="font-size:13px;color:#6B4423;text-align:center;font-style:italic">Si le bouton ne s'affiche pas, copie ce lien : <a href="${clientAccessLink}" style="color:#A85537;word-break:break-all">${clientAccessLink}</a></p>` : ''}
+<p style="font-family:'Italiana',Georgia,serif;font-size:18px;color:#A85537;margin-top:30px">Avec attention,</p>
+<p style="font-family:'Italiana',Georgia,serif;font-size:20px;color:#2A1810;margin-top:-10px">L'équipe Sanctuarys</p>
+<div style="font-family:monospace;font-size:10px;letter-spacing:3px;color:#6B4423;text-transform:uppercase;margin-top:40px;padding-top:24px;border-top:1px solid rgba(106,68,35,.18);opacity:.7">Sanctuarys · sanctuarys.me · info@sanctuarys.me</div>
+</div></body></html>`
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: 'Sanctuarys <info@sanctuarys.me>',
+            to: (email || appt.client_email).toLowerCase(),
+            subject: 'Ton créneau achat boutique est confirmé ✦',
+            html
+          })
+        }).catch((e) => console.error('Resend achat mail:', e))
+      }
+
+      return json({ received: true, type: 'achat', appointment_id: appointmentId })
     }
 
     // === Fondatrice signup (legacy path) ===
