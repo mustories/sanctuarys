@@ -20,7 +20,7 @@ const SERVICES: Record<string, ServiceDef> = {
   vsteam: {
     label: 'VageeSteam',
     duration: 60,
-    price: 66,
+    price: 88,
     description: "Lecture radiesthesique de l'uterus + VageeSteam",
     apptType: null
   },
