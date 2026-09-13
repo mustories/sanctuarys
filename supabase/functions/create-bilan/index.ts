@@ -228,10 +228,14 @@ Deno.serve(async (req) => {
     // (typiquement les rendez vous pris via WhatsApp, sans paiement Stripe et donc
     // sans passage par le webhook qui cree habituellement le compte)
     // Une adolescente doit toujours avoir son propre espace, meme pour un bilan
-    // sans rendez-vous : c'est le seul cas ou la source 'manuel' declenche aussi
-    // la creation de compte.
+    // sans rendez-vous. Un scan d'achat boutique (type_analyse === 'achat') ouvre
+    // lui aussi naturellement un espace membre, meme quand il est saisi a la main
+    // sans rendez-vous : c'est ainsi qu'une personne venue seulement acheter des
+    // plantes retrouve son analyse dans son propre espace.
     let clientAccessLink: string | null = null
-    const doitAvoirUnEspace = source === 'public' || (profilFinal === 'adolescente' && source === 'manuel')
+    const doitAvoirUnEspace = source === 'public'
+      || typeAnalyseFinal === 'achat'
+      || (profilFinal === 'adolescente' && source === 'manuel')
     if (doitAvoirUnEspace) {
       try {
         if (clientProfileId) {
