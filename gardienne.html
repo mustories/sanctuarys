@@ -372,6 +372,56 @@
   .tab-btn.active { background: var(--terracotta); border-color: var(--terracotta-deep); color: var(--blanc); }
   #quiSuisJe { margin-left: auto; max-width: 180px; }
 
+  .dispo-qui { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+  .dispo-qui-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--marron-soft); }
+  .dispo-qui-btn {
+    font-family: 'Italiana', serif;
+    font-size: 15px;
+    color: var(--marron-deep);
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dispo-qui-btn:hover { border-color: var(--terracotta); }
+  .dispo-qui-btn.active { background: var(--terracotta); border-color: var(--terracotta-deep); color: var(--blanc); }
+
+  .dispo-day { margin-bottom: 22px; }
+  .dispo-day-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta-deep);
+    margin-bottom: 10px;
+  }
+  .dispo-slots { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dispo-slot {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--marron-deep);
+    background: var(--blanc-deep);
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 58px;
+    text-align: center;
+  }
+  .dispo-slot:hover { border-color: var(--terracotta); }
+  .dispo-slot.mine { background: var(--terracotta); border-color: var(--terracotta-deep); color: var(--blanc); }
+  .dispo-slot.blocked {
+    background: transparent;
+    border-style: dashed;
+    color: var(--marron-soft);
+    opacity: 0.55;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+  .dispo-day.closed .dispo-day-title { opacity: 0.5; }
+
   .period-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .period-btn {
     font-family: 'JetBrains Mono', monospace;
@@ -560,6 +610,7 @@
     <button class="tab-btn" data-tab="historique" onclick="switchTab('historique')">Historique</button>
     <button class="tab-btn" data-tab="clientes" onclick="switchTab('clientes')">Clientes</button>
     <button class="tab-btn" data-tab="scans" onclick="switchTab('scans')">Scans réalisés</button>
+    <button class="tab-btn" data-tab="disponibilites" onclick="switchTab('disponibilites')">Disponibilités</button>
     <select id="quiSuisJe"></select>
   </div>
 
@@ -641,6 +692,26 @@
     </div>
     <div id="scansList"></div>
     <div class="error" id="scansError" hidden></div>
+  </div>
+
+  <!-- DISPONIBILITÉS : chaque gardienne ouvre elle même ses creneaux -->
+  <div class="card tab-panel" data-tab="disponibilites" id="disponibilitesCard" hidden>
+    <div class="agenda-header">
+      <h2>Tes <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">disponibilités.</em></h2>
+    </div>
+    <p class="empty-note" style="margin:-6px 0 18px;">
+      Ouvre les créneaux où tu es disponible pour les deux prochaines semaines. Seuls ces créneaux
+      s'affichent aux clientes sur le site : rien ne se propose tant que tu ne l'as pas ouvert toi même.
+      Pour l'Anubis 4 Venus, un créneau n'apparaît que si toi <em>et</em> Charlotte l'avez toutes les deux ouvert,
+      puisqu'elle t'assiste en seconde main.
+    </p>
+    <div class="dispo-qui" id="dispoQuiPicker">
+      <span class="dispo-qui-label">Je suis&nbsp;:</span>
+      <button type="button" class="dispo-qui-btn" data-prenom="charlotte" onclick="setDispoQui('charlotte')">Charlotte</button>
+      <button type="button" class="dispo-qui-btn" data-prenom="princesse" onclick="setDispoQui('princesse')">Princesse</button>
+    </div>
+    <div id="dispoContent"></div>
+    <div class="error" id="dispoError" hidden></div>
   </div>
 
   <!-- FICHE CLIENTE : "espace client" -->
@@ -1025,6 +1096,7 @@ function switchTab(tab) {
   });
   if (tab === 'historique' && HISTORIQUE_BOOKINGS.length === 0) loadHistorique(365);
   if (tab === 'scans' && TOUS_LES_SCANS.length === 0) loadScans();
+  if (tab === 'disponibilites') initDisponibilites();
 }
 
 function setProfilBilan(profil) {
@@ -1259,6 +1331,120 @@ document.getElementById('quiSuisJe').addEventListener('change', function () {
   try { sessionStorage.setItem('gardienne_qui', this.value); } catch (e) {}
   document.getElementById('gardienneSelect').value = this.value;
 });
+
+// ============ DISPONIBILITÉS (Charlotte / Princesse ouvrent leurs creneaux) ============
+let DISPO_QUI = '';
+let DISPO_DAYS = [];
+let DISPO_BUSY = false;
+
+function initDisponibilites() {
+  if (!DISPO_QUI) {
+    let saved = '';
+    try { saved = sessionStorage.getItem('gardienne_dispo_qui') || ''; } catch (e) {}
+    DISPO_QUI = (saved === 'charlotte' || saved === 'princesse') ? saved : '';
+  }
+  document.querySelectorAll('.dispo-qui-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.prenom === DISPO_QUI);
+  });
+  if (DISPO_QUI) {
+    loadDisponibilites();
+  } else {
+    document.getElementById('dispoContent').innerHTML = '<p class="empty-note">Choisis ton prénom ci-dessus pour ouvrir tes disponibilités.</p>';
+  }
+}
+
+function setDispoQui(prenom) {
+  DISPO_QUI = prenom;
+  try { sessionStorage.setItem('gardienne_dispo_qui', prenom); } catch (e) {}
+  document.querySelectorAll('.dispo-qui-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.prenom === prenom);
+  });
+  loadDisponibilites();
+}
+window.setDispoQui = setDispoQui;
+
+async function loadDisponibilites() {
+  const errEl = document.getElementById('dispoError');
+  const contentEl = document.getElementById('dispoContent');
+  errEl.hidden = true;
+  contentEl.innerHTML = '<p class="empty-note">Chargement de tes disponibilités...</p>';
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-disponibilites`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD, action: 'list', gardienne_prenom: DISPO_QUI })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    DISPO_DAYS = result.days || [];
+    renderDisponibilites();
+  } catch (err) {
+    errEl.textContent = 'Impossible de charger tes disponibilités : ' + err.message;
+    errEl.hidden = false;
+    contentEl.innerHTML = '';
+  }
+}
+
+const DISPO_JOURS_LABEL = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+function renderDisponibilites() {
+  const contentEl = document.getElementById('dispoContent');
+  if (!DISPO_DAYS.length) {
+    contentEl.innerHTML = '<p class="empty-note">Aucun jour à afficher.</p>';
+    return;
+  }
+  contentEl.innerHTML = DISPO_DAYS.map(day => {
+    const d = new Date(day.date + 'T12:00:00');
+    const label = `${DISPO_JOURS_LABEL[d.getDay()]} ${d.getDate()}`;
+    if (day.closed) {
+      return `<div class="dispo-day closed"><div class="dispo-day-title">${label} · fermé</div></div>`;
+    }
+    if (!day.slots.length) {
+      return `<div class="dispo-day"><div class="dispo-day-title">${label}</div><p class="empty-note" style="padding:0;">Aucun créneau ce jour.</p></div>`;
+    }
+    const slots = day.slots.map(s => {
+      const cls = s.blocked ? 'dispo-slot blocked' : (s.mine ? 'dispo-slot mine' : 'dispo-slot');
+      const title = s.blocked ? `Déjà pris (${s.blocked_type === 'anubis4venus' ? 'Anubis 4 Venus' : 'VageeSteam'})` : (s.mine ? 'Tu es disponible · clique pour retirer' : 'Clique pour t\'ouvrir ce créneau');
+      const onclick = s.blocked ? '' : `onclick="toggleDispoSlot('${s.slot_start}', ${s.mine})"`;
+      return `<div class="${cls}" ${onclick} title="${title}">${s.label}</div>`;
+    }).join('');
+    return `<div class="dispo-day"><div class="dispo-day-title">${label}</div><div class="dispo-slots">${slots}</div></div>`;
+  }).join('');
+}
+
+async function toggleDispoSlot(slotStart, currentlyMine) {
+  if (DISPO_BUSY) return;
+  DISPO_BUSY = true;
+  const errEl = document.getElementById('dispoError');
+  errEl.hidden = true;
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-disponibilites`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mot_de_passe: GARDIENNE_PASSWORD,
+        action: 'toggle',
+        gardienne_prenom: DISPO_QUI,
+        slot_start: slotStart,
+        make_available: !currentlyMine
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    // Mise a jour optimiste locale, sans tout recharger
+    for (const day of DISPO_DAYS) {
+      const slot = day.slots.find(s => s.slot_start === slotStart);
+      if (slot) { slot.mine = !currentlyMine; break; }
+    }
+    renderDisponibilites();
+  } catch (err) {
+    errEl.textContent = 'Impossible d\'enregistrer ce créneau : ' + err.message;
+    errEl.hidden = false;
+  } finally {
+    DISPO_BUSY = false;
+  }
+}
+window.toggleDispoSlot = toggleDispoSlot;
 
 // ============ AGENDA VISUEL (vue semaine) ============
 let GA_HORAIRES = [];
