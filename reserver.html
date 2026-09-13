@@ -667,7 +667,8 @@
     const supa = await Sanctuarys.init();
     const { data, error } = await supa.rpc('get_available_slots', {
       p_sanctuary_id: state.sanctuary.id,
-      p_date: state.date
+      p_date: state.date,
+      p_type: state.service.key
     });
     if (error) {
       grid.innerHTML = `<div class="no-slots">Erreur : ${error.message}</div>`;
