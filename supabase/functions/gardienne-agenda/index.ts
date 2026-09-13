@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
       email: a.client_email || '',
       phone: a.client_phone || '',
       profile_id: a.client_profile_id || null,
-      soin: a.type === 'achat' ? 'Achat boutique · sélection de plantes' : 'V-Steam · rendez vous public',
+      soin: a.type === 'achat' ? 'Achat boutique · sélection de plantes' : a.type === 'anubis4venus' ? 'Anubis 4 Venus · rendez vous public' : 'VageeSteam · rendez vous public',
       gardienne_id: a.gardienne_id || null,
       retard_count: a.retard_count || 0,
       sanction_montant: a.sanction_montant || 0,
@@ -112,7 +112,14 @@ Deno.serve(async (req) => {
 
     const bookings = desClub.concat(desPublics).sort((x, y) => new Date(x.start_at).getTime() - new Date(y.start_at).getTime())
 
-    return json({ success: true, bookings, gardiennes: gard.data || [], since, until })
+    // Tous les bilans jamais realises (bilan de soin ET analyse d'achat), y
+    // compris ceux saisis a la main sans rendez-vous : sert a l'onglet "Scans
+    // realises" de l'espace gardienne, pour les retrouver facilement meme
+    // quand ils ne sont rattaches a aucun rendez-vous ni aucune seance.
+    const allBilans = (bilans.data || []).slice()
+      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+    return json({ success: true, bookings, gardiennes: gard.data || [], since, until, all_bilans: allBilans })
   } catch (err: any) {
     console.error('gardienne-agenda error:', err)
     return json({ error: err.message || 'Erreur inattendue' }, 500)
