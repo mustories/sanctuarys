@@ -559,6 +559,7 @@
     <button class="tab-btn active" data-tab="agenda" onclick="switchTab('agenda')">Agenda</button>
     <button class="tab-btn" data-tab="historique" onclick="switchTab('historique')">Historique</button>
     <button class="tab-btn" data-tab="clientes" onclick="switchTab('clientes')">Clientes</button>
+    <button class="tab-btn" data-tab="scans" onclick="switchTab('scans')">Scans réalisés</button>
     <select id="quiSuisJe"></select>
   </div>
 
@@ -626,6 +627,20 @@
     </div>
     <div id="clientesResults"></div>
     <div class="error" id="clientesError" hidden></div>
+  </div>
+
+  <!-- SCANS REALISES : tous les bilans (soin et achat), y compris ceux -->
+  <!-- saisis a la main sans rendez-vous, pour les retrouver facilement -->
+  <div class="card tab-panel" data-tab="scans" id="scansCard" hidden>
+    <div class="agenda-header">
+      <h2>Les <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta-deep);">scans réalisés.</em></h2>
+      <button class="btn secondary" style="font-size:13px; padding:9px 16px;" onclick="openManualBilan()">+ Bilan sans rendez-vous</button>
+    </div>
+    <div class="field agenda-search">
+      <input type="text" id="scansFilter" placeholder="Filtrer par prénom, nom ou email..." oninput="renderScansList()">
+    </div>
+    <div id="scansList"></div>
+    <div class="error" id="scansError" hidden></div>
   </div>
 
   <!-- FICHE CLIENTE : "espace client" -->
@@ -953,7 +968,7 @@ const PRIX_30G = {
 };
 const PRIX_CURE_SACHETS = 33;
 let GRIMOIRE_ITEMS_FLAT = []; // [{ name, prix30 }] rempli par renderGrimoire()
-let DEVIS_GRAMMAGES = {}; // index dans GRIMOIRE_ITEMS_FLAT -> 30 | 50 | 100
+let DEVIS_GRAMMAGES = {}; // index dans GRIMOIRE_ITEMS_FLAT -> 10 | 30 | 50 | 100
 let DEVIS_CURE = false;
 
 // Calcule le prix au grammage demande depuis le prix du 30g, arrondi au
@@ -970,6 +985,7 @@ function formatEuro(n) {
 let GARDIENNE_PASSWORD = '';
 let AGENDA_BOOKINGS = [];
 let HISTORIQUE_BOOKINGS = [];
+let TOUS_LES_SCANS = [];
 let AGENDA_GARDIENNES = [];
 let SELECTED_BOOKING = null;
 let SELECTED_BOOKING_ORIGIN = 'agenda';
@@ -1008,6 +1024,7 @@ function switchTab(tab) {
     document.getElementById(id).hidden = true;
   });
   if (tab === 'historique' && HISTORIQUE_BOOKINGS.length === 0) loadHistorique(365);
+  if (tab === 'scans' && TOUS_LES_SCANS.length === 0) loadScans();
 }
 
 function setProfilBilan(profil) {
@@ -1873,6 +1890,93 @@ function renderHistoriqueList() {
   listEl.innerHTML = html;
 }
 
+// Charge tous les bilans/scans jamais realises (soin et achat), y compris
+// ceux saisis a la main sans rendez-vous, pour l'onglet "Scans realises".
+async function loadScans() {
+  const errEl = document.getElementById('scansError');
+  const listEl = document.getElementById('scansList');
+  errEl.hidden = true;
+  listEl.innerHTML = '<p class="empty-note">Chargement des scans...</p>';
+  try {
+    const resp = await fetch(`${GARDIENNE_SUPABASE_URL}/functions/v1/gardienne-agenda`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mot_de_passe: GARDIENNE_PASSWORD })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Erreur inattendue');
+    TOUS_LES_SCANS = result.all_bilans || [];
+    renderScansList();
+  } catch (err) {
+    errEl.textContent = 'Impossible de charger les scans : ' + err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = '';
+  }
+}
+
+function renderScansList() {
+  const filter = (document.getElementById('scansFilter').value || '').trim().toLowerCase();
+  const listEl = document.getElementById('scansList');
+
+  const filtered = TOUS_LES_SCANS.filter(b => {
+    if (!filter) return true;
+    const hay = `${b.client_prenom || ''} ${b.client_nom || ''} ${b.client_email || ''}`.toLowerCase();
+    return hay.includes(filter);
+  });
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<p class="empty-note">Aucun scan trouvé.</p>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(b => {
+    const d = new Date(b.created_at);
+    const key = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(b);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([label, items]) => {
+    html += `<div class="day-group"><h3>${label}</h3>`;
+    items.forEach(b => { html += renderScanRow(b); });
+    html += `</div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+function renderScanRow(b) {
+  const d = new Date(b.created_at);
+  const dateLabel = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  const estAchat = b.type_analyse === 'achat';
+  const typeBadge = estAchat ? '<span class="badge badge-manuel">✦ Achat boutique</span>' : '<span class="badge">✦ Bilan</span>';
+  const manuelBadge = b.source_type === 'manuel' ? '<span class="badge badge-manuel">Sans rendez-vous</span>' : '';
+  const elements = Array.isArray(b.elements_choisis) ? b.elements_choisis.join(', ') : (b.elements_choisis || '');
+  return `
+        <div class="result-row" onclick="openScanFromList('${b.id}')">
+          <div>
+            <div class="name">${dateLabel} · ${escapeHtml(b.client_prenom || '')} ${escapeHtml(b.client_nom || '')}</div>
+            <div class="sub">${escapeHtml(elements)} · ${escapeHtml(b.client_email || '')}</div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">${typeBadge}${manuelBadge}</div>
+        </div>
+      `;
+}
+
+// Ouvre un scan directement depuis la liste globale : ni cliente ni rendez
+// vous selectionnes, donc la fermeture de la vue revient simplement a
+// l'onglet "Scans realises".
+function openScanFromList(id) {
+  const bilan = TOUS_LES_SCANS.find(b => String(b.id) === String(id));
+  if (!bilan) return;
+  SELECTED_BOOKING = null;
+  CURRENT_CLIENT = null;
+  document.getElementById('rdvCard').hidden = true;
+  document.getElementById('clientDetailCard').hidden = true;
+  openBilanView(bilan);
+}
+
 let clientesSearchTimer = null;
 function searchClientes() {
   clearTimeout(clientesSearchTimer);
@@ -2117,6 +2221,7 @@ function renderGrimoire() {
           <div class="grimoire-price-row" id="priceRow-${i}" hidden>
             ${prix30 ? `
               <div class="grimoire-weights">
+                <button type="button" class="weight-chip" data-g="10" onclick="setGrammage(${i}, 10)">10g</button>
                 <button type="button" class="weight-chip active" data-g="30" onclick="setGrammage(${i}, 30)">30g</button>
                 <button type="button" class="weight-chip" data-g="50" onclick="setGrammage(${i}, 50)">50g</button>
                 <button type="button" class="weight-chip" data-g="100" onclick="setGrammage(${i}, 100)">100g</button>

@@ -7,7 +7,7 @@
 <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <meta name="theme-color" content="#C8704D">
-<meta name="description" content="Prendre rendez-vous dans une Sanctuarys. Bain Vapeur Vaginal ou Venusian Body. Créneaux à partir de 66€.">
+<meta name="description" content="Prendre rendez-vous dans une Sanctuarys. VageeSteam ou Anubis 4 Venus. Créneaux à partir de 66€.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -259,7 +259,7 @@
   <div class="header">
     <div class="meta">✦ Réserver mon soin</div>
     <h1>Ton rendez-vous<br><em>Sanctuarys.</em></h1>
-    <p class="subtitle">Bain Vapeur Vaginal ou Venusian Body, au choix. Paiement en ligne, dernier créneau à 19h.</p>
+    <p class="subtitle">VageeSteam ou Anubis 4 Venus, au choix. Paiement en ligne, dernier créneau à 19h.</p>
   </div>
 
   <div id="fondatriceBanner" style="display:none; background: linear-gradient(135deg, rgba(168, 85, 55, 0.10), rgba(212, 160, 76, 0.10)); border: 1px solid var(--terracotta); padding: 22px 26px; margin-bottom: 30px; text-align: center;">
@@ -359,6 +359,15 @@
       <strong>À noter</strong>
       Sanctuarys n'accueille pas les femmes enceintes pour des raisons de sécurité physiologique. En envoyant ce formulaire, tu confirmes ne pas être enceinte. Les allaitantes sont accueillies, indique-le ci-dessus.
     </div>
+    <div class="warn" id="a4vSafetyBox" style="display:none;">
+      <strong>Anubis 4 Venus : sécurité avant tout</strong>
+      Ce soin associe une chaleur profonde à 70° et des actifs botaniques concentrés, il est proscrit dans certains cas :
+      <ul id="a4vContreIndicList" style="margin:10px 0 12px; padding-left: 20px; font-family:'Cormorant Garamond',serif; font-style:italic;"></ul>
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px;">
+        <input type="checkbox" id="a4vConfirm" style="margin-top:4px; accent-color:var(--terracotta);">
+        Je confirme ne présenter aucune de ces contre-indications, et ne pas être enceinte ni allaitante.
+      </label>
+    </div>
     <div class="actions">
       <button class="btn-back" type="button" onclick="goStep(3)">← Retour</button>
       <button class="btn-next" type="button" onclick="goStep(5)">Suivant →</button>
@@ -391,9 +400,20 @@
   // recalcules cote serveur dans rdv-create-checkout (jamais de confiance
   // dans ce qui part du navigateur pour le paiement).
   const SERVICES = [
-    { key: 'vsteam', label: 'Bain Vapeur Vaginal', duration: 60, price: 66, desc: "Lecture radiesthésique de l'utérus, prescription au Bar à plantes et Bain Vapeur Vaginal." },
-    { key: 'venusian', label: 'Venusian Body', duration: 60, price: 66, desc: 'Détox au sauna infrarouge, dans une cabine dédiée.' },
-    { key: 'venusian_gommage', label: 'Venusian Body + gommage', duration: 80, price: 88, desc: 'Détox au sauna infrarouge avec gommage, pour prolonger le soin.' }
+    { key: 'vsteam', label: 'VageeSteam', duration: 60, price: 66, desc: "Lecture radiesthésique de l'utérus, prescription au Bar à plantes et VageeSteam." },
+    { key: 'anubis4venus', label: 'Anubis 4 Venus', duration: 60, price: 77, desc: 'Soin signature bio-physiologique : massage aux baumes végétaux sur-mesure puis cocon thermique enveloppant à 70°.' }
+  ];
+
+  // Contre-indications absolues du protocole Anubis 4 Venus (chaleur profonde
+  // a 70 degres + occlusion complete + actifs botaniques concentres). Cette
+  // liste sert au garde-fou affiche avant reservation de ce soin uniquement.
+  const A4V_CONTRE_INDICATIONS = [
+    "Grossesse ou allaitement en cours",
+    "Pathologie cardiovasculaire lourde (insuffisance cardiaque, hypertension sévère non contrôlée, infarctus ou AVC récent, pacemaker)",
+    "Trouble thromboembolique aigu (phlébite, thrombose veineuse profonde récente, embolie pulmonaire)",
+    "État fébrile, infectieux ou inflammatoire aigu",
+    "Affection cutanée aiguë ou étendue (plaie ouverte, brûlure, eczéma ou psoriasis suintant)",
+    "Cancer évolutif ou en cours de traitement, sans autorisation écrite de l'oncologue référent"
   ];
 
   const state = {
@@ -417,6 +437,14 @@
     if (n === 4) {
       // Verifier que les etapes precedentes sont completes
       if (!state.slotStart) { goStep(3); return; }
+      // Affiche le garde-fou de securite specifique au protocole Anubis 4 Venus
+      const a4vBox = document.getElementById('a4vSafetyBox');
+      if (state.service && state.service.key === 'anubis4venus') {
+        document.getElementById('a4vContreIndicList').innerHTML = A4V_CONTRE_INDICATIONS.map(c => `<li>${c}</li>`).join('');
+        a4vBox.style.display = 'block';
+      } else {
+        a4vBox.style.display = 'none';
+      }
     }
     if (n === 5) {
       // Verifier informations
@@ -429,6 +457,19 @@
         showError('Prénom, nom, email, téléphone et réponse allaitement sont obligatoires.');
         goStep(4);
         return;
+      }
+      if (state.service && state.service.key === 'anubis4venus') {
+        if (allaitement.value === 'oui') {
+          showError("Le protocole Anubis 4 Venus n'est pas accessible pendant l'allaitement. Écris-nous à info@sanctuarys.me pour un autre soin adapté.");
+          goStep(4);
+          return;
+        }
+        const confirmBox = document.getElementById('a4vConfirm');
+        if (!confirmBox || !confirmBox.checked) {
+          showError("Merci de confirmer l'absence de contre-indications pour réserver le protocole Anubis 4 Venus.");
+          goStep(4);
+          return;
+        }
       }
       renderRecap();
       // Si Fondatrice avec sessions restantes : afficher le bouton free
@@ -675,7 +716,8 @@
       phone: document.getElementById('fPhone').value.trim(),
       ville: null,
       notes: document.getElementById('fNotes').value.trim() || null,
-      allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui'
+      allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
+      contre_indications_confirmees: document.getElementById('a4vConfirm')?.checked === true
     };
 
     try {
@@ -761,7 +803,7 @@
         client_email: document.getElementById('fEmail').value.trim().toLowerCase(),
         client_phone: document.getElementById('fPhone').value.trim(),
         client_ville: null,
-        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Séance Fondatrice incluse - membership ' + state.fondatrice.membershipId + ']',
+        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Séance Fondatrice incluse - membership ' + state.fondatrice.membershipId + ']' + (state.service.key === 'anubis4venus' ? '\n[Contre-indications A4V confirmées par la cliente]' : ''),
         is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
         start_at: state.slotStart,
         duration_minutes: state.service.duration,
@@ -805,7 +847,7 @@
         client_email: document.getElementById('fEmail').value.trim().toLowerCase(),
         client_phone: document.getElementById('fPhone').value.trim(),
         client_ville: null,
-        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Réservé via WhatsApp - payé par PayPal]',
+        client_notes: (document.getElementById('fNotes').value.trim() || '') + '\n\n[Réservé via WhatsApp - payé par PayPal]' + (state.service.key === 'anubis4venus' ? '\n[Contre-indications A4V confirmées par la cliente]' : ''),
         is_allaitement: document.querySelector('input[name="allaitement"]:checked')?.value === 'oui',
         start_at: state.slotStart,
         duration_minutes: state.service.duration,

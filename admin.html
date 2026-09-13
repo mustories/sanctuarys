@@ -4591,7 +4591,7 @@
       nom: a.client_nom || '',
       email: a.client_email || '',
       phone: a.client_phone || '',
-      soin: 'V-Steam · public',
+      soin: a.type === 'anubis4venus' ? 'Anubis 4 Venus · public' : 'VageeSteam · public',
       gardienne_id: a.gardienne_id || null,
       couleur: '#8C6A4F'
     }));
