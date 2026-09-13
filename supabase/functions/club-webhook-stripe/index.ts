@@ -276,16 +276,15 @@ Deno.serve(async (req) => {
         ].filter(Boolean).join(', ')
 
         // Le libelle du soin depend du type stocke sur l'appointment
-        // (null = Bain Vapeur Vaginal, historique par defaut)
+        // (null = VageeSteam, historique par defaut ; Venusian Body et
+        // Venusian Body + gommage ne sont plus proposes a la reservation,
+        // remplaces par Anubis 4 Venus, mais on garde un repli neutre au cas
+        // ou d'anciennes reservations passeraient encore par ce webhook)
         const apptType = (appt as any).type || null
-        const serviceLabel = apptType === 'venusian' ? 'Venusian Body'
-          : apptType === 'venusian_gommage' ? 'Venusian Body + gommage'
-          : 'Bain Vapeur Vaginal'
-        const serviceDesc = apptType === 'venusian'
-          ? 'Détox au sauna infrarouge, dans une cabine dédiée.'
-          : apptType === 'venusian_gommage'
-          ? 'Détox au sauna infrarouge avec gommage, dans une cabine dédiée.'
-          : "Lecture radiesthésique de ton utérus + Bain Vapeur Vaginal, avec composition de plantes personnelle au Bar à plantes."
+        const serviceLabel = apptType === 'anubis4venus' ? 'Anubis 4 Venus' : 'VageeSteam'
+        const serviceDesc = apptType === 'anubis4venus'
+          ? 'Massage aux baumes végétaux sur-mesure puis cocon thermique enveloppant à 70°, dans une cabine dédiée.'
+          : "Lecture radiesthésique de ton utérus + VageeSteam, avec composition de plantes personnelle au Bar à plantes."
         const durationLabel = `${(appt as any).duration_minutes || 60} minutes`
         const priceLabel = `${(appt as any).price_total_eur != null ? (appt as any).price_total_eur : 66}€`
 
