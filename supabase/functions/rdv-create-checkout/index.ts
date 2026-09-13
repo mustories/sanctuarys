@@ -18,27 +18,28 @@ const corsHeaders = {
 type ServiceDef = { label: string; duration: number; price: number; description: string; apptType: string | null }
 const SERVICES: Record<string, ServiceDef> = {
   vsteam: {
-    label: 'Bain Vapeur Vaginal',
+    label: 'VageeSteam',
     duration: 60,
     price: 66,
-    description: "Lecture radiesthesique de l'uterus + Bain Vapeur Vaginal",
+    description: "Lecture radiesthesique de l'uterus + VageeSteam",
     apptType: null
   },
-  venusian: {
-    label: 'Venusian Body',
+  anubis4venus: {
+    label: 'Anubis 4 Venus',
     duration: 60,
-    price: 66,
-    description: 'Detox au sauna infrarouge',
-    apptType: 'venusian'
-  },
-  venusian_gommage: {
-    label: 'Venusian Body + gommage',
-    duration: 80,
-    price: 88,
-    description: 'Detox au sauna infrarouge avec gommage',
-    apptType: 'venusian_gommage'
+    price: 77,
+    description: 'Massage aux baumes vegetaux sur-mesure puis cocon thermique enveloppant a 70 degres',
+    apptType: 'anubis4venus'
   }
 }
+
+// Le protocole Anubis 4 Venus (chaleur profonde a 70 degres + occlusion
+// complete + actifs botaniques concentres) comporte des contre-indications
+// medicales strictes documentees dans le guide client REBIRTH TECHNOLOGIE.
+// La reservation en ligne exige donc, en plus des champs habituels, que la
+// cliente ne soit pas enceinte/allaitante et confirme l'absence des autres
+// contre-indications listees (cote client, avant paiement).
+const A4V_SERVICE_KEY = 'anubis4venus'
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -65,11 +66,23 @@ Deno.serve(async (req) => {
     const {
       sanctuary_id, start_at,
       prenom, nom, email, phone, ville,
-      notes, allaitement, service_key
+      notes, allaitement, service_key, contre_indications_confirmees
     } = body
 
     if (!sanctuary_id || !start_at || !prenom || !nom || !email || !phone) {
       return json({ error: 'Champs obligatoires manquants : sanctuary, creneau, prenom, nom, email, telephone' }, 400)
+    }
+
+    // Garde-fou de securite specifique au protocole Anubis 4 Venus : grossesse
+    // et allaitement sont des contre-indications absolues, et la cliente doit
+    // avoir confirme l'absence des autres contre-indications avant paiement.
+    if (service_key === A4V_SERVICE_KEY) {
+      if (allaitement === true || allaitement === 'oui') {
+        return json({ error: "Le protocole Anubis 4 Venus n'est pas accessible pendant l'allaitement." }, 400)
+      }
+      if (contre_indications_confirmees !== true) {
+        return json({ error: "Confirmation des contre-indications manquante pour le protocole Anubis 4 Venus." }, 400)
+      }
     }
 
     const svcKey = typeof service_key === 'string' && SERVICES[service_key] ? service_key : 'vsteam'
