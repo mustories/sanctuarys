@@ -3,8 +3,9 @@
 -- Charlotte (VageeSteam) et Princesse (Anubis 4 Venus) declarent
 -- chacune, deux semaines a l'avance, les creneaux ou elles sont
 -- disponibles. Le site public ne propose alors que les creneaux
--- ou la bonne gardienne (ou les deux, pour Anubis 4 Venus ou
--- Charlotte assiste en seconde main) s'est rendue disponible.
+-- ou la bonne gardienne s'est rendue disponible : Princesse pour
+-- Anubis 4 Venus (Charlotte l'assiste quand elle est la, mais son
+-- absence ne bloque jamais la seance), Charlotte pour VageeSteam.
 -- Logique d'accueil, pas de forcing : rien ne s'affiche tant que
 -- la gardienne concernee n'a pas ouvert le creneau elle meme.
 -- =====================================================
@@ -36,14 +37,14 @@ drop policy if exists "admin manage disponibilites" on public.gardienne_disponib
 create policy "admin manage disponibilites" on public.gardienne_disponibilites
   for all to authenticated using (true) with check (true);
 
--- 2. Une seule seance a la fois : Charlotte est le goulot d'etranglement
--- commun (elle assure seule le VageeSteam et assiste en seconde main sur
--- l'Anubis 4 Venus), donc jamais deux soins en simultane a Paris.
+-- 2. Une seule seance a la fois a Paris (une seule salle), donc jamais
+-- deux soins en simultane quel que soit qui les mene.
 update public.sanctuaries set capacity = 1 where slug = 'paris';
 
--- 3. Fonction creneaux disponibles, consciente du soin demande (p_type)
--- et croisant les disponibilites des deux gardiennes :
---   - 'anubis4venus' -> Princesse ET Charlotte doivent etre disponibles
+-- 3. Fonction creneaux disponibles, consciente du soin demande (p_type) :
+--   - 'anubis4venus' -> Princesse doit etre disponible (elle mene seule
+--     ce soin ; Charlotte l'assiste en seconde main quand elle est la,
+--     mais son absence ne bloque jamais la seance)
 --   - tout autre soin (VageeSteam) -> Charlotte doit etre disponible
 -- L'ancienne fonction a 2 arguments (uuid, date) reste intacte pour les
 -- appels qui ne precisent pas de soin (ex. boutique.html).
@@ -120,21 +121,17 @@ begin
 
     available := v_taken < v_capacity;
 
-    -- Croisement des disponibilites declarees par les gardiennes
+    -- Disponibilite declaree par la gardienne qui mene ce soin.
+    -- Anubis 4 Venus ne depend que de Princesse : Charlotte assiste en
+    -- second quand elle est disponible, mais son absence ne bloque rien.
     if available and p_type = 'anubis4venus' then
-      if v_princesse_id is null or v_charlotte_id is null then
+      if v_princesse_id is null then
         available := false;
       else
         available :=
           exists (
             select 1 from public.gardienne_disponibilites d
             where d.gardienne_id = v_princesse_id
-              and d.sanctuary_id = p_sanctuary_id
-              and d.slot_start = v_slot_start
-          )
-          and exists (
-            select 1 from public.gardienne_disponibilites d
-            where d.gardienne_id = v_charlotte_id
               and d.sanctuary_id = p_sanctuary_id
               and d.slot_start = v_slot_start
           );
