@@ -12,6 +12,7 @@
 //  - update_rdv   : { source, id, patch }       -> modifie un rendez vous
 //  - mark_retard  : { source, id }              -> +1 retard, sanction au 2e
 //  - mark_no_show : { source, id }              -> statut no_show (aucun bilan, aucun remboursement)
+//  - send_message : { to_email, to_prenom?, subject?, message } -> email libre (Resend)
 // =====================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -27,6 +28,10 @@ function json(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   })
+}
+
+function escapeHtml(s: string): string {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
 function tableFor(source: string) {
@@ -265,6 +270,72 @@ Deno.serve(async (req) => {
       const { data, error } = await admin.from(table).update({ status: 'no_show' }).eq('id', id).select().single()
       if (error) return json({ error: error.message }, 500)
       return json({ success: true, updated: data })
+    }
+
+    // ===================================================
+    // ENVOYER UN MESSAGE LIBRE A UNE CLIENTE (email simple, Resend)
+    // Sert par exemple a demander une confirmation de rendez vous,
+    // ou tout autre message ponctuel envoye depuis l'espace gardienne.
+    // ===================================================
+    if (action === 'send_message') {
+      const { to_email, to_prenom, subject, message } = body
+      const toEmail = (to_email || '').trim().toLowerCase()
+      if (!toEmail || !message || !String(message).trim()) {
+        return json({ error: 'to_email et message requis' }, 400)
+      }
+
+      const resendKey = Deno.env.get('RESEND_API_KEY')
+      if (!resendKey) return json({ error: 'RESEND_API_KEY non configurée' }, 500)
+
+      const emailSubject = subject || 'Un message de Sanctuarys'
+      const paragraphes = String(message)
+        .split('\n')
+        .map((l: string) => l.trim())
+        .filter((l: string) => l.length > 0)
+        .map((l: string) => `<p>${escapeHtml(l)}</p>`)
+        .join('\n  ')
+
+      const emailHtml = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body { background: #FAF5EC; font-family: Georgia, serif; color: #2A1810; margin: 0; padding: 40px 20px; }
+.container { max-width: 600px; margin: 0 auto; background: #FAF5EC; padding: 48px; border: 1px solid rgba(106, 68, 35, 0.18); }
+.meta { font-family: monospace; font-size: 10px; letter-spacing: 4px; color: #A85537; text-transform: uppercase; margin: 0 0 32px; }
+p { font-size: 16px; line-height: 1.85; color: #4A3020; margin: 0 0 18px; font-family: Georgia, serif; }
+.signature { font-family: Georgia, serif; font-size: 18px; color: #A85537; margin-top: 32px; }
+.signature-name { font-size: 20px; color: #2A1810; margin-top: -10px; }
+.footer { font-family: monospace; font-size: 10px; letter-spacing: 3px; color: #6B4423; text-transform: uppercase; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(106, 68, 35, 0.18); opacity: 0.7; }
+</style></head><body>
+<div class="container">
+  <p class="meta">✦ Sanctuarys</p>
+  <p>${to_prenom ? `Chère ${escapeHtml(to_prenom)},` : 'Bonjour,'}</p>
+  ${paragraphes}
+  <p class="signature">Avec attention,</p>
+  <p class="signature-name">L'équipe Sanctuarys</p>
+  <div class="footer">Sanctuarys · Gynécologie naturelle · Fertilité · sanctuarys.me</div>
+</div></body></html>`
+
+      const resendResp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Sanctuarys <info@sanctuarys.me>',
+          to: toEmail,
+          subject: emailSubject,
+          html: emailHtml,
+          reply_to: 'info@sanctuarys.me'
+        })
+      })
+
+      if (!resendResp.ok) {
+        const errTxt = await resendResp.text()
+        console.error('gardienne-clientes send_message Resend error:', errTxt)
+        return json({ error: `Envoi impossible : ${errTxt}` }, 500)
+      }
+
+      return json({ success: true })
     }
 
     return json({ error: 'action invalide' }, 400)
