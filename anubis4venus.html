@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anubis 4 Venus · Rituel signature · Sanctuarys</title>
+<link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#1A0F08">
+<meta name="description" content="Anubis 4 Venus, le rituel signature Sanctuarys. Occlusion thermique à 70°, onction bio-alchimique et codex des 7 baumes : où la métaphysique, la science et la nature se rencontrent dans un seul geste.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sanctuarys.me/anubis4venus">
+<meta property="og:title" content="Anubis 4 Venus · Rituel signature · Sanctuarys">
+<meta property="og:description" content="Le corps scellé, la matière transmutée, le magnétisme restauré. Le rituel signature Sanctuarys, entre science et alchimie végétale.">
+<meta property="og:image" content="https://sanctuarys.me/assets/og-image.png">
+<meta property="og:site_name" content="Sanctuarys">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Anubis 4 Venus · Rituel signature · Sanctuarys">
+<meta name="twitter:description" content="Occlusion thermique, onction bio-alchimique, codex des 7 baumes. Le rituel qui scelle, transmute et propulse.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Italiana&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #FAF5EC;
+    --blanc-deep: #F3EBDB;
+    --marron-soft: #6B4423;
+    --marron: #4A3020;
+    --marron-deep: #2A1810;
+    --marron-noir: #1A0F08;
+    --noir-photo: #0F0805;
+    --terracotta: #C8704D;
+    --terracotta-deep: #A85537;
+    --terracotta-pale: #E8B099;
+    --or: #B8895A;
+    --or-pale: #D4A04C;
+    --or-deep: #8A6840;
+    --rose-pale: #E8C5B6;
+    --rouge-sacre: #8B1A1A;
+    --line-dark: rgba(212, 160, 76, 0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--marron-noir); color: var(--blanc-deep);
+    font-family: 'Inter', sans-serif; font-weight: 300;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--terracotta); color: var(--blanc); }
+  img { max-width: 100%; }
+  em { font-style: italic; }
+
+  a { color: inherit; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 4px;
+    color: var(--or-pale); text-transform: uppercase;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    padding: 20px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(26, 15, 8, 0.86);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-dark);
+  }
+  nav a.logo img { height: 38px; display: block; filter: brightness(0) invert(1); opacity: 0.92; }
+  nav .nav-links { display: flex; gap: 28px; align-items: center; list-style: none; }
+  nav .nav-links a {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px;
+    text-transform: uppercase; text-decoration: none; color: var(--rose-pale); opacity: 0.85;
+  }
+  nav .nav-links a:hover { opacity: 1; color: var(--or-pale); }
+  nav .nav-cta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2.5px;
+    color: var(--marron-noir); text-transform: uppercase; text-decoration: none;
+    padding: 12px 22px; background: var(--terracotta); border: 1px solid var(--terracotta);
+    transition: all 0.3s;
+  }
+  nav .nav-cta:hover { background: var(--or-pale); border-color: var(--or-pale); }
+  @media (max-width: 720px) { nav .nav-links { display: none; } }
+
+  /* HERO */
+  .hero {
+    min-height: 92vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 140px 40px 80px; position: relative;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(200, 112, 77, 0.16), transparent 55%),
+      radial-gradient(circle at 82% 75%, rgba(212, 160, 76, 0.12), transparent 50%),
+      var(--marron-noir);
+  }
+  .hero-inner { max-width: 980px; margin: 0 auto; text-align: center; }
+  .hero h1 {
+    font-family: 'Italiana', serif; font-weight: 400;
+    font-size: clamp(48px, 8vw, 108px); line-height: 0.98; color: var(--blanc);
+    margin: 22px 0 26px;
+  }
+  .hero h1 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-pale); }
+  .hero .subtitle {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(18px, 2.4vw, 24px);
+    color: var(--rose-pale); max-width: 640px; margin: 0 auto 36px; line-height: 1.6;
+  }
+  .hero .lede {
+    max-width: 700px; margin: 0 auto; font-size: 16px; line-height: 1.85; color: var(--rose-pale); opacity: 0.92;
+  }
+  .hero-cta-row { margin-top: 44px; display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2.5px;
+    text-transform: uppercase; text-decoration: none; color: var(--marron-noir);
+    padding: 18px 34px; background: var(--terracotta); border: 1px solid var(--terracotta);
+    transition: all 0.3s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--or-pale); border-color: var(--or-pale); }
+  .btn-ghost {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2.5px;
+    text-transform: uppercase; text-decoration: none; color: var(--rose-pale);
+    padding: 18px 34px; border: 1px solid var(--line-dark);
+    transition: all 0.3s; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--or-pale); color: var(--or-pale); }
+
+  /* SECTIONS */
+  section.block { padding: 120px 40px; max-width: 980px; margin: 0 auto; }
+  section.block.wide { max-width: 1300px; }
+  .block-head { text-align: center; margin-bottom: 56px; }
+  .block-head .eyebrow { display: block; margin-bottom: 18px; }
+  .block-head h2 {
+    font-family: 'Italiana', serif; font-weight: 400; font-size: clamp(30px, 4.2vw, 48px);
+    color: var(--blanc); line-height: 1.1;
+  }
+  .block-head h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-pale); }
+
+  .prose { font-size: 17px; line-height: 1.95; color: var(--rose-pale); }
+  .prose p { margin-bottom: 22px; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { color: var(--blanc); font-weight: 500; }
+
+  .divider { width: 46px; height: 1px; background: var(--or-pale); margin: 0 auto 30px; opacity: 0.6; }
+
+  /* MYTHE - 3 colonnes */
+  .mythe-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    background: var(--line-dark); margin-top: 20px;
+  }
+  .mythe-card { background: var(--marron-noir); padding: 44px 32px; }
+  .mythe-card .roman {
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 4px; color: var(--or-pale);
+    margin-bottom: 18px;
+  }
+  .mythe-card h3 { font-family: 'Italiana', serif; font-size: 26px; color: var(--blanc); margin-bottom: 16px; font-weight: 400; }
+  .mythe-card p { font-size: 15px; line-height: 1.8; color: var(--rose-pale); opacity: 0.92; }
+  @media (max-width: 860px) { .mythe-grid { grid-template-columns: 1fr; } }
+
+  /* CITATION */
+  .citation {
+    max-width: 760px; margin: 0 auto; text-align: center; padding: 100px 40px;
+  }
+  .citation blockquote {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(22px, 3vw, 30px);
+    color: var(--terracotta-pale); line-height: 1.6;
+  }
+  .citation cite {
+    display: block; margin-top: 24px; font-style: normal;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    color: var(--or-pale); text-transform: uppercase;
+  }
+
+  /* SCIENCE */
+  .science-band { background: var(--noir-photo); }
+  .science-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 50px; }
+  .science-item .num { font-family: 'Italiana', serif; font-size: 40px; color: var(--terracotta-pale); margin-bottom: 12px; }
+  .science-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: var(--blanc); margin-bottom: 10px; }
+  .science-item p { font-size: 14.5px; line-height: 1.8; color: var(--rose-pale); opacity: 0.9; }
+  @media (max-width: 860px) { .science-grid { grid-template-columns: 1fr; gap: 36px; } }
+
+  /* CODEX 7 BAUMES */
+  .codex-band { background: var(--marron-noir); }
+  .codex-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; background: var(--line-dark); margin-top: 20px; }
+  .codex-card { background: var(--noir-photo); padding: 38px 36px; }
+  .codex-card .codex-top { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; }
+  .codex-card .codex-num { font-family: 'Cinzel', serif; font-size: 13px; color: var(--or-pale); letter-spacing: 2px; }
+  .codex-card h3 {
+    font-family: 'Italiana', serif; font-size: 24px; color: var(--blanc); font-weight: 400; letter-spacing: 1px;
+  }
+  .codex-row { margin-bottom: 14px; }
+  .codex-row:last-child { margin-bottom: 0; }
+  .codex-row .tag {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2.5px;
+    color: var(--terracotta-pale); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .codex-row p { font-size: 14.5px; line-height: 1.75; color: var(--rose-pale); opacity: 0.92; }
+  @media (max-width: 720px) { .codex-grid { grid-template-columns: 1fr; } }
+
+  /* PROTOCOLE */
+  .phase-list { margin-top: 20px; border-top: 1px solid var(--line-dark); }
+  .phase {
+    display: grid; grid-template-columns: 90px 1fr; gap: 30px;
+    padding: 34px 0; border-bottom: 1px solid var(--line-dark);
+  }
+  .phase .phase-meta { }
+  .phase .phase-meta .phase-num { font-family: 'Cinzel', serif; font-size: 12px; color: var(--or-pale); letter-spacing: 1px; }
+  .phase .phase-meta .phase-time {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--rose-pale); opacity: 0.7;
+    margin-top: 6px; letter-spacing: 1px;
+  }
+  .phase h4 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 21px; color: var(--blanc); margin-bottom: 8px; }
+  .phase p { font-size: 15px; line-height: 1.85; color: var(--rose-pale); opacity: 0.92; }
+  @media (max-width: 640px) { .phase { grid-template-columns: 1fr; gap: 8px; } }
+
+  .note-box {
+    margin-top: 40px; padding: 26px 30px; border: 1px solid var(--line-dark);
+    font-size: 14.5px; line-height: 1.8; color: var(--rose-pale); opacity: 0.9;
+  }
+  .note-box strong { color: var(--or-pale); font-weight: 500; }
+
+  /* CONTRE-INDICATIONS */
+  .safety-band { background: var(--noir-photo); }
+  .safety-list { margin-top: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 40px; }
+  .safety-list li { list-style: none; font-size: 14.5px; line-height: 1.7; color: var(--rose-pale); opacity: 0.88; padding-left: 20px; position: relative; }
+  .safety-list li::before { content: '✦'; position: absolute; left: 0; color: var(--terracotta-pale); font-size: 11px; top: 3px; }
+  @media (max-width: 720px) { .safety-list { grid-template-columns: 1fr; } }
+
+  /* CTA FINAL */
+  .final-cta { text-align: center; padding: 140px 40px; background: var(--marron-noir); position: relative; }
+  .final-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(200, 112, 77, 0.14), transparent 60%);
+  }
+  .final-cta-inner { position: relative; max-width: 640px; margin: 0 auto; }
+  .final-cta h2 { font-family: 'Italiana', serif; font-size: clamp(32px, 5vw, 52px); color: var(--blanc); margin: 20px 0 20px; font-weight: 400; }
+  .final-cta h2 em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta-pale); }
+  .final-cta .price-line {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--or-pale);
+    text-transform: uppercase; margin-bottom: 30px;
+  }
+  .final-cta p.lede { font-size: 15.5px; line-height: 1.85; color: var(--rose-pale); margin-bottom: 40px; }
+
+  .closing-line {
+    text-align: center; padding: 0 40px 100px; font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: clamp(17px, 2.2vw, 21px); color: var(--rose-pale); opacity: 0.85;
+    max-width: 620px; margin: 0 auto; line-height: 1.7;
+  }
+
+  footer {
+    background: var(--noir-photo); color: var(--rose-pale); opacity: 0.75;
+    text-align: center; padding: 40px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    border-top: 1px solid var(--line-dark);
+  }
+  footer a { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 720px) {
+    section.block { padding: 80px 24px; }
+    .citation { padding: 70px 24px; }
+    nav { padding: 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="logo"><img src="/assets/sanctuarys-logo-1.png" alt="Sanctuarys"></a>
+  <ul class="nav-links">
+    <li><a href="/index.html">Sanctuarys</a></li>
+    <li><a href="/reserver.html">Tous les soins</a></li>
+  </ul>
+  <a href="/reserver.html?service=anubis4venus" class="nav-cta">Réserver ✦</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Rituel signature · Rebirth Technologie</span>
+    <h1>Anubis 4 <em>Venus.</em></h1>
+    <p class="subtitle">Le corps scellé, la matière transmutée, le magnétisme restauré.</p>
+    <p class="lede">Les sorcières d'hier étaient les scientifiques d'aujourd'hui. Anubis 4 Venus assume cet héritage entier : une ingénierie corporelle où la chaleur, la matière végétale et la vibration cessent d'être trois langages séparés pour devenir un seul geste, posé sur une heure et sur un corps.</p>
+    <div class="hero-cta-row">
+      <a href="/reserver.html?service=anubis4venus" class="btn-primary">Réserver le rituel ✦</a>
+      <a href="#codex" class="btn-ghost">Découvrir le codex</a>
+    </div>
+  </div>
+</header>
+
+<!-- LE PRINCIPE -->
+<section class="block" id="principe">
+  <div class="block-head">
+    <span class="eyebrow">Le principe</span>
+    <h2>Le corps est un<br><em>émetteur.</em></h2>
+  </div>
+  <div class="prose">
+    <p>Une pensée seule ne change pas une réalité. Ce qui la change, c'est la fréquence que le corps émet, cellule après cellule, à travers son champ. Tant qu'une stase reste figée dans la chair, mémoire de contraction, ancienne défense, réflexe de manque, elle continue de parler à ta place et d'appeler en miroir les mêmes situations, les mêmes lenteurs, les mêmes lourdeurs.</p>
+    <p>Anubis 4 Venus s'adresse directement à cette racine. <strong>Un geste unique</strong>, l'occlusion thermique et l'onction végétale conjuguées, déverrouille le système nerveux et réinforme les tissus en profondeur. Ce qui change alors n'est pas seulement la peau. C'est le signal que le corps envoie au reste de sa vie.</p>
+  </div>
+</section>
+
+<!-- LE MYTHE OPÉRATIF -->
+<section class="block wide" style="max-width: 1300px;">
+  <div class="block-head">
+    <span class="eyebrow">La mécanique du rituel</span>
+    <h2>Trois noms,<br><em>un seul geste.</em></h2>
+  </div>
+  <div class="mythe-grid">
+    <div class="mythe-card">
+      <div class="roman">I · ANUBIS</div>
+      <h3>Le gardien du seuil.</h3>
+      <p>Il commande l'immobilité et referme le tumulte extérieur. En scellant le corps sous la couverture thermique, il matérialise le vase clos : aucune énergie ne s'échappe, aucune distraction ne pénètre. Le corps est mis au secret.</p>
+    </div>
+    <div class="mythe-card">
+      <div class="roman">II · LE CHIFFRE 4</div>
+      <h3>L'ancrage terrestre.</h3>
+      <p>Il convoque les quatre éléments que le protocole met littéralement en jeu : le feu de la chaleur profonde, l'eau de la sudation, la terre de la chair et des tissus, l'air du souffle qui se libère une fois le diaphragme relâché.</p>
+    </div>
+    <div class="mythe-card">
+      <div class="roman">III · VENUS</div>
+      <h3>La matrice régénérée.</h3>
+      <p>Dès que la matière est épurée sous le linceul d'Anubis, Vénus déploie sa puissance d'attraction : souplesse, sensorialité, beauté vivante, fécondité des tissus. Le corps ressort allégé, magnétisé, rayonnant.</p>
+    </div>
+  </div>
+</section>
+
+<div class="citation">
+  <blockquote>« Ce qui est en bas est comme ce qui est en haut, et ce qui est en haut est comme ce qui est en bas, pour accomplir les miracles d'une seule chose. »</blockquote>
+  <cite>Table d'Émeraude</cite>
+</div>
+
+<!-- CE QUE DIT LA SCIENCE -->
+<section class="block wide science-band" style="max-width: none; padding: 120px 40px;">
+  <div class="block-head" style="max-width: 780px; margin: 0 auto 56px;">
+    <span class="eyebrow">Ce que dit la science</span>
+    <h2>La preuve et la<br><em>vibration.</em></h2>
+    <div class="divider" style="margin-top: 26px;"></div>
+    <p class="prose" style="max-width: 640px; margin: 0 auto;">Ce que les mains anciennes savaient par l'expérience, l'instrument le mesure aujourd'hui. Trois mécanismes mesurables soutiennent chaque minute du rituel.</p>
+  </div>
+  <div class="science-grid" style="max-width: 1180px; margin: 50px auto 0;">
+    <div class="science-item">
+      <div class="num">70°</div>
+      <h4>La chute de résistance cutanée</h4>
+      <p>Sous occlusion complète, la peau perd sa résistance électrique et devient un milieu hyper-conducteur. Le corps peut alors recevoir l'information vibratoire du baume sans parasite extérieur.</p>
+    </div>
+    <div class="science-item">
+      <div class="num">HSP</div>
+      <h4>Les protéines de choc thermique</h4>
+      <p>La chaleur profonde stimule leur production. Ces réparatrices cellulaires accélèrent le nettoyage des tissus et referment la porte au stress oxydatif.</p>
+    </div>
+    <div class="science-item">
+      <div class="num">SNP</div>
+      <h4>Le basculement parasympathique</h4>
+      <p>Le système nerveux quitte l'état de défense. Rythme cardiaque abaissé, viscères décompressés : le corps cesse de se défendre et commence à se reconstruire.</p>
+    </div>
+  </div>
+  <p style="text-align: center; margin-top: 60px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 19px; color: var(--terracotta-pale); max-width: 640px; margin-left: auto; margin-right: auto;">Les sorcières d'hier étaient les scientifiques d'aujourd'hui. Anubis 4 Venus ne choisit pas entre la vibration et la preuve. Il les fait parler la même langue.</p>
+</section>
+
+<!-- CODEX DES 7 BAUMES -->
+<section class="block wide codex-band" id="codex" style="max-width: none; padding: 120px 40px;">
+  <div class="block-head">
+    <span class="eyebrow">Le codex</span>
+    <h2>Les sept<br><em>baumes.</em></h2>
+    <div class="divider" style="margin-top: 26px;"></div>
+    <p class="prose" style="max-width: 640px; margin: 0 auto;">Chaque baume est une synergie végétale précise, composée en atelier et gardée secrète. Le baume actif de ta séance n'est jamais choisi au hasard : il est déterminé au pendule de radiesthésie, face à ton terrain du jour.</p>
+  </div>
+  <div class="codex-grid" style="max-width: 1180px; margin: 0 auto;">
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 1</span><h3>Purification</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Nettoie les miasmes et colmate les brèches du champ. Dissout ce qu'ont laissé les liens toxiques et les lieux trop lourds.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Les relations parasites s'éloignent d'elles-mêmes. Fin des cycles de malchance répétés, quotidien allégé.</p></div>
+    </div>
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 2</span><h3>Fluidité</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Relance le mouvement du champ. Ce qui était stase et densité redevient onde et vitesse.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Affaires débloquées, administration qui avance enfin, opportunités qui recommencent à circuler.</p></div>
+    </div>
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 3</span><h3>Matrice</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Réactive le vortex créateur du bassin et le rayonnement vénusien. Le champ cesse de se défendre, il redevient réceptif.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Magnétisme relationnel en hausse, désir réhabilité, créativité qui redescend enfin dans la matière.</p></div>
+    </div>
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 4</span><h3>Ancrage</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Densifie l'assise dans les jambes. La structure cesse de flotter dans le mental, elle se pose dans l'axe.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Sécurité matérielle retrouvée, décisions lucides, limites posées sans dureté, idées enfin concrétisées.</p></div>
+    </div>
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 5</span><h3>Mutation</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Accélère la mue fréquentielle. Le champ change de signature sans passer par la crise destructrice.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Transitions de vie dénouées, portes du passé refermées sans regret, seuils franchis sans répéter l'ancien schéma.</p></div>
+    </div>
+
+    <div class="codex-card">
+      <div class="codex-top"><span class="codex-num">N° 6</span><h3>Sécurité</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Érige un bouclier de paix impénétrable. Le signal de panique interne s'efface, la cohérence du champ revient.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Fin de l'urgence permanente, confiance qui s'installe d'instinct, sommeil souverain, défis abordés sans submersion.</p></div>
+    </div>
+
+    <div class="codex-card" style="grid-column: 1 / -1; max-width: 560px; margin: 0 auto;">
+      <div class="codex-top"><span class="codex-num">N° 7</span><h3>Couronnement</h3></div>
+      <div class="codex-row"><span class="tag">Vibratoire</span><p>Fait rayonner le centre du cœur. Relie l'axe terrestre à l'axe céleste.</p></div>
+      <div class="codex-row"><span class="tag">Matière</span><p>Souveraineté restaurée sans lutte ni justification, reconnaissance naturelle, respect qui s'impose de lui-même.</p></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LE PROTOCOLE -->
+<section class="block wide" style="max-width: 900px;">
+  <div class="block-head">
+    <span class="eyebrow">Le protocole</span>
+    <h2>Une heure,<br><em>quatre temps.</em></h2>
+  </div>
+  <div class="phase-list">
+    <div class="phase">
+      <div class="phase-meta"><div class="phase-num">Phase I</div><div class="phase-time">5 min</div></div>
+      <div><h4>Le diagnostic et la mise en chauffe</h4><p>Le baume actif est déterminé au pendule de radiesthésie, jamais au hasard ni à la préférence olfactive. La couverture thermique préchauffe, le film occlusif se prépare.</p></div>
+    </div>
+    <div class="phase">
+      <div class="phase-meta"><div class="phase-num">Phase II</div><div class="phase-time">15 min</div></div>
+      <div><h4>L'onction descendante</h4><p>Le ventre d'abord, en mouvements lents et concentriques, pour désamorcer l'alarme intérieure. Puis le corps entier, enduit dans un seul sens : celui qui fait descendre vers les pieds.</p></div>
+    </div>
+    <div class="phase">
+      <div class="phase-meta"><div class="phase-num">Phase III</div><div class="phase-time">30 min</div></div>
+      <div><h4>Le scellé sous l'Athanor</h4><p>Le film se referme, la couverture monte à 70°. Le corps entre en vase clos. C'est là que tout se joue : chute de la résistance cutanée, sudation profonde, système nerveux qui bascule enfin au repos.</p></div>
+    </div>
+    <div class="phase">
+      <div class="phase-meta"><div class="phase-num">Phase IV</div><div class="phase-time">10 min</div></div>
+      <div><h4>La levée du sceau</h4><p>Ouverture progressive, corps nettoyé à la serviette chaude sans retirer le voile actif du baume. Le silence se prolonge : c'est encore le temps où l'information s'installe.</p></div>
+    </div>
+  </div>
+  <div class="note-box">
+    <strong>Ce qui peut survenir sous le sceau.</strong> Frissons, larmes silencieuses ou sommeil profond ne sont pas des alertes : ce sont les signes d'une décharge nerveuse qui s'opère. Ta Gardienne reste présente, sans jamais interrompre le processus.
+  </div>
+</section>
+
+<!-- CONTRE-INDICATIONS -->
+<section class="block wide safety-band" style="max-width: none; padding: 100px 40px;">
+  <div class="block-head" style="max-width: 700px; margin: 0 auto 10px;">
+    <span class="eyebrow">Avant de réserver</span>
+    <h2>Un protocole<br><em>puissant.</em></h2>
+    <p class="prose" style="max-width: 600px; margin: 20px auto 0;">La chaleur profonde et l'occlusion complète en font un soin intense. Il n'est pas accessible dans les situations suivantes.</p>
+  </div>
+  <ul class="safety-list" style="max-width: 900px; margin: 0 auto;">
+    <li>Grossesse ou allaitement en cours</li>
+    <li>Pathologie cardiovasculaire lourde (insuffisance cardiaque, hypertension sévère non contrôlée, infarctus ou AVC récent, pacemaker)</li>
+    <li>Trouble thromboembolique aigu (phlébite, thrombose veineuse profonde récente, embolie pulmonaire)</li>
+    <li>État fébrile, infectieux ou inflammatoire aigu</li>
+    <li>Affection cutanée aiguë ou étendue (plaie ouverte, brûlure, eczéma ou psoriasis suintant)</li>
+    <li>Cancer évolutif ou en cours de traitement, sans autorisation écrite de l'oncologue référent</li>
+  </ul>
+</section>
+
+<!-- CTA FINAL -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <span class="eyebrow">Le rituel, en vrai</span>
+    <h2>Franchir<br><em>le seuil.</em></h2>
+    <div class="price-line">77 € · 60 minutes · Sanctuarys Paris</div>
+    <p class="lede">Une heure sur table, un vase clos, un baume choisi pour toi seule. Le rituel se réserve comme n'importe quel soin Sanctuarys : en ligne, en quelques minutes.</p>
+    <a href="/reserver.html?service=anubis4venus" class="btn-primary">Réserver mon rituel ✦</a>
+  </div>
+</section>
+
+<p class="closing-line">Anubis 4 Venus est pensé pour voyager. Le même sceau, la même précision, la même heure de vase clos, où que Sanctuarys s'installe.</p>
+
+<footer>
+  <a href="/index.html">Sanctuarys</a> · <a href="/reserver.html">Tous les soins</a> · <a href="/cgv.html">CGV</a> · info@sanctuarys.me
+</footer>
+
+</body>
+</html>

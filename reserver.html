@@ -426,6 +426,10 @@
     whatsappMode: new URLSearchParams(window.location.search).get('whatsapp') === '1'
   };
 
+  // Permet aux pages de soin (ex. anubis4venus.html) de deep-linker direct
+  // vers l'etape 3 avec le bon soin deja choisi, ex. reserver.html?service=anubis4venus
+  const PRESELECT_SERVICE = new URLSearchParams(window.location.search).get('service');
+
   function goStep(n) {
     document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('step' + n).classList.add('active');
@@ -526,13 +530,31 @@
         <div class="status">${s.active ? '✦ Ouvert' : 'Bientôt'}</div>
       </div>
     `).join('');
+
+    // Deep-link direct depuis une page de soin : un seul lieu actif et un
+    // soin valide dans l'URL suffisent pour sauter tout de suite a l'etape 3.
+    const activeSanctuaries = data.filter(s => s.active);
+    if (PRESELECT_SERVICE && activeSanctuaries.length === 1 && SERVICES.some(s => s.key === PRESELECT_SERVICE)) {
+      const card = container.querySelector(`.sanctuary-card[data-id="${activeSanctuaries[0].id}"]`);
+      if (card) chooseSanctuary(card, PRESELECT_SERVICE);
+    }
   }
 
-  function chooseSanctuary(el) {
+  function chooseSanctuary(el, preselectServiceKey) {
     document.querySelectorAll('.sanctuary-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
     state.sanctuary = { id: el.dataset.id, nom: el.querySelector('h3').textContent.split('.')[0].trim() };
-    setTimeout(() => { renderServiceList(); goStep(2); }, 200);
+    setTimeout(() => {
+      renderServiceList();
+      goStep(2);
+      if (preselectServiceKey) {
+        const svcCard = document.querySelector(`#serviceList .sanctuary-card[data-key="${preselectServiceKey}"]`);
+        if (svcCard) {
+          chooseService(svcCard);
+          setTimeout(goToSlotStep, 200);
+        }
+      }
+    }, 200);
   }
 
   function renderServiceList() {
