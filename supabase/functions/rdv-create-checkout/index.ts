@@ -88,6 +88,20 @@ Deno.serve(async (req) => {
     const svcKey = typeof service_key === 'string' && SERVICES[service_key] ? service_key : 'vsteam'
     const service = SERVICES[svcKey]
 
+    // Gardienne de reference pour ce soin (Charlotte fait le VageeSteam,
+    // Princesse l'Anubis 4 Venus avec Charlotte en second) : purement
+    // informatif pour l'agenda, la disponibilite reelle est deja verifiee
+    // par get_available_slots avant meme d'arriver ici.
+    const gardiennePrenom = svcKey === A4V_SERVICE_KEY ? 'princesse' : 'charlotte'
+    const { data: gardienneRef } = await admin
+      .from('gardiennes')
+      .select('id')
+      .ilike('prenom', gardiennePrenom)
+      .eq('active', true)
+      .order('created_at')
+      .limit(1)
+      .maybeSingle()
+
     // Sanctuary info (capacite + metadata)
     const { data: sanctuary } = await admin
       .from('sanctuaries')
@@ -126,6 +140,7 @@ Deno.serve(async (req) => {
       .from('appointments')
       .insert({
         sanctuary_id,
+        gardienne_id: gardienneRef?.id || null,
         client_prenom: prenom,
         client_nom: nom,
         client_email: email.toLowerCase(),
