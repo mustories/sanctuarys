@@ -1,6 +1,6 @@
 // =====================================================
 // SANCTUARYS · Edge Function · create-manual-appointment
-// Permet a une gardienne (Charlotte, Manthyta) de placer elle meme
+// Permet a une gardienne (Charlotte, Princesse) de placer elle meme
 // un rendez vous sur l'agenda (client WhatsApp, walk-in, etc.),
 // sans passer par le tunnel de paiement en ligne.
 // =====================================================

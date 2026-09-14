@@ -1310,7 +1310,7 @@ function renderGaStats() {
 function populateGardienneSelects() {
   const options = AGENDA_GARDIENNES.length
     ? AGENDA_GARDIENNES.map(g => `<option value="${g.id}">${escapeHtml(g.prenom)}</option>`).join('')
-    : '<option value="">Charlotte</option><option value="">Manthyta</option>';
+    : '<option value="">Charlotte</option><option value="">Princesse</option>';
   document.getElementById('gardienneSelect').innerHTML = options;
   document.getElementById('mGardienne').innerHTML = '<option value="">Non assignée</option>' + options;
 

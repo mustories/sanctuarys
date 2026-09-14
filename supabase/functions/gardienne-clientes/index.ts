@@ -1,6 +1,6 @@
 // =====================================================
 // SANCTUARYS · Edge Function · gardienne-clientes
-// Espace des gardiennes (Charlotte, Manthyta) : annuaire des
+// Espace des gardiennes (Charlotte, Princesse) : annuaire des
 // clientes, fiche detail ("espace client"), notes, modification
 // des rendez vous, retards et absences.
 // Protege par le mot de passe partage (GARDIENNE_PASSWORD).

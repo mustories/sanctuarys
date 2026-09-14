@@ -1,6 +1,6 @@
 // =====================================================
 // SANCTUARYS · Edge Function · create-bilan
-// Espace de Charlotte et Manthyta (gardiennes sur place)
+// Espace de Charlotte et Princesse (gardiennes sur place)
 // Recoit un bilan radiesthesique (etat uterus %, etat
 // receptivite %, allies vegetaux choisis dans le grimoire),
 // fait rediger l'analyse par Claude, l'enregistre, expedie

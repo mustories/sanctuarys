@@ -1,6 +1,6 @@
 // =====================================================
 // SANCTUARYS · Edge Function · gardienne-agenda
-// Renvoie a l'espace des gardiennes (Charlotte, Manthyta) l'agenda
+// Renvoie a l'espace des gardiennes (Charlotte, Princesse) l'agenda
 // unifie (rendez vous publics + seances Fondatrices) pour qu'elles
 // puissent cliquer directement sur une cliente et faire son bilan.
 // Protege par le mot de passe partage, lecture via service role car
